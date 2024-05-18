@@ -1,4 +1,4 @@
-New app to office Secretaria de salud
+Villadonq version 2 with Inertia + Svelte
 
 - cp .env.example .env
 - composer install
