@@ -3,32 +3,35 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
+use DB;
 class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     *
+     * @return void
      */
-    public function run(): void
-    {
-        DB::table('users')->insert
-        (
-            [
-                [
-                    'area_id' => 1,
-                     'password' => Hash::make('1234'),
-                     'name' => 'Juan',
-                     'last_name' => 'Donquis',
-                     'ci' => '1234',
-                     'charge' => 'Desarrollador',
-                     'type_user_id' => '1',
-                     'search' => 'Juan Donquis 1234 Desarrollador Usuario Sistemas'
-                ],
+    public function run()
+    {   
+
         
-            ]
-        );
+
+            DB::table('users')->insert([
+
+                'type_user_id' => 1,
+                'ci' => '12345678',
+                'name' => 'Juan',
+                'last_name' => 'Donquis',
+                'email' => 'juan@gmail.com',
+                'password' => Hash::make('12345678'),
+                'phone_number' => '04125800610',
+                'address' => 'JUANCRI',
+                'date_birth' => '2022-07-09',
+                'state' => 'Falcon',
+                'city' => 'Coro',
+                'photo' => '',
+
+            ]);
     }
 }

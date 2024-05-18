@@ -2,23 +2,31 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+
+use DB;
 
 class TypeUserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     *
+     * @return void
      */
-    public function run(): void
-    {
-        DB::table('type_users')->insert
-        (   
-            [
-                ['name' => 'Usuario'],
-                ['name' => 'Administrador']    
-            ]
-        );
+    public function run()
+    {   
+
+        $fields = [
+
+            ['name' => 'Administrador' ],
+            ['name' => 'Representante' ],
+            ['name' => 'Profesor' ],
+
+     
+
+         ];   
+
+         DB::table('type_users')->insert($fields);
+
     }
 }

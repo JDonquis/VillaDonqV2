@@ -13,20 +13,21 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'area_id',
-        'username',
+
+    protected $fillable = 
+    [    
+        'type_user_id',
+        'ci',
         'name',
         'last_name',
-        'ci',
-        'charge',
-        'type_user_id',
+        'email',
         'password',
+        'phone_number',
+        'address',
+        'date_birth',
+        'state',
+        'city',
+        'photo'
     ];
 
     /**
@@ -65,14 +66,18 @@ class User extends Authenticatable
         switch ($user->type_user_id) 
         {
             case 1:
-                $rol = 'user';
+                $rol = 'Administrador';
                 break;
             case 2:
-                $rol = 'admin';
+                $rol = 'Representante';
                 break;
             
+            case 3:
+                $rol = 'Profesor';
+                break;
+
             default:
-                $rol = 'user';
+                $rol = 'Representante';
                 break;
 
         }

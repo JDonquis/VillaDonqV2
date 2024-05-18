@@ -37,22 +37,6 @@ class UserController extends Controller
 
             return Inertia::location('/dashboard');
 
-            // return inertia('Index', 
-            // [
-            //     'token' => $token,
-            //     'user_data' => 
-            //     [
-            //         'area_id' => $user->area_id, 
-            //         'type_user_id' => $user->type_user_id, 
-            //         'name' => $user->name, 
-            //         'last_name' => $user->last_name, 
-            //         'ci' => $user->ci, 
-            //         'username' => $user->username, 
-            //         'charge' => $user->charge,
-            //         'permissions' => $permissionsWithFormat
-            //     ],
-
-            // ]);
 
     }
 
