@@ -35,7 +35,7 @@ class StudentController extends Controller
                 'courses' => $courses,
                 'sections' => $sections,
                 'course_sections' => $course_sections,
-                'students' => $studestudentsPerCoursents,
+                'students' => $studentsPerCourse,
             ]
 
             
