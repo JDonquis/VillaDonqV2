@@ -19,8 +19,6 @@
         ...serverSideData.filters
     }
     // $: $form, handleFilters()
-    console.log(serverSideData.filters.search);
-    export let searchRoute = "/dashboard/bitacora";
 
 
     const handleFilters = debounce((event) => {
