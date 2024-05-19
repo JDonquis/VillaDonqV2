@@ -16,7 +16,7 @@ class SectionSeeder extends Seeder
     {
          $fields = [
 
-            ['name' => 'Seccion A' ],
+            ['name' => 'A' ],
      
 
          ];   
