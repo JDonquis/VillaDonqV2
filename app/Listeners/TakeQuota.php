@@ -25,8 +25,9 @@ class TakeQuota
         $student = $event->student;
         $schoolLapseActive = SchoolLapse::where('status',1)->first();
 
-        $quota = Quota::where('school_lapse_id',$schoolLapseActive->id)
-        ->decrement('remaining')
-        ->increment('accepted');
+        $quota = Quota::where('school_lapse_id', $schoolLapseActive->id)->first();
+        $quota->decrement('remaining');
+        $quota->increment('accepted');
+        $quota->save();
     }
 }

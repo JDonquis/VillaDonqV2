@@ -5,6 +5,7 @@ namespace App\Listeners;
 use Carbon\Carbon;
 use App\Models\MainConfig;
 use App\Models\SchoolLapse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 

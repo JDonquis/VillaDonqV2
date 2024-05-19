@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Inertia\Inertia;
 use App\Models\Course;
 use App\Models\Section;
@@ -63,12 +64,11 @@ class StudentController extends Controller
     }
 
     public function store(CreateStudentRequest $request)
-    {
+    {   
         DB::beginTransaction();
 
         try 
         {
-   
             $this->studentService->create($request);
 
             DB::commit();

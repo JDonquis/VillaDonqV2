@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-
 use DB;
+
+use Illuminate\Database\Seeder;
+use Database\Seeders\QuotaSeeder;
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -27,6 +29,7 @@ class DatabaseSeeder extends Seeder
             'users',
             'main_configs',
             'school_lapses',
+            'quotas',
 
 
         ]);
@@ -41,7 +44,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             TypeDocumentSeeder::class,
             MainConfigSeeder::class,
-            SchoolLapseSeeder::class
+            SchoolLapseSeeder::class,
+            QuotaSeeder::class,
             
         ]);
     }

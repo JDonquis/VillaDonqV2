@@ -57,6 +57,7 @@ class StudentService
         
         if(!isset($user->id))
             $user = $this->createUser($data);
+        
             
         
         $representative = Representative::where('user_id',$user->id)->first();
@@ -131,7 +132,7 @@ class StudentService
             'last_name' => $data['student_last_name'],
             'date_birth' => $data['student_date_birth'],
             'email' => $data['student_email'] ?? null,
-            'DNI' => $data['student_DNI'] ?? null,
+            'ci' => $data['student_ci'] ?? null,
             'phone_number' => $data['student_phone_number'] ?? null,
             'sex' => $data['student_sex'] ?? null,
             'previous_school' => $data['student_previous_school'] ?? null,
