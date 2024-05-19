@@ -6,12 +6,13 @@
     export let placeholder = "";
     export let type = "text";
     export let classes = ''
+    export let theme = "ligtht"
 
     export let error = false;
 </script>
 
-<div class={`text-left mt-5 ${classes}`}>
-    <label for={label} class="form__label" {placeholder}>{label} {required? "*" : "" }</label>
+<div class={`text-left w-full mt-5 ${theme == "dark" ? "bg-color1 text-gray-100" : ''}`}>
+    <label for={label} class={`form__label w-full text-gray-300 ${theme == "dark" ? "bg-color1 text-gray-100" : ''}`} {placeholder}>{label} {required? "*" : "" }</label>
     <div class="relative w-full parent_div">
         {#if type === "textarea"}
             <textarea bind:value id={label} rows="1"></textarea>
@@ -92,8 +93,5 @@
     .parent_div:focus-within::before {
         width: 98%;
     }
-    label {
-        width: 100%;
-        color: azure;
-    }
+   
 </style>

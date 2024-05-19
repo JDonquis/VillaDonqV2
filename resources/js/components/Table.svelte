@@ -12,6 +12,7 @@
     export let filtersOptions = [];
     export let selectedRow;
     export let serverSideData = {};
+    export let pagination = true;
     $: console.log(filtersOptions);
     $: console.log(serverSideData.filters);
 
@@ -33,14 +34,14 @@
 <section class="w-full">
     <div class="mt-6 md:flex md:items-center md:justify-between">
         <div
-            class="inline-flex overflow-hidden bg-white border divide-x rounded-lg dark:bg-gray-900 rtl:flex-row-reverse dark:border-gray-700 dark:divide-gray-700"
+            class="inline-flex overflow-hidden bg-white border border-dark border-opacity-50  divide-x rounded-lg  rtl:flex-row-reverse  "
         >
             <button on:click={(e) => {
                 filterClientData['status'] = ""
                 handleFilters()
             }} 
-                class="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm dark:hover:bg-gray-800 dark:text-gray-300 hover:bg-gray-100"
-                class:bg-gray-800={filterClientData['status'] == '' || !filterClientData['status']}
+                class="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm bg-gray-200  hover:bg-gray-100"
+                class:bg-gray-200={filterClientData['status'] == '' || !filterClientData['status']}
 
             >
                 Todos
@@ -51,8 +52,8 @@
                         filterClientData[filterKey] = filter.id
                         handleFilters()
                     }} 
-                        class="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm dark:hover:bg-gray-800 dark:text-gray-300 hover:bg-gray-100"
-                        class:bg-gray-800={filterClientData[filterKey] == filter.id}
+                        class="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm   hover:bg-gray-100"
+                        class:bg-gray-200={filterClientData[filterKey] == filter.id}
                     >
                         {filter.name}
                     </button>
@@ -68,7 +69,7 @@
                     viewBox="0 0 24 24"
                     stroke-width="1.5"
                     stroke="currentColor"
-                    class="w-5 h-5 mx-3 text-gray-400 dark:text-gray-600"
+                    class="w-5 h-5 mx-3 text-gray-400 "
                 >
                     <path
                         stroke-linecap="round"
@@ -85,7 +86,7 @@
                 on:input={() => {
                     handleFilters();
                 }}
-                class="block w-full py-1.5 pr-5 text-gray-700 bg-white border border-gray-200 rounded-lg md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                class="block w-full py-1.5 pr-5 text-gray-700 bg-white border border-gray-200 rounded-lg md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5  focus:border-blue-400  focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
             />
         </div>
         {#if selectedRow.status}
@@ -119,16 +120,16 @@
         >
             <div class="inline-block w-full py-2 align-middle md:px-6 lg:px-8">
                 <div
-                    class="overflow-x-auto max-h-[500px] overflow-y-auto scroll-table border border-gray-200 dark:border-gray-700 md:rounded-lg"
+                    class="overflow-x-auto max-h-[500px] overflow-y-auto scroll-table border border-gray-200  md:rounded-lg"
                 >
                     <table
-                        class="table overflow-scroll overflow-y-auto w-full divide-y divide-gray-200 dark:divide-gray-700"
+                        class="table overflow-scroll overflow-y-auto w-full divide-y divide-gray-200 "
                     >
                         <slot name="thead"></slot>
 
                         <slot
                             name="tbody"
-                            class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900"
+                            class="bg-white divide-y divide-gray-200  "
                         ></slot>
                     </table>
                 </div>
@@ -136,63 +137,70 @@
         </div>
     </div>
 
-    <div class="mt-2 sm:flex sm:items-center sm:justify-between">
-        <div class="text-sm text-gray-500 dark:text-gray-400">
-            Page <span class="font-medium text-gray-700 dark:text-gray-100"
-                >{serverSideData.current_page} of {serverSideData.last_page}</span
-            >
-        </div>
-
-        <div class="flex items-center mt-4 gap-x-4 sm:mt-0">
-            <a
-                use:inertia
-                href={serverSideData.prev_page_url}
-                class="flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 disabled:cursor-not-allowed bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800"
-                disabled={serverSideData.prev_page_url == null}
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-5 h-5 rtl:-scale-x-100"
+    {#if pagination}
+        
+        <!-- Pagination ---------------------------------------------------------------------------------------------- -->
+        <div class="mt-2 sm:flex sm:items-center sm:justify-between">
+            <div class="text-sm text-gray-500 ">
+                Page <span class="font-medium text-gray-700 "
+                    >{serverSideData.current_page} of {serverSideData.last_page}</span
                 >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
-                    />
-                </svg>
+            </div>
 
-                <span> previous </span>
-            </a>
 
-            <a
-                use:inertia
-                href={serverSideData.next_page_url}
-                class="flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800"
-                disabled={serverSideData.next_page_url == null}
-            >
-                <span> Next </span>
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-5 h-5 rtl:-scale-x-100"
+            <!-- pagination buttons -->
+            <div class="flex items-center mt-4 gap-x-4 sm:mt-0">
+                <a
+                    use:inertia
+                    href={serverSideData.prev_page_url}
+                    class="flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 disabled:cursor-not-allowed 
+                    white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100   "
+                    disabled={serverSideData.prev_page_url == null}
                 >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
-                    />
-                </svg>
-            </a>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-5 h-5 rtl:-scale-x-100"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
+                        />
+                    </svg>
+
+                    <span> previous </span>
+                </a>
+
+                <a
+                    use:inertia
+                    href={serverSideData.next_page_url}
+                    class="flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100 "
+                    disabled={serverSideData.next_page_url == null}
+                >
+                    <span> Next </span>
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-5 h-5 rtl:-scale-x-100"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
+                        />
+                    </svg>
+                </a>
+            </div>
         </div>
-    </div>
+    {/if}
 </section>
 
 <style>

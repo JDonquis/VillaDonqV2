@@ -6,31 +6,34 @@
 
     import { displayAlert } from "../../stores/alertStore";
     import { useForm } from "@inertiajs/svelte";
+    export let data = [];
+
+    console.log(data);
 
     let formCreate = useForm({
-        student_name: "",
-        student_last_name: "",
-        student_date_birth: "",
-        student_email: "",
-        student_CI: "",
-        student_phone_number: "",
-        course_id: "",
+        student_name: "Nombre de estudiante",
+        student_last_name: "Villasmil Tovar",
+        student_date_birth: "1999-06-25",
+        student_email: "juanvillans16@gmail.com",
+        student_ci: "27253194",
+        student_phone_number: "04124393123",
+        course_id: 1,
         section_id: "",
-        student_sex: "",
-        student_previous_school: "",
-        state: "",
-        city: "",
-        address: "",
-        rep_name: "",
-        rep_last_name: "",
-        rep_DNI: "",
-        rep_phone_number: "",
-        rep_email: "",
-        rep_profession: "",
-        rep_workplace: "",
+        student_sex: "Masculino",
+        student_previous_school: "Libertadores de america jeje",
+        state: "Falcón",
+        city: "Coro",
+        address: "Conjunto residencial Juan crisóstomo Falcón",
+        rep_name: "Mildred",
+        rep_last_name: "Tovar",
+        rep_ci: "385560",
+        rep_phone_number: "048271281",
+        rep_email: "msocratis@gmail.com",
+        rep_profession: "Economista",
+        rep_workplace: "Fundefal",
         second_rep_name: "",
         second_rep_last_name: "",
-        second_rep_DNI: "",
+        second_rep_ci: "",
         second_rep_phone_number: "",
         second_rep_email: "",
         second_rep_profession: "",
@@ -42,7 +45,7 @@
         student_last_name: "",
         student_date_birth: "",
         student_email: "",
-        student_DNI: "",
+        student_ci: "",
         student_phone_number: "",
         course_id: "",
         section_id: "",
@@ -53,14 +56,14 @@
         address: "",
         rep_name: "",
         rep_last_name: "",
-        rep_DNI: "",
+        rep_ci: "",
         rep_phone_number: "",
         rep_email: "",
         rep_profession: "",
         rep_workplace: "",
         second_rep_name: "",
         second_rep_last_name: "",
-        second_rep_DNI: "",
+        second_rep_ci: "",
         second_rep_phone_number: "",
         second_rep_email: "",
         second_rep_profession: "",
@@ -74,7 +77,7 @@
     function handleSubmit(event) {
         event.preventDefault();
         $formCreate.clearErrors();
-        $formCreate.post("/dashboard/bitacora", {
+        $formCreate.post("/dashboard/matricula", {
             onError: (errors) => {
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
@@ -111,20 +114,23 @@
         });
     }
     function handleDelete(id) {
-        $formCreate.delete(`/dashboard/bitacora/${id}`, {
+        $formCreate.delete(`/dashboard/matriculo/${id}`, {
             onBefore: () =>
                 confirm(
-                    `¿Está seguro de eliminar la actividad ${selectedRow.title}?`,
+                    `¿Está seguro de eliminar a este estudiante ${selectedRow.title}?`,
                 ),
         });
     }
-    export let data = [];
 
     function fillFormToEdit() {
         $formEdit.reset();
         showModalFormEdit = true;
     }
 
+    $: console.log($formCreate);
+    $: console.log(
+        data.course_sections?.data?.[`course_${$formCreate.course_id}`],
+    );
 </script>
 
 <svelte:head>
@@ -140,7 +146,7 @@
 
     <form id="a-form" on:submit={handleSubmit} action="" class="w-[600px]">
         <fieldset
-            class="px-5 snap-start bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
         >
             <legend
                 class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
@@ -158,7 +164,7 @@
                 required={true}
                 label={"Apellido"}
                 bind:value={$formCreate.student_last_name}
-                error={$formCreate.errors?.studen_last_name}
+                error={$formCreate.errors?.student_last_name}
             />
             <Input
                 type="date"
@@ -169,28 +175,24 @@
             />
             <Input
                 type="email"
-                required={true}
                 label="correo"
                 bind:value={$formCreate.student_email}
                 error={$formCreate.errors?.student_email}
             />
             <Input
                 type="number"
-                required={true}
                 label={"Cédula"}
-                bind:value={$formCreate.student_CI}
-                error={$formCreate.errors?.student_CI}
+                bind:value={$formCreate.student_ci}
+                error={$formCreate.errors?.student_ci}
             />
             <Input
                 type="tel"
-                required={true}
                 label={"Teléfono"}
                 bind:value={$formCreate.student_phone_number}
                 error={$formCreate.errors?.student_phone_number}
             />
             <Input
                 type="select"
-                required={true}
                 label={"Sexo"}
                 bind:value={$formCreate.student_sex}
                 error={$formCreate.errors?.student_sex}
@@ -205,8 +207,9 @@
                 bind:value={$formCreate.course_id}
                 error={$formCreate.errors?.course_id}
             >
-                <option value="Masculino">1er año</option>
-                <option value="Femenino">2do año</option>
+                {#each data.courses as course}
+                    <option value={course.id}>{course.name}</option>
+                {/each}
             </Input>
             <Input
                 type="select"
@@ -215,13 +218,15 @@
                 bind:value={$formCreate.section_id}
                 error={$formCreate.errors?.section_id}
             >
-                <option value="Masculino">A</option>
-                <option value="Femenino">B</option>
+                {#each data.course_sections?.data?.[`course_${$formCreate.course_id}`] as section}
+                    <option value={section.section_id}
+                        >{section.section_name}</option
+                    >
+                {/each}
             </Input>
 
             <Input
                 type="textarea"
-                required={true}
                 label={"Colegio de procedencia"}
                 bind:value={$formCreate.student_previous_school}
                 error={$formCreate.errors?.student_previous_school}
@@ -229,7 +234,35 @@
         </fieldset>
 
         <fieldset
-            class="px-5 snap-start bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+        >
+            <legend
+                class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
+                >DIRECCIÓNES</legend
+            >
+            <Input
+                type="text"
+                label={"Estado"}
+                bind:value={$formCreate.state}
+                error={$formCreate.errors?.state}
+            />
+            <Input
+                type="text"
+                label={"Ciudad"}
+                bind:value={$formCreate.city}
+                error={$formCreate.errors?.city}
+            />
+            <Input
+                type="textarea"
+                label={"Dirección específica"}
+                bind:value={$formCreate.address}
+                error={$formCreate.errors?.address}
+                classes="col-span-2"
+            />
+        </fieldset>
+
+        <fieldset
+            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
         >
             <legend
                 class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
@@ -239,86 +272,61 @@
                 type="text"
                 required={true}
                 label={"Nombre"}
-                bind:value={$formCreate.student_name}
-                error={$formCreate.errors?.student_name}
+                bind:value={$formCreate.rep_name}
+                error={$formCreate.errors?.rep_name}
             />
             <Input
                 type="text"
                 required={true}
                 label={"Apellido"}
-                bind:value={$formCreate.student_last_name}
-                error={$formCreate.errors?.studen_last_name}
-            />
-            <Input
-                type="date"
-                required={true}
-                label={"Fecha de nacimiento"}
-                bind:value={$formCreate.student_date_birth}
-                error={$formCreate.errors?.student_date_birth}
-            />
-            <Input
-                type="email"
-                required={true}
-                label="correo"
-                bind:value={$formCreate.student_email}
-                error={$formCreate.errors?.student_email}
+                bind:value={$formCreate.rep_last_name}
+                error={$formCreate.errors?.rep_last_name}
             />
             <Input
                 type="number"
                 required={true}
                 label={"Cédula"}
-                bind:value={$formCreate.student_CI}
-                error={$formCreate.errors?.student_CI}
+                bind:value={$formCreate.rep_ci}
+                error={$formCreate.errors?.rep_ci}
+            />
+            <Input
+                type="date"
+                label={"Fecha de nacimiento"}
+                bind:value={$formCreate.rep_date_birth}
+                error={$formCreate.errors?.rep_date_birth}
+            />
+            <Input
+                type="email"
+                required={true}
+                label="correo"
+                bind:value={$formCreate.rep_email}
+                error={$formCreate.errors?.rep_email}
             />
             <Input
                 type="tel"
                 required={true}
                 label={"Teléfono"}
-                bind:value={$formCreate.student_phone_number}
-                error={$formCreate.errors?.student_phone_number}
+                bind:value={$formCreate.rep_phone_number}
+                error={$formCreate.errors?.rep_phone_number}
             />
+
             <Input
-                type="select"
-                required={true}
-                label={"Sexo"}
-                bind:value={$formCreate.student_sex}
-                error={$formCreate.errors?.student_sex}
-            >
-                <option value="Masculino">Masculino</option>
-                <option value="Femenino">Femenino</option>
-            </Input>
-            <Input
-                type="select"
-                required={true}
-                label={"Año escolar"}
-                bind:value={$formCreate.course_id}
-                error={$formCreate.errors?.course_id}
-            >
-                <option value="Masculino">1er año</option>
-                <option value="Femenino">2do año</option>
-            </Input>
-            <Input
-                type="select"
-                required={true}
-                label={"Sección"}
-                bind:value={$formCreate.section_id}
-                error={$formCreate.errors?.section_id}
-            >
-                <option value="Masculino">A</option>
-                <option value="Femenino">B</option>
-            </Input>
+                type="text"
+                label={"Profesión"}
+                bind:value={$formCreate.rep_profession}
+                error={$formCreate.errors?.rep_profession}
+            />
 
             <Input
                 type="textarea"
-                required={true}
-                label={"Colegio de procedencia"}
-                bind:value={$formCreate.student_previous_school}
-                error={$formCreate.errors?.student_previous_school}
+                label={"Lugar de trabajo"}
+                bind:value={$formCreate.rep_workplace}
+                error={$formCreate.errors?.rep_workplace}
             />
         </fieldset>
 
         <fieldset
-            class="px-5 snap-start bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
         >
             <legend
                 class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
@@ -326,83 +334,53 @@
             >
             <Input
                 type="text"
-                required={true}
                 label={"Nombre"}
-                bind:value={$formCreate.student_name}
-                error={$formCreate.errors?.student_name}
+                bind:value={$formCreate.second_rep_name}
+                error={$formCreate.errors?.second_rep_name}
             />
             <Input
                 type="text"
-                required={true}
                 label={"Apellido"}
-                bind:value={$formCreate.student_last_name}
-                error={$formCreate.errors?.studen_last_name}
+                bind:value={$formCreate.second_rep_last_name}
+                error={$formCreate.errors?.second_rep_last_name}
             />
             <Input
                 type="date"
-                required={true}
                 label={"Fecha de nacimiento"}
-                bind:value={$formCreate.student_date_birth}
-                error={$formCreate.errors?.student_date_birth}
+                bind:value={$formCreate.second_rep_date_birth}
+                error={$formCreate.errors?.second_rep_date_birth}
             />
             <Input
                 type="email"
-                required={true}
                 label="correo"
-                bind:value={$formCreate.student_email}
-                error={$formCreate.errors?.student_email}
+                bind:value={$formCreate.second_rep_email}
+                error={$formCreate.errors?.second_rep_email}
             />
             <Input
                 type="number"
-                required={true}
                 label={"Cédula"}
-                bind:value={$formCreate.student_CI}
-                error={$formCreate.errors?.student_CI}
+                bind:value={$formCreate.second_rep_ci}
+                error={$formCreate.errors?.second_rep_ci}
             />
             <Input
                 type="tel"
-                required={true}
                 label={"Teléfono"}
-                bind:value={$formCreate.student_phone_number}
-                error={$formCreate.errors?.student_phone_number}
+                bind:value={$formCreate.second_rep_phone_number}
+                error={$formCreate.errors?.second_rep_phone_number}
             />
+
             <Input
-                type="select"
-                required={true}
-                label={"Sexo"}
-                bind:value={$formCreate.student_sex}
-                error={$formCreate.errors?.student_sex}
-            >
-                <option value="Masculino">Masculino</option>
-                <option value="Femenino">Femenino</option>
-            </Input>
-            <Input
-                type="select"
-                required={true}
-                label={"Año escolar"}
-                bind:value={$formCreate.course_id}
-                error={$formCreate.errors?.course_id}
-            >
-                <option value="Masculino">1er año</option>
-                <option value="Femenino">2do año</option>
-            </Input>
-            <Input
-                type="select"
-                required={true}
-                label={"Sección"}
-                bind:value={$formCreate.section_id}
-                error={$formCreate.errors?.section_id}
-            >
-                <option value="Masculino">A</option>
-                <option value="Femenino">B</option>
-            </Input>
+                type="text"
+                label={"Profesión"}
+                bind:value={$formCreate.second_rep_profession}
+                error={$formCreate.errors?.second_rep_profession}
+            />
 
             <Input
                 type="textarea"
-                required={true}
-                label={"Colegio de procedencia"}
-                bind:value={$formCreate.student_previous_school}
-                error={$formCreate.errors?.student_previous_school}
+                label={"Lugar de trabajo"}
+                bind:value={$formCreate.second_rep_workplace}
+                error={$formCreate.errors?.second_rep_workplace}
             />
         </fieldset>
     </form>
@@ -415,115 +393,276 @@
     />
 </Modal>
 
-{#if showModalFormEdit}
-    <Modal bind:showModal={showModalFormEdit}>
-        <h2 slot="header" class="text-sm text-center">EDITAR ACTIVIDAD</h2>
+<Modal bind:showModal={showModalFormEdit}>
+    <h2 slot="header" class="text-sm text-center">EDITAR ACTIVIDAD</h2>
 
-        <form
-            id="a-form"
-            on:submit={handleEdit}
-            action=""
-            class="w-[500px] grid grid-cols-2 gap-x-5"
+    <form
+        id="a-form"
+        on:submit={handleEdit}
+        action=""
+        class="w-[500px] grid grid-cols-2 gap-x-5"
+    >
+        <fieldset
+            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
         >
-            <Carousel perPage={1}>
-                <fieldset class=" grid grid-cols-2 gap-x-5 w-full">
-                    <legend>DATOS DEL ESTUDIANTE</legend>
-                    <Input
-                        type="text"
-                        required={true}
-                        label={"Nombre"}
-                        bind:value={$formEdit.student_name}
-                        error={$formEdit.errors?.student_name}
-                    />
-                    <Input
-                        type="text"
-                        required={true}
-                        label={"Apellido"}
-                        bind:value={$formEdit.student_last_name}
-                        error={$formEdit.errors?.studen_last_name}
-                    />
-                    <Input
-                        type="date"
-                        required={true}
-                        label={"Fecha de nacimiento"}
-                        bind:value={$formEdit.student_date_birth}
-                        error={$formEdit.errors?.student_date_birth}
-                    />
-                    <Input
-                        type="email"
-                        required={true}
-                        label="correo"
-                        bind:value={$formEdit.student_email}
-                        error={$formEdit.errors?.student_email}
-                    />
-                    <Input
-                        type="number"
-                        required={true}
-                        label={"Cédula"}
-                        bind:value={$formEdit.student_CI}
-                        error={$formEdit.errors?.student_CI}
-                    />
-                    <Input
-                        type="tel"
-                        required={true}
-                        label={"Teléfono"}
-                        bind:value={$formEdit.student_phone_number}
-                        error={$formEdit.errors?.student_phone_number}
-                    />
-                    <Input
-                        type="select"
-                        required={true}
-                        label={"Sexo"}
-                        bind:value={$formEdit.student_sex}
-                        error={$formEdit.errors?.student_sex}
+            <legend
+                class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
+                >DATOS DEL ESTUDIANTE</legend
+            >
+            <Input
+                type="text"
+                required={true}
+                label={"Nombre"}
+                bind:value={$formCreate.student_name}
+                error={$formCreate.errors?.student_name}
+            />
+            <Input
+                type="text"
+                required={true}
+                label={"Apellido"}
+                bind:value={$formCreate.student_last_name}
+                error={$formCreate.errors?.student_last_name}
+            />
+            <Input
+                type="date"
+                required={true}
+                label={"Fecha de nacimiento"}
+                bind:value={$formCreate.student_date_birth}
+                error={$formCreate.errors?.student_date_birth}
+            />
+            <Input
+                type="email"
+                label="correo"
+                bind:value={$formCreate.student_email}
+                error={$formCreate.errors?.student_email}
+            />
+            <Input
+                type="number"
+                label={"Cédula"}
+                bind:value={$formCreate.student_ci}
+                error={$formCreate.errors?.student_ci}
+            />
+            <Input
+                type="tel"
+                label={"Teléfono"}
+                bind:value={$formCreate.student_phone_number}
+                error={$formCreate.errors?.student_phone_number}
+            />
+            <Input
+                type="select"
+                label={"Sexo"}
+                bind:value={$formCreate.student_sex}
+                error={$formCreate.errors?.student_sex}
+            >
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+            </Input>
+            <Input
+                type="select"
+                required={true}
+                label={"Año escolar"}
+                bind:value={$formCreate.course_id}
+                error={$formCreate.errors?.course_id}
+            >
+                {#each data.courses as course}
+                    <option value={course.id}>{course.name}</option>
+                {/each}
+            </Input>
+            <Input
+                type="select"
+                required={true}
+                label={"Sección"}
+                bind:value={$formCreate.section_id}
+                error={$formCreate.errors?.section_id}
+            >
+                {#each data.course_sections?.data?.[`course_${$formCreate.course_id}`] as section}
+                    <option value={section.section_id}
+                        >{section.section_name}</option
                     >
-                        <option value="Masculino">Masculino</option>
-                        <option value="Femenino">Femenino</option>
-                    </Input>
-                    <Input
-                        type="select"
-                        required={true}
-                        label={"Año escolar"}
-                        bind:value={$formEdit.course_id}
-                        error={$formEdit.errors?.course_id}
-                    >
-                        <option value="Masculino">1er año</option>
-                        <option value="Femenino">2do año</option>
-                    </Input>
-                    <Input
-                        type="select"
-                        required={true}
-                        label={"Sección"}
-                        bind:value={$formEdit.section_id}
-                        error={$formEdit.errors?.section_id}
-                    >
-                        <option value="Masculino">A</option>
-                        <option value="Femenino">B</option>
-                    </Input>
+                {/each}
+            </Input>
 
-                    <Input
-                        type="textarea"
-                        required={true}
-                        label={"Colegio de procedencia"}
-                        bind:value={$formCreate.student_previous_school}
-                        error={$formCreate.errors?.student_previous_school}
-                    />
-                </fieldset>
-            </Carousel>
-        </form>
-        <input
-            form="a-form"
-            slot="btn_footer"
-            type="submit"
-            value={$formEdit.processing ? "Cargando..." : "Editar"}
-            class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color2 text-black font-bold py-3 rounded-md cursor-pointer"
-        />
-    </Modal>
-{/if}
+            <Input
+                type="textarea"
+                label={"Colegio de procedencia"}
+                bind:value={$formCreate.student_previous_school}
+                error={$formCreate.errors?.student_previous_school}
+            />
+        </fieldset>
 
-<div class="flex justify-between">
+        <fieldset
+            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+        >
+            <legend
+                class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
+                >DIRECCIÓNES</legend
+            >
+            <Input
+                type="text"
+                label={"Estado"}
+                bind:value={$formCreate.state}
+                error={$formCreate.errors?.state}
+            />
+            <Input
+                type="text"
+                label={"Ciudad"}
+                bind:value={$formCreate.city}
+                error={$formCreate.errors?.city}
+            />
+            <Input
+                type="textarea"
+                label={"Dirección específica"}
+                bind:value={$formCreate.address}
+                error={$formCreate.errors?.address}
+                classes="col-span-2"
+            />
+        </fieldset>
+
+        <fieldset
+            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+        >
+            <legend
+                class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
+                >REPRESENTANTE LEGAL</legend
+            >
+            <Input
+                type="text"
+                required={true}
+                label={"Nombre"}
+                bind:value={$formCreate.rep_name}
+                error={$formCreate.errors?.rep_name}
+            />
+            <Input
+                type="text"
+                required={true}
+                label={"Apellido"}
+                bind:value={$formCreate.rep_last_name}
+                error={$formCreate.errors?.rep_last_name}
+            />
+            <Input
+                type="number"
+                required={true}
+                label={"Cédula"}
+                bind:value={$formCreate.rep_ci}
+                error={$formCreate.errors?.rep_ci}
+            />
+            <Input
+                type="date"
+                label={"Fecha de nacimiento"}
+                bind:value={$formCreate.rep_date_birth}
+                error={$formCreate.errors?.rep_date_birth}
+            />
+            <Input
+                type="email"
+                required={true}
+                label="correo"
+                bind:value={$formCreate.rep_email}
+                error={$formCreate.errors?.rep_email}
+            />
+            <Input
+                type="tel"
+                required={true}
+                label={"Teléfono"}
+                bind:value={$formCreate.rep_phone_number}
+                error={$formCreate.errors?.rep_phone_number}
+            />
+
+            <Input
+                type="text"
+                label={"Profesión"}
+                bind:value={$formCreate.rep_profession}
+                error={$formCreate.errors?.rep_profession}
+            />
+
+            <Input
+                type="textarea"
+                label={"Lugar de trabajo"}
+                bind:value={$formCreate.rep_workplace}
+                error={$formCreate.errors?.rep_workplace}
+            />
+        </fieldset>
+
+        <fieldset
+            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+        >
+            <legend
+                class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
+                >2DO REPRESENTANTE</legend
+            >
+            <Input
+                type="text"
+                label={"Nombre"}
+                bind:value={$formCreate.second_rep_name}
+                error={$formCreate.errors?.second_rep_name}
+            />
+            <Input
+                type="text"
+                label={"Apellido"}
+                bind:value={$formCreate.second_rep_last_name}
+                error={$formCreate.errors?.second_rep_last_name}
+            />
+            <Input
+                type="date"
+                label={"Fecha de nacimiento"}
+                bind:value={$formCreate.second_rep_date_birth}
+                error={$formCreate.errors?.second_rep_date_birth}
+            />
+            <Input
+                type="email"
+                label="correo"
+                bind:value={$formCreate.second_rep_email}
+                error={$formCreate.errors?.second_rep_email}
+            />
+            <Input
+                type="number"
+                label={"Cédula"}
+                bind:value={$formCreate.second_rep_ci}
+                error={$formCreate.errors?.second_rep_ci}
+            />
+            <Input
+                type="tel"
+                label={"Teléfono"}
+                bind:value={$formCreate.second_rep_phone_number}
+                error={$formCreate.errors?.second_rep_phone_number}
+            />
+
+            <Input
+                type="text"
+                label={"Profesión"}
+                bind:value={$formCreate.second_rep_profession}
+                error={$formCreate.errors?.second_rep_profession}
+            />
+
+            <Input
+                type="textarea"
+                label={"Lugar de trabajo"}
+                bind:value={$formCreate.second_rep_workplace}
+                error={$formCreate.errors?.second_rep_workplace}
+            />
+        </fieldset>
+    </form>
+    <input
+        form="a-form"
+        slot="btn_footer"
+        type="submit"
+        value={$formEdit.processing ? "Cargando..." : "Editar"}
+        class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color2 text-black font-bold py-3 rounded-md cursor-pointer"
+    />
+</Modal>
+
+<div class="flex justify-between items-center">
+    <div class="w-44">
+        <label for="filterYear " class="text-lg"> Año escolar </label>
+        <select id="filterYear" class="w-full p-2 rounded-xl">
+            {#each data.courses as course}
+                <option class="bg-gray-50" value={course.id}
+                    >{course.name}</option
+                >
+            {/each}
+        </select>
+    </div>
     <button
-        class="btn_create"
+        class="btn_create inline-block"
         on:click={(e) => {
             e.preventDefault();
             showModal = true;
@@ -531,14 +670,13 @@
     >
 </div>
 
-
 <Table
     {selectedRow}
-   
     on:fillFormToEdit={fillFormToEdit}
     on:clickDeleteIcon={() => {
         handleDelete(selectedRow.id);
     }}
+    pagination={false}
 >
     <thead slot="thead" class="sticky top-0 z-50">
         <tr>
@@ -553,13 +691,14 @@
     </thead>
 
     <tbody slot="tbody">
-       <tr>
-        <td>12</td>
-        <td>3</td>
-        <td>4</td>
-        <td>5</td>
-        <td>6</td>
-        <td>7</td>
-       </tr>
+        <tr>
+            <td>12</td>
+            <td>3</td>
+            <td>4</td>
+            <td>5</td>
+            <td>6</td>
+            <td>7</td>
+            <td>8</td>
+        </tr>
     </tbody>
 </Table>

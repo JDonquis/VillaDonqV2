@@ -34,7 +34,7 @@
     grid-template-rows: 40px 1fr 49px;
     transition: all 0.3s ease;
     background: var(--background);
-    color: #fcfcfc;
+    color: #1d1d1d;
 }
 
 .main_and_footer_container {
@@ -117,12 +117,13 @@ h1 {
 }
 
 .table thead {
-    background-color: rgb(31 41 55 / var(--tw-bg-opacity));
+    background-color: rgb(247, 247, 247);
+    color: rgb(44, 44, 44);
 }
 
 .table tbody {
-    background-color: rgb(17 24 39 / var(--tw-bg-opacity));
-    border-color: rgb(55 65 81 / var(--tw-divide-opacity));
+    background-color: rgb(251, 251, 251);
+    border-color: white;
 
 }
 
@@ -133,7 +134,7 @@ h1 {
     /* .font-normal */
     text-align: left;
     /* .text-left */
-    color: rgb(184, 188, 197);
+    /* color: rgb(184, 188, 197); */
     /* dark\:text-gray-400 */
     padding-left: 1rem;
     padding-right: 1rem;
@@ -148,12 +149,12 @@ h1 {
     padding-inline: 1rem;
     font-size: 0.975rem
         /* 14px */
-    ;
+    ;               
     line-height: 1.25rem
         /* 20px */
     ;
     white-space: nowrap;
-    color: rgb(240, 240, 240);
+    color: rgb(19, 19, 19);
 }
 
 .btn_create {
