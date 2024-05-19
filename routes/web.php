@@ -24,7 +24,14 @@ Route::get('/logout', [UserController::class, 'logout'])->middleware('auth')->na
 Route::middleware(['auth'])->group(function () 
 {
     Route::get('/dashboard', [AppController::class, 'dashboard'])->name('dashboard');
+    
     Route::get('/dashboard/matricula', [StudentController::class, 'index']);    
+    Route::get('/dashboard/matricula/estudiantes', [StudentController::class, 'getStudents']);
+    Route::post('/dashboard/matricula', [StudentController::class, 'store']);    
+    
+    
+
+
     Route::post('/dashboard/bitacora', [BitacoraController::class, 'store']);    
     Route::put('/dashboard/bitacora/{id}', [BitacoraController::class, 'update']);    
     Route::delete('/dashboard/bitacora/{id}', [BitacoraController::class, 'destroy']);    

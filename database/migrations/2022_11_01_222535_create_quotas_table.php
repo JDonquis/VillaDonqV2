@@ -15,9 +15,9 @@ class CreateQuotasTable extends Migration
     {
         Schema::create('quotas', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('assigned');
-            $table->bigInteger('accepted');
-            $table->bigInteger('remaining');
+            $table->integer('assigned');
+            $table->integer('accepted');
+            $table->integer('remaining');
             $table->foreignId("course_id")->constrained()->onDelete("restrict")->onUpdate("restrict");
             $table->foreignId("school_lapse_id")->constrained()->onDelete("restrict")->onUpdate("restrict");
             $table->timestamps();

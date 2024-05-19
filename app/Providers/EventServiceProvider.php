@@ -2,10 +2,14 @@
 
 namespace App\Providers;
 
+use App\Listeners\TakeQuota;
+use App\Events\StudentCreated;
+use App\Listeners\GenerateBalance;
+use Illuminate\Support\Facades\Event;
+use App\Listeners\GenerateInscription;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -18,6 +22,11 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        StudentCreated::class => [
+            TakeQuota::class,
+            GenerateInscription::class,
+            GenerateBalance::class,
+        ]
     ];
 
     /**
