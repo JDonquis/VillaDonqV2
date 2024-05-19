@@ -17,18 +17,18 @@ class CourseSeeder extends Seeder
         $fields = 
         [
 
-            ['name' => '1er Año' ],
-            ['name' => '2do Año' ],
-            ['name' => '3er Año' ],
-            ['name' => '4to Año' ],
             ['name' => '5to Año' ],
+            ['name' => '4to Año' ],
+            ['name' => '3er Año' ],
+            ['name' => '2do Año' ],
+            ['name' => '1er Año' ],
 
-            ['name' => '1er Grado' ],
-            ['name' => '2do Grado' ],
-            ['name' => '3er Grado' ],
-            ['name' => '4to Grado' ],
-            ['name' => '5to Grado' ],
             ['name' => '6to Grado' ],
+            ['name' => '5to Grado' ],
+            ['name' => '4to Grado' ],
+            ['name' => '3er Grado' ],   
+            ['name' => '2do Grado' ],
+            ['name' => '1er Grado' ],
 
             ['name' => '1er Nivel' ],
             ['name' => '2do Nivel' ],
