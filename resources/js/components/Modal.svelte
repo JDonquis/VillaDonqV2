@@ -7,11 +7,13 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+{#if showModal}
+
 <dialog
 	bind:this={dialog}
 	on:close={() => (showModal = false)}
 	on:click|self={() => dialog.close()}
-	class="dark:bg-background dark:text-gray-50"
+	class="bg-color1 dark:text-gray-50"
 >
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div on:click|stopPropagation>
@@ -21,7 +23,7 @@
 		<hr class="my-4"/>
 		<!-- svelte-ignore a11y-autofocus -->
 		<div class="flex justify-between gap-12">
-			<button class="text-gray-400" autofocus on:click={() => dialog.close()}>Cerrar</button>
+			<button class="text-gray-400"  on:click={() => dialog.close()}>Cerrar</button>
 
 			<slot name="btn_footer">
 	
@@ -29,6 +31,7 @@
 		</div>
 	</div>
 </dialog>
+{/if}
 
 <style>
 	dialog {

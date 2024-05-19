@@ -11,7 +11,7 @@
 </script>
 
 <div class={`text-left mt-5 ${classes}`}>
-    <label for={label} class="form__label" {placeholder}>{label}</label>
+    <label for={label} class="form__label" {placeholder}>{label} {required? "*" : "" }</label>
     <div class="relative w-full parent_div">
         {#if type === "textarea"}
             <textarea bind:value id={label} rows="1"></textarea>
@@ -85,7 +85,7 @@
         left: 2.5px;
         border-radius: 4px;
         height: 2px;
-        background: linear-gradient(80deg, rgb(100, 233, 238) 9%, #2758da 93%);
+        background: linear-gradient(80deg, #54ffaf 9%, #1f4287 93%);
         background-color: aqua;
         width: 0%;
     }

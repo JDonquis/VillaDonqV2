@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@esbuild/linux-x64@0.17.17":
+"@esbuild/win32-x64@0.17.17":
   version "0.17.17"
-  resolved "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.17.17.tgz"
-  integrity sha512-XcSGTQcWFQS2jx3lZtQi7cQmDYLrpLRyz1Ns1DzZCtn898cWfm5Icx/DEWNcTU+T+tyPV89RQtDnI7qL2PObPg==
+  resolved "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.17.17.tgz"
+  integrity sha512-FNZw7H3aqhF9OyRQbDDnzUApDXfC1N6fgBhkqEO2jvYCJ+DxMTfZVqg3AX0R1khg1wHTBRD5SdcibSJ+XF6bFg==
 
 "@iconify/types@^2.0.0":
   version "2.0.0"
@@ -756,6 +756,11 @@ side-channel@^1.0.4:
     call-bind "^1.0.0"
     get-intrinsic "^1.0.2"
     object-inspect "^1.9.0"
+
+siema@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.npmjs.org/siema/-/siema-1.5.1.tgz"
+  integrity sha512-BUNFdTSbC9/2gA6r6teBY9B8O/XZOUz8kVyttpsbq4gbHF9PidUDzs6aPtiObhV4KoEuPQdhRvK5hPPi9lgSTg==
 
 source-map-js@^1.0.2:
   version "1.0.2"

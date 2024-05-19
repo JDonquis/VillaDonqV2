@@ -9,8 +9,8 @@
     const navPages = [
         {
             icon: "mdi:patient-outline",
-            href: "/dashboard/bitacora",
-            name: "Bitácora",
+            href: "/dashboard/matricula",
+            name: "Matricula",
         },
         {
             icon: "mdi:patient-outline",
@@ -26,13 +26,14 @@
     console.log($page);
 </script>
 
-<nav class="left_nav rounded-tr-xl pt-2 text-gray-200 h-full relative">
-    <button on:click={() => toggleMenu()} class="hidden md:block d-flex mx-2 w-11/12  items-center pt-1  text-center text-2xl text-gray-300 hover:text-color2 hover:bg-gray-950">
-
+<nav class="left_nav flex md:block items-center bg-color1  text-gray-200 h-full relative rounded-3xl overflow-hidden">
+    <button on:click={() => toggleMenu()} class="hidden md:block burger_icon  items-center pt-1  text-center text-2xl text-gray-300 hover:text-color4 bg-gray-700 bg-opacity-50 ">
+    
         <iconify-icon class="mb-0 pb-0" icon="majesticons:menu-expand-left-line"></iconify-icon>
     </button>
+    <a href="" class="logo text-lg hidden md:block p-4 text-center w-full inline-block">VILLADONQ</a>
     <ul
-        class="flex justify-around items-center  md:flex-col
+        class="flex justify-around items-center w-full md:flex-col
     md:items-start md:justify-normal md:p-2 md:gap-1 md:[&>*]:w-full"
     >
         {#each navPages as navPage}
@@ -41,7 +42,7 @@
                 <a
                     href={navPage.href}
                     use:inertia
-                    class="hover:bg-gray-800 z-10 rounded-md flex md:gap-2 items-center p-2"
+                    class="hover:text-color4 z-10 rounded-md flex md:gap-2 items-center p-2"
                     class:active={$page.url.startsWith(navPage.href)}
                     ><iconify-icon
                         class="text-xlc md:text-lg"
@@ -63,27 +64,15 @@
         position: relative;
         border-radius: 6px;
         /* box-shadow: 0 0 10px 0px #9BF2EA; */
-        color: #21262e !important;
+        color: #21e6c1 !important;
         font-weight: bold;
     }
     a:before {
-        position: absolute;
-        transition: .2s;
-        content: "";
-        width: 0%;
-        left: 0;
-        border-radius: 5px;
-        z-index: -1;
-        height: 100%;
-        background: linear-gradient(80deg, #acd7f2 9%, transparent 99%);
-        background: #acd7f2;
 
     }
     a.active:before {
-        width: 100%;
         
     }
     a:active {
-        background: #0B8CD5;
     }
 </style>

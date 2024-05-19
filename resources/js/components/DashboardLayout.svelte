@@ -18,15 +18,18 @@
 <svelte:head>
 
 </svelte:head>
-<section class="bg-white min-h-screen  dashboard_container" class:menuStatus-false={$navStatus.isContracted}>
-    <Header />
+<div class="bg-gray-700 h-screen">
 
-    <div class=" main_and_footer_container  border-l dark:border-gray-700" bing:this="main_and_footer_container">
-        <main  style={mainWidth}  class={`mx-auto main_dashboard   relative px-10 duration-100 pb-10`} >
-            <slot />
-        </main>
-        <Footer />
-
-    </div>
-    <LeftNav />
-</section>
+    <section class="bg-gray-200 h-full  dashboard_container p-2 rounded-2xl" class:menuStatus-false={$navStatus.isContracted}>
+        
+        <Header />
+        <div class=" main_and_footer_container " bing:this="main_and_footer_container">
+            <main  style={mainWidth}  class={`mx-auto  main_dashboard   relative px-10 duration-100 pb-10`} >
+                <slot />
+            </main>
+            <Footer />
+    
+        </div>
+        <LeftNav />
+    </section>
+</div>
