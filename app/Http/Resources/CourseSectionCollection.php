@@ -13,8 +13,9 @@ class CourseSectionCollection extends ResourceCollection
         $response = [];
         foreach ($this as $courseSection) 
         {   
-            $response[$courseSection->course_id][] = ['section_id' => $courseSection->section_id, 'section_name' => $courseSection->section->name];
+            $response['course_'.$courseSection->course_id][] = ['section_id' => $courseSection->section_id, 'section_name' => $courseSection->section->name];
         }
+
 
 
         return $response;
