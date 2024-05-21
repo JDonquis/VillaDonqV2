@@ -8,7 +8,38 @@
     import { useForm } from "@inertiajs/svelte";
     export let data = [];
 
+    
+
     console.log(data);
+    const emptyDataForm = {
+        student_name: "",
+        student_last_name: "",
+        student_date_birth: "",
+        student_email: "",
+        student_ci: "",
+        student_phone_number: "",
+        course_id: "",
+        section_id: "",
+        student_sex: "",
+        student_previous_school: "",
+        state: "",
+        city: "",
+        address: "",
+        rep_name: "",
+        rep_last_name: "",
+        rep_ci: "",
+        rep_phone_number: "",
+        rep_email: "",
+        rep_profession: "",
+        rep_workplace: "",
+        second_rep_name: "",
+        second_rep_last_name: "",
+        second_rep_ci: "",
+        second_rep_phone_number: "",
+        second_rep_email: "",
+        second_rep_profession: "",
+        second_rep_workplace: "",
+    };
 
     let formCreate = useForm({
         student_name: "Nombre de estudiante",
@@ -41,38 +72,18 @@
     });
 
     let formEdit = useForm({
-        student_name: "",
-        student_last_name: "",
-        student_date_birth: "",
-        student_email: "",
-        student_ci: "",
-        student_phone_number: "",
-        course_id: "",
-        section_id: "",
-        student_sex: "",
-        student_previous_school: "",
-        state: "",
-        city: "",
-        address: "",
-        rep_name: "",
-        rep_last_name: "",
-        rep_ci: "",
-        rep_phone_number: "",
-        rep_email: "",
-        rep_profession: "",
-        rep_workplace: "",
-        second_rep_name: "",
-        second_rep_last_name: "",
-        second_rep_ci: "",
-        second_rep_phone_number: "",
-        second_rep_email: "",
-        second_rep_profession: "",
-        second_rep_workplace: "",
+        ...emptyDataForm,
     });
 
     let showModal = false;
     $: showModalFormEdit = false;
-    $: selectedRow = { status: false, id: 0 };
+    let selectedRow = { status: false, id: 0 };
+
+    document.addEventListener("keydown", ({key}) => {
+            if (key === "Escape")  {
+                selectedRow = { status: false, id: 0 };
+            }
+    })
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -396,12 +407,7 @@
 <Modal bind:showModal={showModalFormEdit}>
     <h2 slot="header" class="text-sm text-center">EDITAR ACTIVIDAD</h2>
 
-    <form
-        id="a-form"
-        on:submit={handleEdit}
-        action=""
-        class="w-[500px] grid grid-cols-2 gap-x-5"
-    >
+    <form id="a-form" on:submit={handleSubmit} action="" class="w-[600px]">
         <fieldset
             class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
         >
@@ -413,46 +419,46 @@
                 type="text"
                 required={true}
                 label={"Nombre"}
-                bind:value={$formCreate.student_name}
-                error={$formCreate.errors?.student_name}
+                bind:value={$formEdit.student_name}
+                error={$formEdit.errors?.student_name}
             />
             <Input
                 type="text"
                 required={true}
                 label={"Apellido"}
-                bind:value={$formCreate.student_last_name}
-                error={$formCreate.errors?.student_last_name}
+                bind:value={$formEdit.student_last_name}
+                error={$formEdit.errors?.student_last_name}
             />
             <Input
                 type="date"
                 required={true}
                 label={"Fecha de nacimiento"}
-                bind:value={$formCreate.student_date_birth}
-                error={$formCreate.errors?.student_date_birth}
+                bind:value={$formEdit.student_date_birth}
+                error={$formEdit.errors?.student_date_birth}
             />
             <Input
                 type="email"
                 label="correo"
-                bind:value={$formCreate.student_email}
-                error={$formCreate.errors?.student_email}
+                bind:value={$formEdit.student_email}
+                error={$formEdit.errors?.student_email}
             />
             <Input
                 type="number"
                 label={"Cédula"}
-                bind:value={$formCreate.student_ci}
-                error={$formCreate.errors?.student_ci}
+                bind:value={$formEdit.student_ci}
+                error={$formEdit.errors?.student_ci}
             />
             <Input
                 type="tel"
                 label={"Teléfono"}
-                bind:value={$formCreate.student_phone_number}
-                error={$formCreate.errors?.student_phone_number}
+                bind:value={$formEdit.student_phone_number}
+                error={$formEdit.errors?.student_phone_number}
             />
             <Input
                 type="select"
                 label={"Sexo"}
-                bind:value={$formCreate.student_sex}
-                error={$formCreate.errors?.student_sex}
+                bind:value={$formEdit.student_sex}
+                error={$formEdit.errors?.student_sex}
             >
                 <option value="Masculino">Masculino</option>
                 <option value="Femenino">Femenino</option>
@@ -461,8 +467,8 @@
                 type="select"
                 required={true}
                 label={"Año escolar"}
-                bind:value={$formCreate.course_id}
-                error={$formCreate.errors?.course_id}
+                bind:value={$formEdit.course_id}
+                error={$formEdit.errors?.course_id}
             >
                 {#each data.courses as course}
                     <option value={course.id}>{course.name}</option>
@@ -472,10 +478,10 @@
                 type="select"
                 required={true}
                 label={"Sección"}
-                bind:value={$formCreate.section_id}
-                error={$formCreate.errors?.section_id}
+                bind:value={$formEdit.section_id}
+                error={$formEdit.errors?.section_id}
             >
-                {#each data.course_sections?.data?.[`course_${$formCreate.course_id}`] as section}
+                {#each data.course_sections?.data?.[`course_${$formEdit.course_id}`] as section}
                     <option value={section.section_id}
                         >{section.section_name}</option
                     >
@@ -485,8 +491,8 @@
             <Input
                 type="textarea"
                 label={"Colegio de procedencia"}
-                bind:value={$formCreate.student_previous_school}
-                error={$formCreate.errors?.student_previous_school}
+                bind:value={$formEdit.student_previous_school}
+                error={$formEdit.errors?.student_previous_school}
             />
         </fieldset>
 
@@ -500,20 +506,20 @@
             <Input
                 type="text"
                 label={"Estado"}
-                bind:value={$formCreate.state}
-                error={$formCreate.errors?.state}
+                bind:value={$formEdit.state}
+                error={$formEdit.errors?.state}
             />
             <Input
                 type="text"
                 label={"Ciudad"}
-                bind:value={$formCreate.city}
-                error={$formCreate.errors?.city}
+                bind:value={$formEdit.city}
+                error={$formEdit.errors?.city}
             />
             <Input
                 type="textarea"
                 label={"Dirección específica"}
-                bind:value={$formCreate.address}
-                error={$formCreate.errors?.address}
+                bind:value={$formEdit.address}
+                error={$formEdit.errors?.address}
                 classes="col-span-2"
             />
         </fieldset>
@@ -529,56 +535,56 @@
                 type="text"
                 required={true}
                 label={"Nombre"}
-                bind:value={$formCreate.rep_name}
-                error={$formCreate.errors?.rep_name}
+                bind:value={$formEdit.rep_name}
+                error={$formEdit.errors?.rep_name}
             />
             <Input
                 type="text"
                 required={true}
                 label={"Apellido"}
-                bind:value={$formCreate.rep_last_name}
-                error={$formCreate.errors?.rep_last_name}
+                bind:value={$formEdit.rep_last_name}
+                error={$formEdit.errors?.rep_last_name}
             />
             <Input
                 type="number"
                 required={true}
                 label={"Cédula"}
-                bind:value={$formCreate.rep_ci}
-                error={$formCreate.errors?.rep_ci}
+                bind:value={$formEdit.rep_ci}
+                error={$formEdit.errors?.rep_ci}
             />
             <Input
                 type="date"
                 label={"Fecha de nacimiento"}
-                bind:value={$formCreate.rep_date_birth}
-                error={$formCreate.errors?.rep_date_birth}
+                bind:value={$formEdit.rep_date_birth}
+                error={$formEdit.errors?.rep_date_birth}
             />
             <Input
                 type="email"
                 required={true}
                 label="correo"
-                bind:value={$formCreate.rep_email}
-                error={$formCreate.errors?.rep_email}
+                bind:value={$formEdit.rep_email}
+                error={$formEdit.errors?.rep_email}
             />
             <Input
                 type="tel"
                 required={true}
                 label={"Teléfono"}
-                bind:value={$formCreate.rep_phone_number}
-                error={$formCreate.errors?.rep_phone_number}
+                bind:value={$formEdit.rep_phone_number}
+                error={$formEdit.errors?.rep_phone_number}
             />
 
             <Input
                 type="text"
                 label={"Profesión"}
-                bind:value={$formCreate.rep_profession}
-                error={$formCreate.errors?.rep_profession}
+                bind:value={$formEdit.rep_profession}
+                error={$formEdit.errors?.rep_profession}
             />
 
             <Input
                 type="textarea"
                 label={"Lugar de trabajo"}
-                bind:value={$formCreate.rep_workplace}
-                error={$formCreate.errors?.rep_workplace}
+                bind:value={$formEdit.rep_workplace}
+                error={$formEdit.errors?.rep_workplace}
             />
         </fieldset>
 
@@ -592,52 +598,52 @@
             <Input
                 type="text"
                 label={"Nombre"}
-                bind:value={$formCreate.second_rep_name}
-                error={$formCreate.errors?.second_rep_name}
+                bind:value={$formEdit.second_rep_name}
+                error={$formEdit.errors?.second_rep_name}
             />
             <Input
                 type="text"
                 label={"Apellido"}
-                bind:value={$formCreate.second_rep_last_name}
-                error={$formCreate.errors?.second_rep_last_name}
+                bind:value={$formEdit.second_rep_last_name}
+                error={$formEdit.errors?.second_rep_last_name}
             />
             <Input
                 type="date"
                 label={"Fecha de nacimiento"}
-                bind:value={$formCreate.second_rep_date_birth}
-                error={$formCreate.errors?.second_rep_date_birth}
+                bind:value={$formEdit.second_rep_date_birth}
+                error={$formEdit.errors?.second_rep_date_birth}
             />
             <Input
                 type="email"
                 label="correo"
-                bind:value={$formCreate.second_rep_email}
-                error={$formCreate.errors?.second_rep_email}
+                bind:value={$formEdit.second_rep_email}
+                error={$formEdit.errors?.second_rep_email}
             />
             <Input
                 type="number"
                 label={"Cédula"}
-                bind:value={$formCreate.second_rep_ci}
-                error={$formCreate.errors?.second_rep_ci}
+                bind:value={$formEdit.second_rep_ci}
+                error={$formEdit.errors?.second_rep_ci}
             />
             <Input
                 type="tel"
                 label={"Teléfono"}
-                bind:value={$formCreate.second_rep_phone_number}
-                error={$formCreate.errors?.second_rep_phone_number}
+                bind:value={$formEdit.second_rep_phone_number}
+                error={$formEdit.errors?.second_rep_phone_number}
             />
 
             <Input
                 type="text"
                 label={"Profesión"}
-                bind:value={$formCreate.second_rep_profession}
-                error={$formCreate.errors?.second_rep_profession}
+                bind:value={$formEdit.second_rep_profession}
+                error={$formEdit.errors?.second_rep_profession}
             />
 
             <Input
                 type="textarea"
                 label={"Lugar de trabajo"}
-                bind:value={$formCreate.second_rep_workplace}
-                error={$formCreate.errors?.second_rep_workplace}
+                bind:value={$formEdit.second_rep_workplace}
+                error={$formEdit.errors?.second_rep_workplace}
             />
         </fieldset>
     </form>
@@ -680,25 +686,53 @@
 >
     <thead slot="thead" class="sticky top-0 z-50">
         <tr>
-            <th>Cod</th>
-            <th>Actividad</th>
-            <th>Estado</th>
-            <th>Ubicación SSF</th>
-            <th>Dirección/Oficina </th>
-            <th>Progreso</th>
-            <th>Fecha</th>
+            <th>N°</th>
+            <th>Nombres</th>
+            <th>Apellidos</th>
+            <th>C.I</th>
+            <th>Sexo</th>
+            <th>Edad</th>
+            <th>Rep Legal</th>
+            <th>Tel rep legal</th>
         </tr>
     </thead>
 
     <tbody slot="tbody">
-        <tr>
-            <td>12</td>
-            <td>3</td>
-            <td>4</td>
-            <td>5</td>
-            <td>6</td>
-            <td>7</td>
-            <td>8</td>
-        </tr>
+        {#each data.students.data as row, i}
+            <tr
+                on:click={(e) => {
+                    // let newSelectedRowStatus = !selectedRow.status;
+                    if (row.id != selectedRow.id) {
+                        selectedRow = {
+                            status: true,
+                            id: row.id,
+                            title: row.title,
+                        };
+                        $formEdit.defaults({
+                            ...row,
+                        });
+                    } else {
+                        selectedRow = {
+                            status: false,
+                            id: 0,
+                            title: "",
+                        };
+                        $formEdit.defaults({
+                            ...emptyDataForm,
+                        });
+                    }
+                }}
+                class={`cursor-pointer hover:bg-gray-500 hover:bg-opacity-5 ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : ""}`}
+            >
+                <td>{i + 1}</td>
+                <td>{row.student_name}</td>
+                <td>{row.student_last_name}</td>
+                <td>{row.student_ci}</td>
+                <td>{row.student_sex}</td>
+                <td>{row.student_date_birth}</td>
+                <td>{row.rep_name} {row.rep_last_name}</td>
+                <td>{row.rep_phone_number}</td>
+            </tr>
+        {/each}
     </tbody>
 </Table>
