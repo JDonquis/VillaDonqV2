@@ -75,7 +75,7 @@
                 </div>
                 {#if userNav}
 
-                    <div class="absolute rounded-md flex items-center flex-col bg-color4 w-full z-50 px-3 top-10 -left-10 rounded-tr-none  min-h-[50px] text-gray-100 ">
+                    <div class="absolute rounded-md flex items-center flex-col bg-color1 w-full z-50 px-3 top-10 -left-10 rounded-tr-none   text-gray-100 ">
                         <a href="/logout" class="p-2 cursor-pointer hover:underline hover:text-gray-50 inline-block" >Cerrar sesión</a>
                         <!-- <button on:click={authHandlers.logout} class="p-4 flex items-center text-rigth w-full justify-end hover:text-green4 gap-2 hover:font-bold hover:underline" >Cerrar sesión <iconify-icon icon="solar:logout-line-duotone" class="text-xl"></iconify-icon></button> -->
                     </div>
