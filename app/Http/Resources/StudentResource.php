@@ -15,7 +15,8 @@ class StudentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return 
-        [
+        [   
+            'student_id' => $this->id,
             'student_name' => $this->name,
             'student_last_name' => $this->last_name,
             'student_date_birth' => $this->date_birth,
