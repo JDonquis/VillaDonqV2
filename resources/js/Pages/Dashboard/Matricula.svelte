@@ -5,7 +5,7 @@
     import Alert from "../../components/Alert.svelte";
 
     import { displayAlert } from "../../stores/alertStore";
-    import { useForm } from "@inertiajs/svelte";
+    import { useForm, router  } from "@inertiajs/svelte";
     export let data = [];
 
     
@@ -39,6 +39,7 @@
         second_rep_email: "",
         second_rep_profession: "",
         second_rep_workplace: "",
+        rep_id: "",
     };
 
     let formCreate = useForm({
@@ -138,6 +139,23 @@
         showModalFormEdit = true;
     }
 
+    function createSection(course_id) {
+       
+        router.post("/dashboard/secciones",{course_id}, {
+            onError: (errors) => {
+                if (errors.data) {
+                    displayAlert({ type: "error", message: errors.data });
+                }
+            },
+            onSuccess: (mensaje) => {
+                displayAlert({
+                    type: "success",
+                    message: "Ok todo salió bien",
+                });
+            },
+        });
+    }
+
     $: console.log($formCreate);
     $: console.log(
         data.course_sections?.data?.[`course_${$formCreate.course_id}`],
@@ -230,8 +248,8 @@
                 error={$formCreate.errors?.section_id}
             >
                 {#each data.course_sections?.data?.[`course_${$formCreate.course_id}`] as section}
-                    <option value={section.section_id}
-                        >{section.section_name}</option
+                    <option value={section.id}
+                        >{section.name}</option
                     >
                 {/each}
             </Input>
@@ -407,7 +425,7 @@
 <Modal bind:showModal={showModalFormEdit}>
     <h2 slot="header" class="text-sm text-center">EDITAR ACTIVIDAD</h2>
 
-    <form id="a-form" on:submit={handleSubmit} action="" class="w-[600px]">
+    <form id="a-form" on:submit={handleEdit} action="" class="w-[600px]">
         <fieldset
             class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
         >
@@ -482,8 +500,8 @@
                 error={$formEdit.errors?.section_id}
             >
                 {#each data.course_sections?.data?.[`course_${$formEdit.course_id}`] as section}
-                    <option value={section.section_id}
-                        >{section.section_name}</option
+                    <option value={section.id}
+                        >{section.name}</option
                     >
                 {/each}
             </Input>
@@ -682,8 +700,20 @@
     on:clickDeleteIcon={() => {
         handleDelete(selectedRow.id);
     }}
+    filtersOptions={{section_id : data.course_sections?.data?.[`course_${$formCreate.course_id}`]}}
     pagination={false}
 >
+    <div slot="filterBox">
+            <button 
+                on:click={createSection}
+                class="rounded border border-color3 text-color3 h-full cursor-pointer hover:bg-color3 hover:text-gray-100 px-4">
+            Crear sección
+        </button>
+
+        <button class="ml-3 p-2 px-3 bg-gray-100" title="Elimar Sección">
+            <iconify-icon class="text-xl relative top-1" icon="ph:trash"></iconify-icon>
+        </button>
+    </div>
     <thead slot="thead" class="sticky top-0 z-50">
         <tr>
             <th>N°</th>
@@ -702,10 +732,10 @@
             <tr
                 on:click={(e) => {
                     // let newSelectedRowStatus = !selectedRow.status;
-                    if (row.id != selectedRow.id) {
+                    if (row.student_id != selectedRow.id) {
                         selectedRow = {
                             status: true,
-                            id: row.id,
+                            id: row.student_id,
                             title: row.title,
                         };
                         $formEdit.defaults({
@@ -722,7 +752,7 @@
                         });
                     }
                 }}
-                class={`cursor-pointer hover:bg-gray-500 hover:bg-opacity-5 ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : ""}`}
+                class={`cursor-pointer  ${selectedRow.id == row.student_id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
             >
                 <td>{i + 1}</td>
                 <td>{row.student_name}</td>
