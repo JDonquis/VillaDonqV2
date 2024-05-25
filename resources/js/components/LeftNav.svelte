@@ -8,22 +8,13 @@
 
     const navPages = [
         {
-            icon: "mdi:patient-outline",
+            icon: "mdi:google-classroom",
             href: "/dashboard/matricula",
             name: "Matricula",
         },
+    
         {
-            icon: "mdi:patient-outline",
-            href: "/dashboard/maquinas",
-            name: "Maquinas",
-        },
-        {
-            icon: "mdi:patient-outline",
-            href: "/dashboard/mantenimiento",
-            name: "Mantenimiento",
-        },
-        {
-            icon: "mdi:patient-outline",
+            icon: "streamline:payment-10",
             href: "/dashboard/pagos",
             name: "Pagos",
         },

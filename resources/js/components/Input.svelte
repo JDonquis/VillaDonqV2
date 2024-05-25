@@ -7,6 +7,8 @@
     export let type = "text";
     export let classes = ''
     export let theme = "ligtht"
+    export let min = ""
+    export let max = ""
 
     export let error = false;
 </script>
@@ -28,6 +30,8 @@
                 id={label}
                 class="form__field"
                 required={required}
+                max={max}
+                min={min}
             />
         {/if}
         {#if error}

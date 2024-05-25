@@ -310,14 +310,14 @@
             <Input
                 type="text"
                 required={true}
-                label={"Nombre"}
+                label={"Nombres"}
                 bind:value={$formCreate.rep_name}
                 error={$formCreate.errors?.rep_name}
             />
             <Input
                 type="text"
                 required={true}
-                label={"Apellido"}
+                label={"Apellidos"}
                 bind:value={$formCreate.rep_last_name}
                 error={$formCreate.errors?.rep_last_name}
             />
@@ -373,13 +373,13 @@
             >
             <Input
                 type="text"
-                label={"Nombre"}
+                label={"Nombres"}
                 bind:value={$formCreate.second_rep_name}
                 error={$formCreate.errors?.second_rep_name}
             />
             <Input
                 type="text"
-                label={"Apellido"}
+                label={"Apellidos"}
                 bind:value={$formCreate.second_rep_last_name}
                 error={$formCreate.errors?.second_rep_last_name}
             />
@@ -446,14 +446,14 @@
             <Input
                 type="text"
                 required={true}
-                label={"Nombre"}
+                label={"Nombres"}
                 bind:value={$formEdit.student_name}
                 error={$formEdit.errors?.student_name}
             />
             <Input
                 type="text"
                 required={true}
-                label={"Apellido"}
+                label={"Apellidos"}
                 bind:value={$formEdit.student_last_name}
                 error={$formEdit.errors?.student_last_name}
             />
