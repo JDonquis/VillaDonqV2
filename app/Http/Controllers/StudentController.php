@@ -37,6 +37,11 @@ class StudentController extends Controller
                 'sections' => $sections,
                 'course_sections' => $course_sections,
                 'students' => $studentsPerCourse,
+                'filters' => 
+                [
+                    'current_course_id' => 1,
+                    'current_section_id' => 1,
+                ]
             ]
 
             
