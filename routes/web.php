@@ -33,6 +33,7 @@ Route::middleware(['auth'])->group(function ()
     Route::post('/dashboard/secciones', [SectionController::class, 'store']);    
     Route::delete('/dashboard/secciones/{id}', [SectionController::class, 'destroy']);    
 
+    Route::get('/dashboard/pagos', [PaymentController::class, 'index']);    
     
     
 });
