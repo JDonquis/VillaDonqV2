@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Listeners\TakeQuota;
 use App\Events\StudentCreated;
 use App\Listeners\GenerateBalance;
+use App\Listeners\UpdateTakeQuota;
 use Illuminate\Support\Facades\Event;
 use App\Listeners\GenerateInscription;
 use Illuminate\Auth\Events\Registered;
@@ -26,7 +27,13 @@ class EventServiceProvider extends ServiceProvider
             TakeQuota::class,
             GenerateInscription::class,
             GenerateBalance::class,
+        ],
+        StudentUpdated::class => [
+            UpdateTakeQuota::class,
+            GenerateInscription::class,
+            GenerateBalance::class,
         ]
+
     ];
 
     /**

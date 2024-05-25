@@ -95,4 +95,26 @@ class StudentController extends Controller
             return response()->json(['message' => $e->getMessage()],400);
         }
     }
+
+    public function update(CreateStudentRequest $request, $id)
+    {
+        DB::beginTransaction();
+
+        try 
+        {
+            $this->studentService->update($request, $id);
+
+            DB::commit();
+
+            return redirect('/dashboard/matricula');
+
+        }
+        catch (Exception $e)
+        {   
+            
+            DB::rollback();
+             
+            return response()->json(['message' => $e->getMessage()],400);
+        }
+    }
 }

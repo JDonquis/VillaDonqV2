@@ -36,6 +36,7 @@ class CreateStudentRequest extends FormRequest
             'state' => ['sometimes'],
             'city' => ['sometimes'],
             'address' => ['sometimes'],
+            'rep_id' => ['sometimes'],
             'rep_name' => ['required'],
             'rep_last_name' => ['required'],
             'rep_ci' => ['required'],
