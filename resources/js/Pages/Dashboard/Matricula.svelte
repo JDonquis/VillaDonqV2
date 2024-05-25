@@ -41,7 +41,7 @@
         second_rep_workplace: "",
         rep_id: "",
     };
-
+    
     let formCreate = useForm({
         student_name: "Nombre de estudiante",
         student_last_name: "Villasmil Tovar",
@@ -105,6 +105,7 @@
             },
         });
     }
+
     function handleEdit(event) {
         event.preventDefault();
         $formEdit.clearErrors();
@@ -125,11 +126,12 @@
             },
         });
     }
+    
     function handleDelete(id) {
-        $formCreate.delete(`/dashboard/matriculo/${id}`, {
+        $formCreate.delete(`/dashboard/matricula/${id}`, {
             onBefore: () =>
                 confirm(
-                    `¿Está seguro de eliminar a este estudiante ${selectedRow.title}?`,
+                    `¿Está seguro de eliminar a este estudiante?`,
                 ),
         });
     }
@@ -156,7 +158,15 @@
         });
     }
 
-    $: console.log($formCreate);
+    function deleteSection(id) {
+        router.delete(`/dashboard/secciones/${id}`, {
+            onBefore: () =>
+                confirm(
+                    `¿Está seguro de eliminar esta sección?`,
+                ),
+        });
+    }
+    $: console.log(data.filters.current_course_id);
     $: console.log(
         data.course_sections?.data?.[`course_${$formCreate.course_id}`],
     );
@@ -693,7 +703,6 @@
         }}>Inscribir</button
     >
 </div>
-
 <Table
     {selectedRow}
     on:fillFormToEdit={fillFormToEdit}
@@ -705,12 +714,15 @@
 >
     <div slot="filterBox">
             <button 
-                on:click={createSection}
+                on:click={() => createSection(data.filters.current_course_id)}
                 class="rounded border border-color3 text-color3 h-full cursor-pointer hover:bg-color3 hover:text-gray-100 px-4">
             Crear sección
         </button>
 
-        <button class="ml-3 p-2 px-3 bg-gray-100" title="Elimar Sección">
+        
+        <button 
+        on:click={() => deleteSection(data.filters.current_section_id)}
+        class="ml-3 p-2 px-3 bg-gray-100" title="Elimar Sección">
             <iconify-icon class="text-xl relative top-1" icon="ph:trash"></iconify-icon>
         </button>
     </div>
