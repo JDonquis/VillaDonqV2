@@ -131,7 +131,7 @@
         $formCreate.delete(`/dashboard/matricula/${id}`, {
             onBefore: () =>
                 confirm(
-                    `¿Está seguro de eliminar esta sección?`,
+                    `¿Está seguro de eliminar a este estudiante?`,
                 ),
         });
     }
@@ -158,6 +158,14 @@
         });
     }
 
+    function deleteSection(id) {
+        router.delete(`/dashboard/secciones/${id}`, {
+            onBefore: () =>
+                confirm(
+                    `¿Está seguro de eliminar esta sección?`,
+                ),
+        });
+    }
     $: console.log(data.filters.current_course_id);
     $: console.log(
         data.course_sections?.data?.[`course_${$formCreate.course_id}`],
@@ -713,6 +721,7 @@
 
         
         <button 
+        on:click={() => deleteSection(data.filters.current_section_id)}
         class="ml-3 p-2 px-3 bg-gray-100" title="Elimar Sección">
             <iconify-icon class="text-xl relative top-1" icon="ph:trash"></iconify-icon>
         </button>

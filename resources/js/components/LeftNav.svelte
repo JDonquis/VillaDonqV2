@@ -22,6 +22,11 @@
             href: "/dashboard/mantenimiento",
             name: "Mantenimiento",
         },
+        {
+            icon: "mdi:patient-outline",
+            href: "/dashboard/pagos",
+            name: "Pagos",
+        },
     ];
     console.log($page);
 </script>
