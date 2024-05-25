@@ -23,15 +23,15 @@ class CourseSectionSeeder extends Seeder
             ['course_id' => 2, 'section_id' => 1 ],
             ['course_id' => 3, 'section_id' => 1 ],
             ['course_id' => 4, 'section_id' => 1 ],
-
             ['course_id' => 5, 'section_id' => 1 ],
+
             ['course_id' => 6, 'section_id' => 1 ],
             ['course_id' => 7, 'section_id' => 1 ],
             ['course_id' => 8, 'section_id' => 1 ],
             ['course_id' => 9, 'section_id' => 1 ],
             ['course_id' => 10, 'section_id' => 1 ],
-            
             ['course_id' => 11, 'section_id' => 1 ],
+            
             ['course_id' => 12, 'section_id' => 1 ],
             ['course_id' => 13, 'section_id' => 1 ],
             ['course_id' => 14, 'section_id' => 1 ],
