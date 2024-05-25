@@ -63,6 +63,12 @@ class StudentController extends Controller
             'data' =>
             [
                 'students' => $studestudentsPerCoursents,
+                'filters' => 
+                [
+                    'current_course_id' => $courseId,
+                    'current_section_id' => $sectionId,
+                ]
+
             ]
             
         ]);
