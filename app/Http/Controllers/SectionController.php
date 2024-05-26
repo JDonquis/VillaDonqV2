@@ -23,7 +23,7 @@ class SectionController extends Controller
      */
     public function store(Request $request)
     {   
-        $lastSectionName = Section::select('name')->orderBy('id','desc')->first()->name;
+        $currentlastSectionName_letter = Section::select('name')->orderBy('id','desc')->first()->name;
         $nextLetter = chr(ord($currentlastSectionName_letter) + 1);
         
         $sectionCreated = Section::create(['name' => $nextLetter]);

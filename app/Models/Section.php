@@ -12,6 +12,7 @@ class Section extends Model
 
     protected $fillable = ['name'];
 
+    public $timestamps = false;
     // public function quota()
     // {
     // return $this->hasMany(Quota::class,'course_id','id');
