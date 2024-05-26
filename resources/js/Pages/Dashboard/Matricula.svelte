@@ -141,9 +141,9 @@
         showModalFormEdit = true;
     }
 
-    function createSection(course_id) {
+    function createSection() {
        
-        router.post("/dashboard/secciones",{course_id, section_id}, {
+        router.post("/dashboard/secciones",{course_id: data.filters.course_id, section_id: data.filters.section_id}, {
             onError: (errors) => {
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
@@ -714,7 +714,7 @@
 >
     <div slot="filterBox">
             <button 
-                on:click={() => createSection(data.filters.course_id)}
+                on:click={() => createSection()}
                 class="rounded border border-color3 text-color3 h-full cursor-pointer hover:bg-color3 hover:text-gray-100 px-4">
             Crear sección
         </button>
