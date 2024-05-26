@@ -159,14 +159,14 @@
     }
 
     function deleteSection() {
-        router.delete(`/dashboard/secciones/${data.filters.current_course_id}`, {
+        router.delete(`/dashboard/secciones/${data.filters.course_id}`, {
             onBefore: () =>
                 confirm(
                     `¿Está seguro de eliminar esta sección?`,
                 ),
         });
     }
-    $: console.log(data.filters.current_course_id);
+    $: console.log(data.filters.course_id);
     $: console.log(
         data.course_sections?.data?.[`course_${$formCreate.course_id}`],
     );
