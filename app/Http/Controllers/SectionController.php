@@ -32,7 +32,7 @@ class SectionController extends Controller
               
         CourseSection::where('course_id',$course_id)->where('section_id',$section_id)->delete(); 
 
-        return redirect('/dashboard/matricula');
+        return redirect('/dashboard/matricula?course_id='.$course_id.'&section_id='.$previousSectionId);
 
     }
 }
