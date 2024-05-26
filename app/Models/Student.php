@@ -24,6 +24,7 @@ class Student extends Model
         'sex',
         'previous_school',
         'photo',
+        'search',
     ];
 
     public $timestamps = false;

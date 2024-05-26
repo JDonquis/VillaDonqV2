@@ -27,10 +27,17 @@ class StudentService
 
    
     
-    public function getStudentsPerCourse($courseId,$sectionId)
+    public function getStudentsPerCourse($request)
     {
-  
-        $students = Student::where('course_id',$courseId)
+        $courseId = $request->input('course') ?? 1;
+        $sectionId = $request->input('section') ?? 1;
+
+        $students = Student::query()
+        ->when($request->input('search'), function ($query, $search) 
+        {
+            $query->where('search','like','%' . $search . '%');
+        })     
+        ->where('course_id',$courseId)
         ->where('section_id',$sectionId)
         ->with('representative.user','course','section')
         ->get();
@@ -204,11 +211,38 @@ class StudentService
             'photo' => 'guest.webp',
         ]);
 
+        $newStudent->load('representative.user','course','section');
+
+        $search = $this->generateSearch($newStudent);
+
+        $newStudent->update(['search' => $search]);
+
         
 
 
         return $newStudent;
     }
+
+    private function generateSearch($student)
+    {
+
+        $search = 
+        $student->representative->user->name . ' '
+        . $student->representative->user->last_name . ' '
+        . $student->course->name . ' '
+        . $student->section->name . ' '
+        . $student->name . ' '
+        . $student->last_name . ' '
+        . $student->date_birth . ' '
+        . $student->email . ' '
+        . $student->ci . ' '
+        . $student->phone_number . ' '
+        . $student->sex . ' '
+        . $student->previous_school . ' ';
+
+        return $search;
+    }
+
 
 
 }

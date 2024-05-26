@@ -23,14 +23,13 @@ class StudentController extends Controller
 
     public function index(Request $request)
     {   
-        $courseId = $request->input('course') ?? 1;
-        $sectionId = $request->input('section') ?? 1;
+        
 
         $courses = Course::all();
         $sections = Section::all();
 
         $course_sections = new CourseSectionCollection(CourseSection::with('section','course')->get());
-        $studentsPerCourse = $this->studentService->getStudentsPerCourse($courseId,$sectionId);
+        $studentsPerCourse = $this->studentService->getStudentsPerCourse($request);
 
         return inertia('Dashboard/Matricula',
         [
@@ -42,8 +41,9 @@ class StudentController extends Controller
                 'students' => $studentsPerCourse,
                 'filters' => 
                 [
-                    'current_course_id' => 1,
-                    'current_section_id' => 1,
+                    'course_id' =>  $request->input('course') ?? 1,
+                    'section_id' => $request->input('section') ?? 1,
+                    'search' => $request->input('search') ?? null,
                 ]
             ]
 

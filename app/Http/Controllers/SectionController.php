@@ -42,6 +42,8 @@ class SectionController extends Controller
             ->where('course_id',$id)
             ->where('section_id',$sections[0]->id)
             ->delete();
+
+            Section::delete($sections[0]->id);
             
             DB::commit();
 
