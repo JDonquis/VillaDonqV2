@@ -109,7 +109,7 @@
     $: $formCreate.amout, exchange()
 
     function exchange() {
-        $formCreate.bs = $formCreate.amount * dolarPrice
+        $formCreate.bs = $formCreate.amount * +dolarPrice
         console.log($formCreate)   
     }
 </script>
