@@ -162,7 +162,7 @@
     }
 
     function deleteSection() {
-        router.delete(`/dashboard/secciones/${lastSectionId}`, {
+        router.delete(`/dashboard/secciones/${data.filters.course_id}/${lastSectionId}`, {
             onBefore: () =>
                 confirm(
                     `¿Está seguro de eliminar esta sección?`,
