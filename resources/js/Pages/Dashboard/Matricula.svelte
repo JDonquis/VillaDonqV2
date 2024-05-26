@@ -143,7 +143,7 @@
 
     function createSection(course_id) {
        
-        router.post("/dashboard/secciones",{course_id}, {
+        router.post("/dashboard/secciones",{course_id, section_id}, {
             onError: (errors) => {
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
@@ -167,9 +167,8 @@
         });
     }
     $: console.log(data.filters.course_id);
-    $: console.log(
-        data.course_sections?.data?.[`course_${$formCreate.course_id}`],
-    );
+    const sectionsOfThisYear =  data.course_sections?.data?.[`course_${$formCreate.course_id}`]
+    
 </script>
 
 <svelte:head>
@@ -720,14 +719,14 @@
             Crear sección
         </button>
 
-        <!-- {#if } -->
+        {#if  sectionsOfThisYear.length !== 1 && sectionsOfThisYear[sectionsOfThisYear.length-1].id == data.filters.section_id}
             <button 
             on:click={() => deleteSection(data.filters.section_id)}
             class="ml-3 p-2 px-3 bg-gray-100" title="Elimar Sección">
                 <iconify-icon class="text-xl relative top-1" icon="ph:trash"></iconify-icon>
             </button>
         
-        <!-- {/if} -->
+        {/if}
     </div>
     <thead slot="thead" class="sticky top-0 z-50">
         <tr>
