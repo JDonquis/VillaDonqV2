@@ -28,7 +28,7 @@ class SectionController extends Controller
 
     }
 
-    public function destroy()
+    public function destroy($id)
     {   
         DB::beginTransaction();
 
@@ -36,9 +36,12 @@ class SectionController extends Controller
         {
             $sections = Section::orderBy('id', 'desc')->limit(2)->get();
             
-            Student::where('section_id',$sections[0]->id)->update(['section_id',$sections[1]->id]);
+            Student::where('course_id',$id)->where('section_id',$sections[0]->id)->update(['section_id',$sections[1]->id]);
 
-            DB::table('course_sections')->where('section_id',$sections[0]->id)->delete();
+            DB::table('course_sections')
+            ->where('course_id',$id)
+            ->where('section_id',$sections[0]->id)
+            ->delete();
             
             DB::commit();
 
