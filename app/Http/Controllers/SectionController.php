@@ -4,13 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Section;
 use Illuminate\Http\Request;
+use App\Services\StudentService;
 use Illuminate\Support\Facades\DB;
 
 class SectionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
+    public function __construct() 
+    {
+        $this->studentService = new StudentService;
+    }
+
     public function index()
     {
         //
@@ -62,7 +66,18 @@ class SectionController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id)
-    {
+    {   
+        
+        $sections = Section::orderBy('id', 'desc')->limit(2)->get();
+
+        
+
+        $currentlastSectionName_letter = Section::select('name')->orderBy('id','desc')->first()->name;
+        
+        $previousLetter = chr(ord($currentlastSectionName_letter) - 1);
+
+        Section::where('name',$previousLetter)->first();
+
         DB::table('course_sections')->where('section_id',$id)->delete();
         Section::delete($id);
 
