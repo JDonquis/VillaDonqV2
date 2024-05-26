@@ -700,7 +700,10 @@
     <button
         class="btn_create inline-block"
         on:click={(e) => {
+
             e.preventDefault();
+            $formCreate.section_id = +data.filters.section_id
+            $formCreate.course_id = +data.filters.course_id
             showModal = true;
         }}>Inscribir</button
     >
