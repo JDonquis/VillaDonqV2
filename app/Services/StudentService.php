@@ -29,17 +29,10 @@ class StudentService
     
     public function getStudentsPerCourse($courseId,$sectionId)
     {
-        $courseSectionsIds = null;
-
-        $courseSectionsIds = CourseSection::where('course_id',$courseId)
+  
+        $students = Student::where('course_id',$courseId)
         ->where('section_id',$sectionId)
-        ->get()
-        ->pluck('id')
-        ->toArray();
-    
-
-        $students = Student::whereIn('course_section_id',$courseSectionsIds)
-        ->with('representative.user','course_section.course','course_section.section')
+        ->with('representative.user','course','section')
         ->get();
         
 
@@ -127,12 +120,11 @@ class StudentService
             return redirect('/dashboard/matricula')->withErrors(['data' => 'Estudiante ID no encontrado']);
 
 
-        $courseSection = CourseSection::where('course_id',$data['course_id'])->where('section_id',$data['section_id'])->first();
-        
         $student->update([
            
             'representative_id' => $representative->id,
-            'course_section_id' => $courseSection->id,
+            'course_id' => $data['course_id'],
+            'section_id' => $data['section_id'],
             'name' => $data['student_name'],
             'last_name' => $data['student_last_name'],
             'date_birth' => $data['student_date_birth'],
@@ -196,13 +188,11 @@ class StudentService
 
     private function createStudent($data,$representativeId)
     {       
-        $courseSection = CourseSection::where('course_id',$data['course_id'])->where('section_id',$data['section_id'])->first();
-        
-
         $newStudent = Student::create([
            
             'representative_id' => $representativeId,
-            'course_section_id' => $courseSection->id,
+            'course_id' => $data['course_id'],
+            'section_id' => $data['section_id'],
             'name' => $data['student_name'],
             'last_name' => $data['student_last_name'],
             'date_birth' => $data['student_date_birth'],
@@ -219,5 +209,6 @@ class StudentService
 
         return $newStudent;
     }
+
 
 }

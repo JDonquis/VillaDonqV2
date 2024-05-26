@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Section;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Services\StudentService;
 use Illuminate\Support\Facades\DB;
@@ -10,19 +12,7 @@ use Illuminate\Support\Facades\DB;
 class SectionController extends Controller
 {
 
-    public function __construct() 
-    {
-        $this->studentService = new StudentService;
-    }
-
-    public function index()
-    {
-        //
-    }
-
-    
-
-    /**
+     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -38,50 +28,32 @@ class SectionController extends Controller
 
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
+    public function destroy()
     {   
-        
-        $sections = Section::orderBy('id', 'desc')->limit(2)->get();
+        DB::beginTransaction();
+
+        try 
+        {
+            $sections = Section::orderBy('id', 'desc')->limit(2)->get();
+            
+            Student::where('section_id',$sections[0]->id)->update(['section_id',$sections[1]->id]);
+
+            DB::table('course_sections')->where('section_id',$sections[0]->id)->delete();
+            
+            DB::commit();
+
+            return redirect('/dashboard/matricula');
+        } 
+        catch (Exception $th) 
+        {
+            DB::rollback();
+            return redirect('/dashboard/matricula')->withErrors(['data' => 'Algo ha salido mal :(']);
+            
+        }
+
 
         
 
-        $currentlastSectionName_letter = Section::select('name')->orderBy('id','desc')->first()->name;
-        
-        $previousLetter = chr(ord($currentlastSectionName_letter) - 1);
-
-        Section::where('name',$previousLetter)->first();
-
-        DB::table('course_sections')->where('section_id',$id)->delete();
-        Section::delete($id);
-
-        return redirect('/dashboard/matricula');
 
     }
 }
