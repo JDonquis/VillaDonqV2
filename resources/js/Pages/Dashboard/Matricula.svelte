@@ -6,11 +6,11 @@
 
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, router  } from "@inertiajs/svelte";
+    import { claim_svg_element } from "svelte/internal";
     export let data = [];
 
-    
-
     console.log(data);
+
     const emptyDataForm = {
         student_name: "",
         student_last_name: "",
@@ -158,8 +158,8 @@
         });
     }
 
-    function deleteSection(id) {
-        router.delete(`/dashboard/secciones/${id}`, {
+    function deleteSection() {
+        router.delete(`/dashboard/secciones/${data.filters.current_course_id}`, {
             onBefore: () =>
                 confirm(
                     `¿Está seguro de eliminar esta sección?`,
@@ -687,7 +687,7 @@
 <div class="flex justify-between items-center">
     <div class="w-44">
         <label for="filterYear " class="text-lg"> Año escolar </label>
-        <select id="filterYear" class="w-full p-2 rounded-xl">
+        <select id="filterYear" class="w-full p-2 rounded-xl" on:change={() => console.log('fdjsdf')}>
             {#each data.courses as course}
                 <option class="bg-gray-50" value={course.id}
                     >{course.name}</option
@@ -709,6 +709,7 @@
     on:clickDeleteIcon={() => {
         handleDelete(selectedRow.id);
     }}
+    serverSideData={{filters: data.filters}}
     filtersOptions={{section_id : data.course_sections?.data?.[`course_${$formCreate.course_id}`]}}
     pagination={false}
 >

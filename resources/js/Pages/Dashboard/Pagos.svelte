@@ -3,11 +3,12 @@
     import Modal from "../../components/Modal.svelte";
     import Input from "../../components/Input.svelte";
     import Alert from "../../components/Alert.svelte";
-
+    import { getMonitor } from "consulta-dolar-venezuela";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm } from "@inertiajs/svelte";
     export let data = [];
     const currentDate = new Date();
+    const dolarPrice = getMonitor("BCV", "lastUpdate").then(a =>{console.log(a.bcv.price)}); 
 
     // Format the date as a string in the "YYYY-MM-DD" format
     const currentDateString = currentDate.toISOString().split("T")[0];
@@ -28,7 +29,7 @@
         currency: "Bolivar",
         payment_method: "",
         amount: "1295",
-        change: "35",
+        bs: "35",
         vaucher: "1234568",
     });
 
@@ -104,6 +105,13 @@
     $: console.log(
         data.course_sections?.data?.[`course_${$formCreate.course_id}`],
     );
+
+    $: $formCreate.amout, exchange()
+
+    function exchange() {
+        $formCreate.bs = $formCreate.amount * dolarPrice
+        console.log($formCreate)   
+    }
 </script>
 
 <svelte:head>
@@ -197,8 +205,8 @@
         <Input
             type="number"
             label={"Monto en Bolivares (Bs)"}
-            bind:value={$formCreate.change}
-            error={$formCreate.errors?.change}
+            bind:value={$formCreate.bs}
+            error={$formCreate.errors?.bs}
         />
         <Input
             type="number"
