@@ -53,8 +53,8 @@
                                 handleFilters();
                             }}
                             class="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-100"
-                            class:bg-gray-50={filterClientData[filterKey] ==
-                                filter.id || i == 0 && !filterClientData[filterKey]}
+                            class:bg-gray-50={serverSideData.filters[filterKey] ==
+                                filter.id ||( i == 0 && !filterClientData[filterKey])}
                         >
                             {filter.name}
                         </button>
