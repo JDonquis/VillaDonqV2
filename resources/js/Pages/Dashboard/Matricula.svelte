@@ -6,7 +6,7 @@
 
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, router  } from "@inertiajs/svelte";
-    import { claim_svg_element } from "svelte/internal";
+    import { claim_svg_element, onMount } from "svelte/internal";
     export let data = [];
 
     console.log(data);
@@ -42,6 +42,9 @@
         rep_id: "",
     };
     
+    $: sectionsOfThisYear =  data.course_sections?.data?.[`course_${data.filters.course_id}`]
+    $: lastSectionId = sectionsOfThisYear?.[sectionsOfThisYear?.length-1].id
+    $: console.log(lastSectionId)
     let formCreate = useForm({
         student_name: "Nombre de estudiante",
         student_last_name: "Villasmil Tovar",
@@ -143,7 +146,7 @@
 
     function createSection() {
        
-        router.post("/dashboard/secciones",{course_id: data.filters.course_id, section_id: data.filters.section_id}, {
+        router.post("/dashboard/secciones",{course_id: data.filters.course_id, section_id: lastSectionId}, {
             onError: (errors) => {
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
@@ -159,7 +162,7 @@
     }
 
     function deleteSection() {
-        router.delete(`/dashboard/secciones/${data.filters.course_id}`, {
+        router.delete(`/dashboard/secciones/${lastSectionId}`, {
             onBefore: () =>
                 confirm(
                     `¿Está seguro de eliminar esta sección?`,
@@ -167,8 +170,8 @@
         });
     }
     $: console.log(data.filters.course_id);
-    const sectionsOfThisYear =  data.course_sections?.data?.[`course_${$formCreate.course_id}`]
     
+    $: console.log(lastSectionId , data.filters.section_id)
 </script>
 
 <svelte:head>
@@ -719,7 +722,7 @@
             Crear sección
         </button>
 
-        {#if  sectionsOfThisYear.length !== 1 && sectionsOfThisYear[sectionsOfThisYear.length-1].id == data.filters.section_id}
+        {#if  sectionsOfThisYear.length !== 1 && lastSectionId == data.filters.section_id}
             <button 
             on:click={() => deleteSection(data.filters.section_id)}
             class="ml-3 p-2 px-3 bg-gray-100" title="Elimar Sección">
