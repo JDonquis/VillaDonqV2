@@ -716,11 +716,13 @@
     pagination={false}
 >
     <div slot="filterBox">
+        {#if lastSectionId < 6}
             <button 
                 on:click={() => createSection()}
                 class="rounded border border-color3 text-color3 h-full cursor-pointer hover:bg-color3 hover:text-gray-100 px-4">
             Crear sección
         </button>
+        {/if}
 
         {#if  sectionsOfThisYear.length !== 1 && lastSectionId == data.filters.section_id}
             <button 
