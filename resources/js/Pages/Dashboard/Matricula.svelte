@@ -12,6 +12,7 @@
     console.log(data);
 
     const emptyDataForm = {
+        student_id: "",
         student_name: "",
         student_last_name: "",
         student_date_birth: "",
@@ -112,7 +113,7 @@
     function handleEdit(event) {
         event.preventDefault();
         $formEdit.clearErrors();
-        $formEdit.put(`/dashboard/matricula/${$formEdit.id}`, {
+        $formEdit.put(`/dashboard/matricula/${$formEdit.student_id}`, {
             onError: (errors) => {
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
