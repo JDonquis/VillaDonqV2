@@ -22,7 +22,7 @@ class SectionController extends Controller
 
         CourseSection::create(['course_id' => $request->course_id, 'section_id' => $nextSectionId])->save(); 
 
-        return redirect('/dashboard/matricula');
+        return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$nextSectionId);
     }
 
     public function destroy($course_id, $section_id)
