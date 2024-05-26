@@ -715,17 +715,19 @@
 >
     <div slot="filterBox">
             <button 
-                on:click={() => createSection(data.filters.current_course_id)}
+                on:click={() => createSection(data.filters.course_id)}
                 class="rounded border border-color3 text-color3 h-full cursor-pointer hover:bg-color3 hover:text-gray-100 px-4">
             Crear sección
         </button>
 
+        <!-- {#if } -->
+            <button 
+            on:click={() => deleteSection(data.filters.section_id)}
+            class="ml-3 p-2 px-3 bg-gray-100" title="Elimar Sección">
+                <iconify-icon class="text-xl relative top-1" icon="ph:trash"></iconify-icon>
+            </button>
         
-        <button 
-        on:click={() => deleteSection(data.filters.current_section_id)}
-        class="ml-3 p-2 px-3 bg-gray-100" title="Elimar Sección">
-            <iconify-icon class="text-xl relative top-1" icon="ph:trash"></iconify-icon>
-        </button>
+        <!-- {/if} -->
     </div>
     <thead slot="thead" class="sticky top-0 z-50">
         <tr>
