@@ -2,13 +2,10 @@
 
 namespace App\Listeners;
 
-use App\Models\Quota;
-use App\Models\SchoolLapse;
-use App\Models\CourseSection;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
 
-class TakeQuota
+class UpdateTakeQuota
 {
     /**
      * Create the event listener.
@@ -21,6 +18,7 @@ class TakeQuota
     /**
      * Handle the event.
      */
+    
     public function handle(object $event): void
     {
         $student = $event->student;
@@ -34,4 +32,5 @@ class TakeQuota
         $quota->increment('accepted');
         $quota->save();
     }
+    
 }

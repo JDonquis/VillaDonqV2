@@ -7,6 +7,8 @@
     export let type = "text";
     export let classes = ''
     export let theme = "ligtht"
+    export let min = ""
+    export let max = ""
 
     export let error = false;
 </script>
@@ -17,7 +19,8 @@
         {#if type === "textarea"}
             <textarea bind:value id={label} rows="1"></textarea>
         {:else if type === "select"}
-            <select id={label} bind:value>
+                
+            <select id={label} bind:value  required={required}>
                 <slot></slot>
             </select>
         {:else}
@@ -26,7 +29,9 @@
                 {...{ type }}
                 id={label}
                 class="form__field"
-                {required}
+                required={required}
+                max={max}
+                min={min}
             />
         {/if}
         {#if error}

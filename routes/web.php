@@ -4,6 +4,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\BitacoraController;
@@ -33,13 +34,8 @@ Route::middleware(['auth'])->group(function ()
     Route::post('/dashboard/secciones', [SectionController::class, 'store']);    
     Route::delete('/dashboard/secciones/{id}', [SectionController::class, 'destroy']);    
 
+    Route::get('/dashboard/pagos', [PaymentController::class, 'index']);    
     
     
-
-
-    Route::post('/dashboard/bitacora', [BitacoraController::class, 'store']);    
-    Route::put('/dashboard/bitacora/{id}', [BitacoraController::class, 'update']);    
-    Route::delete('/dashboard/bitacora/{id}', [BitacoraController::class, 'destroy']);    
-    Route::get('/dashboard/maquinas', [AppController::class, 'maquinas']);
 });
 

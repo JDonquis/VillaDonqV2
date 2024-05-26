@@ -30,9 +30,9 @@ class CourseSeeder extends Seeder
             ['name' => '2do Grado' ],
             ['name' => '1er Grado' ],
 
-            ['name' => '1er Nivel' ],
-            ['name' => '2do Nivel' ],
             ['name' => '3er Nivel' ],
+            ['name' => '2do Nivel' ],
+            ['name' => '1er Nivel' ],
 
 
          ];   
