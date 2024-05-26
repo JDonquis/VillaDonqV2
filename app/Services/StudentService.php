@@ -8,6 +8,7 @@ use App\Models\Student;
 use App\Models\Activity;
 use App\Models\CourseSection;
 use App\Events\StudentCreated;
+use App\Events\StudentUpdated;
 use App\Models\Representative;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
@@ -86,25 +87,7 @@ class StudentService
     {   
         $data = $request->all();
 
-        $user = User::where('id',$data['rep_id'])->first();        
-        
-        if(!isset($user->id))
-            return redirect('/dashboard/matricula')->withErrors(['data' => 'Usuario ID no encontrado']);
-        
-        
-        $user->update([
-            'name' => $data['rep_name'],
-            'last_name' => $data['rep_last_name'],
-            'ci' => $data['rep_ci'],
-            'phone_number' => $data['rep_phone_number'],
-            'email' => $data['rep_email'] ?? null,
-            'password' => Hash::make($data['rep_ci']),
-            'address' => $data['address'] ?? null,
-            'state' => $data['state'] ?? null,
-            'city' => $data['city'] ?? null,
-        ]);
-
-        $representative = Representative::where('user_id',$user->id)->first();
+        $representative = Representative::where('id',$data['rep_id'])->first();
         
         if(!isset($representative->id))
             return redirect('/dashboard/matricula')->withErrors(['data' => 'Representante ID no encontrado']);
@@ -123,7 +106,28 @@ class StudentService
             'second_representative_workplace' => $data['second_rep_workplace'] ?? null,
         ]);
 
-        $student = Student::where('id',$studentId)>first();
+        $user = User::where('id',$representative->user_id)->first();        
+        
+        if(!isset($user->id))
+            return redirect('/dashboard/matricula')->withErrors(['data' => 'Usuario ID no encontrado']);
+        
+        
+        $user->update([
+            'name' => $data['rep_name'],
+            'last_name' => $data['rep_last_name'],
+            'ci' => $data['rep_ci'],
+            'phone_number' => $data['rep_phone_number'],
+            'email' => $data['rep_email'] ?? null,
+            'password' => Hash::make($data['rep_ci']),
+            'address' => $data['address'] ?? null,
+            'state' => $data['state'] ?? null,
+            'city' => $data['city'] ?? null,
+        ]);
+
+       
+
+        $student = Student::where('id',$studentId)->first();
+
 
         if(!isset($student->id))
             return redirect('/dashboard/matricula')->withErrors(['data' => 'Estudiante ID no encontrado']);

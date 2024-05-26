@@ -11,6 +11,7 @@ use App\Models\CourseSection;
 use App\Services\StudentService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\CreateStudentRequest;
+use App\Http\Requests\UpdateStudentRequest;
 use App\Http\Resources\CourseSectionCollection;
 
 class StudentController extends Controller
@@ -75,8 +76,9 @@ class StudentController extends Controller
         }
     }
 
-    public function update(CreateStudentRequest $request, $id)
+    public function update(UpdateStudentRequest $request, $id)
     {
+
         DB::beginTransaction();
 
         try 

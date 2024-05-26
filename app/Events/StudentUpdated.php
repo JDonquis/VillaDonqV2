@@ -19,7 +19,7 @@ class StudentUpdated
     /**
      * Create a new event instance.
      */
-    public function __construct($courseId , Student $student)
+    public function __construct($courseId , $student)
     {
         $this->student = $student;
         $this->courseId = $courseId;
