@@ -5,7 +5,7 @@
     import Alert from "../../components/Alert.svelte";
 
     import { displayAlert } from "../../stores/alertStore";
-    import { useForm, router  } from "@inertiajs/svelte";
+    import { useForm, router,page  } from "@inertiajs/svelte";
     import { claim_svg_element, onMount } from "svelte/internal";
     export let data = [];
 
@@ -112,7 +112,7 @@
     function handleEdit(event) {
         event.preventDefault();
         $formEdit.clearErrors();
-        $formEdit.put(`/dashboard/bitacora/${$formEdit.id}`, {
+        $formEdit.put(`/dashboard/matricula/${$formEdit.id}`, {
             onError: (errors) => {
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
@@ -168,6 +168,9 @@
                     `¿Está seguro de eliminar esta sección?`,
                 ),
         });
+    }
+    function changeYear(course_id){
+        router.get($page.url,{course_id, section_id: 1})
     }
     $: console.log(data.filters.course_id);
     
@@ -475,6 +478,7 @@
             <Input
                 type="number"
                 label={"Cédula"}
+                required={true}
                 bind:value={$formEdit.student_ci}
                 error={$formEdit.errors?.student_ci}
             />
@@ -689,7 +693,7 @@
 <div class="flex justify-between items-center">
     <div class="w-44">
         <label for="filterYear " class="text-lg"> Año escolar </label>
-        <select id="filterYear" class="w-full p-2 rounded-xl" on:change={() => console.log('fdjsdf')}>
+        <select id="filterYear" class="w-full p-2 rounded-xl" on:change={(e) => changeYear(e.target.value)}>
             {#each data.courses as course}
                 <option class="bg-gray-50" value={course.id}
                     >{course.name}</option
@@ -715,16 +719,16 @@
         handleDelete(selectedRow.id);
     }}
     serverSideData={{filters: data.filters}}
-    filtersOptions={{section_id : data.course_sections?.data?.[`course_${$formCreate.course_id}`]}}
+    filtersOptions={{section_id : sectionsOfThisYear}}
     pagination={false}
 >
     <div slot="filterBox">
         {#if lastSectionId < 6}
             <button 
-                on:click={() => createSection()}
+                on:click={() => changeYear()}
                 class="rounded border border-color3 text-color3 h-full cursor-pointer hover:bg-color3 hover:text-gray-100 px-4">
-            Crear sección
-        </button>
+                Crear sección
+            </button>
         {/if}
 
         {#if  sectionsOfThisYear.length !== 1 && lastSectionId == data.filters.section_id}
