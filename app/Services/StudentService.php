@@ -68,7 +68,7 @@ class StudentService
 
         $student = $this->createStudent($data,$representative->id);
 
-        $student->load('representative.user','course_section.course','course_section.section');
+        $student->load('representative.user','course','section');
         
         
         // $this->createDocuments($request,$student->id);
