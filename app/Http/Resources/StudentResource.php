@@ -20,6 +20,7 @@ class StudentResource extends JsonResource
             'student_name' => $this->name,
             'student_last_name' => $this->last_name,
             'student_date_birth' => $this->date_birth,
+            'student_age' => $this->getAge($this->date_birth),
             'student_email' => $this->email ?? null,
             'student_ci' => $this->ci ?? null,
             'student_phone_number' => $this->phone_number ?? null,
@@ -50,5 +51,12 @@ class StudentResource extends JsonResource
 
         ];
 
+    }
+
+    private function getAge($dateOfBirth)
+    {
+        $today = date("Y-m-d");
+        $diff = date_diff(date_create($dateOfBirth), date_create($today));
+        return $diff->format('%y');
     }
 }

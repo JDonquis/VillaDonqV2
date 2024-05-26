@@ -773,7 +773,7 @@
                 <td>{row.student_last_name}</td>
                 <td>{row.student_ci}</td>
                 <td>{row.student_sex}</td>
-                <td>{row.student_date_birth}</td>
+                <td>{row.student_age}</td>
                 <td>{row.rep_name} {row.rep_last_name}</td>
                 <td>{row.rep_phone_number}</td>
             </tr>
