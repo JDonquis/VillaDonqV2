@@ -128,6 +128,7 @@ class StudentService
         if(!isset($student->id))
             return redirect('/dashboard/matricula')->withErrors(['data' => 'Estudiante ID no encontrado']);
 
+        $previousCourseId = $student->course_id ;
 
         $student->update([
            
@@ -144,13 +145,11 @@ class StudentService
             'previous_school' => $data['student_previous_school'] ?? null,
         ]);
         
-
-        $student->load('representative.user','course_section.course','course_section.section');
-        
+        $student->load('representative.user','course','section');
         
         // $this->createDocuments($request,$student->id);
         
-        event(new StudentCreated($student));
+        event(new StudentUpdated($previousCourseId,$student));
 
         return 0;
 

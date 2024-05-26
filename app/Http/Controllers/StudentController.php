@@ -71,7 +71,7 @@ class StudentController extends Controller
             
             DB::rollback();
             
-            return redirect('/dashboard/matricula')->withErrors(['message' => $e->getMessage()]);
+            return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id)->withErrors(['message' => $e->getMessage()]);
         }
     }
 
@@ -85,7 +85,7 @@ class StudentController extends Controller
 
             DB::commit();
 
-            return redirect('/dashboard/matricula');
+            return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id);
 
         }
         catch (Exception $e)
@@ -93,7 +93,7 @@ class StudentController extends Controller
             
             DB::rollback();
              
-            return response()->json(['message' => $e->getMessage()],400);
+            return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id)->withErrors(['message' => $e->getMessage()]);
         }
     }
 }

@@ -27,7 +27,7 @@ class CreateStudentRequest extends FormRequest
             'student_last_name' => ['required'],
             'student_date_birth' => ['required'],
             'student_email' => ['sometimes'],
-            'student_ci' => ['sometimes','unique:students,ci'],
+            'student_ci' => ['required','unique:students,ci'],
             'student_phone_number' => ['sometimes'],
             'student_sex' => ['sometimes'],
             'student_previous_school' => ['sometimes'],
