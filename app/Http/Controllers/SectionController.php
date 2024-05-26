@@ -26,8 +26,12 @@ class SectionController extends Controller
     }
 
     public function destroy($course_id, $section_id)
-    {         
+    {      
+        $previousSectionId = $section_id - 1;
+        Student::where('course_id',$course_id)->where('section_id',$section_id)->update(['section_id' => $previousSectionId]);
+              
         CourseSection::where('course_id',$course_id)->where('section_id',$section_id)->delete(); 
+
         return redirect('/dashboard/matricula');
 
     }
