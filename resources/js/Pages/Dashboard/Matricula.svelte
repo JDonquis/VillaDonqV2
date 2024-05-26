@@ -42,7 +42,7 @@
     };
 
     let formCreate = useForm({
-        student_name: "Nombre de estudiante",
+        student_name: "Fabian Vidal",
         student_last_name: "Villasmil Tovar",
         student_date_birth: "1999-06-25",
         student_email: "juanvillans16@gmail.com",

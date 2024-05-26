@@ -29,7 +29,7 @@
 <main class="bg-background h-screen">
     <div class="flex flex-col gap-3 items-center justify-center mb-1 py-6">
         <!-- <img src={secretariaLogo} class="max-w-12 lg:max-w-16" alt="" /> -->
-        <h1 class=" text-4xl tracking-widest">OfficeHandler</h1>
+        <h1 class=" text-4xl tracking-widest">Villadonq</h1>
     </div>
     <div class="flex justify-center items-center w-full">
         <!-- <img src={doctor} class="max-w-96 h-96" alt="" /> -->

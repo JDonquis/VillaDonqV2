@@ -8,8 +8,6 @@
     import { useForm } from "@inertiajs/svelte";
     export let data = [];
 
-    
-
     console.log(data);
     const emptyDataForm = {
         date: "",
@@ -283,7 +281,7 @@
         }}>Inscribir</button
     >
 </div>
-
+<!--  
 <Table
     {selectedRow}
     on:fillFormToEdit={fillFormToEdit}
@@ -344,3 +342,4 @@
         {/each}
     </tbody>
 </Table>
+-->
