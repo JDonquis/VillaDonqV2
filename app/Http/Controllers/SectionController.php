@@ -25,10 +25,10 @@ class SectionController extends Controller
         return redirect('/dashboard/matricula');
     }
 
-    // public function destroy($id)
-    // {         
-    //     CourseSection::where('course_id',$request->course_id), 'section_id' => $nextSectionId])->save(); 
+    public function destroy($course_id, $section_id)
+    {         
+        CourseSection::where('course_id',$course_id)->where('section_id',$section_id)->delete(); 
+        return redirect('/dashboard/matricula');
 
-
-    // }
+    }
 }
