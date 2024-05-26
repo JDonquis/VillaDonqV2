@@ -29,16 +29,17 @@ class StudentService
     
     public function getStudentsPerCourse($request)
     {
-        $courseId = $request->input('course') ?? 1;
-        $sectionId = $request->input('section') ?? 1;
+        $courseId = $request->input('course_id') ?? 1;
+        $sectionId = $request->input('section_id') ?? 1;
 
         $students = Student::query()
+        ->where('course_id',$courseId)
+        ->where('section_id',$sectionId)
         ->when($request->input('search'), function ($query, $search) 
         {
             $query->where('search','like','%' . $search . '%');
         })     
-        ->where('course_id',$courseId)
-        ->where('section_id',$sectionId)
+      
         ->with('representative.user','course','section')
         ->get();
         
@@ -67,6 +68,7 @@ class StudentService
 
 
         $student = $this->createStudent($data,$representative->id);
+        
 
         $student->load('representative.user','course','section');
         

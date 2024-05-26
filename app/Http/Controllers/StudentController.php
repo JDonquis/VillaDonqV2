@@ -41,8 +41,8 @@ class StudentController extends Controller
                 'students' => $studentsPerCourse,
                 'filters' => 
                 [
-                    'course_id' =>  $request->input('course') ?? 1,
-                    'section_id' => $request->input('section') ?? 1,
+                    'course_id' =>  $request->input('course_id') ?? 1,
+                    'section_id' => $request->input('section_id') ?? 1,
                     'search' => $request->input('search') ?? null,
                 ]
             ]
