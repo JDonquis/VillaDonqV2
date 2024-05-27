@@ -8,7 +8,17 @@
     import { useForm } from "@inertiajs/svelte";
     export let data = [];
     const currentDate = new Date();
-    const dolarPrice = getMonitor("BCV", "lastUpdate").then(a =>{console.log(a.bcv.price)}); 
+    let dolarPrice;
+
+    getMonitor("BCV", "lastUpdate")
+        .then((response) => {
+            dolarPrice = response.bcv.price;
+            console.log(dolarPrice);
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+        });
+    $: console.log(dolarPrice);
 
     // Format the date as a string in the "YYYY-MM-DD" format
     const currentDateString = currentDate.toISOString().split("T")[0];
@@ -21,6 +31,7 @@
         amount: "",
         change: "",
         vaucher: "",
+        bs: "",
     };
 
     let formCreate = useForm({
@@ -29,7 +40,7 @@
         currency: "Bolivar",
         payment_method: "",
         amount: "1295",
-        bs: "35",
+        bs: "",
         vaucher: "1234568",
     });
 
@@ -106,11 +117,12 @@
         data.course_sections?.data?.[`course_${$formCreate.course_id}`],
     );
 
-    $: $formCreate.amout, exchange()
+    $: $formCreate.amout, exchange();
 
     function exchange() {
-        $formCreate.bs = $formCreate.amount * +dolarPrice
-        console.log($formCreate)   
+        // $formCreate.bs = $formCreate.amount * +dolarPrice;
+        // $formCreate.amount = $formCreate.bs / dolarPrice;
+        console.log('tambien')
     }
 </script>
 
@@ -138,15 +150,18 @@
                 error={$formCreate.errors?.name}
             /> -->
             <input
-
                 type="search"
                 required={true}
                 placeholder="Buscar Estudiante"
-                class={"z-50 mx-auto p-2 mt-6 md:w-60 bg-color1 text-white border rounded-md" }
-            /><iconify-icon class="relative top-2  ml-3 text-2xl" icon="material-symbols:search"></iconify-icon>
+                class={"z-50 mx-auto p-2 mt-6 md:w-60 bg-color1 text-white border rounded-md"}
+            /><iconify-icon
+                class="relative top-2 ml-3 text-2xl"
+                icon="material-symbols:search"
+            ></iconify-icon>
 
-
-            <table class="[&_*]:px-4 [&_*]:py-2 [&_*]:text-left text-sm rounded-md overflow-hidden mt-5">
+            <table
+                class="[&_*]:px-4 [&_*]:py-2 [&_*]:text-left text-sm rounded-md overflow-hidden mt-5"
+            >
                 <thead class="bg-color2">
                     <tr>
                         <th>Estudiante</th>
@@ -159,16 +174,18 @@
                 </thead>
                 <tbody>
                     <tr
-                        class="[&_*]:px-4 [&_*]:py-2 cursor-pointer bg-white bg-opacity-10  border-b border-gray-500"
+                        class="[&_*]:px-4 [&_*]:py-2 cursor-pointer bg-white bg-opacity-10 border-b border-gray-500"
                     >
                         <td>Fabian Eduardo Vidal Molina</td>
                         <td>3434534</td>
                         <td>2do año</td>
                         <td>A</td>
                         <td>Maria de los Angeles</td>
-                        <td><iconify-icon icon="mynaui:delete"></iconify-icon></td>
+                        <td
+                            ><iconify-icon icon="mynaui:delete"
+                            ></iconify-icon></td
+                        >
                     </tr>
-                   
                 </tbody>
             </table>
         </div>
@@ -201,12 +218,18 @@
             required={true}
             bind:value={$formCreate.amount}
             error={$formCreate.errors?.amount}
+            on:input={(e) => {
+                $formCreate.bs = (e.target.value * dolarPrice).toFixed(2)
+            }}
         />
         <Input
             type="number"
             label={"Monto en Bolivares (Bs)"}
             bind:value={$formCreate.bs}
             error={$formCreate.errors?.bs}
+            on:input={(e) => {
+                $formCreate.amount = (e.target.value / dolarPrice).toFixed(2)
+            }}
         />
         <Input
             type="number"
@@ -363,5 +386,4 @@
             </tr>
         {/each}
     </tbody> -->
-
 </Table>

@@ -3,8 +3,11 @@
 
     // import secretariaLogo from '$lib/images/logo_secretaria-circle-main.png';
     import Input from "../components/Input.svelte";
+    import Modal from "../components/Modal.svelte";
+
     import Alert from "../components/Alert.svelte";
     import { displayAlert } from "../stores/alertStore";
+    let showModal = false;
 
     let form = useForm({
         ci: null,
@@ -13,71 +16,170 @@
 
     function handleSubmit(event) {
         event.preventDefault();
-        $form.clearErrors()
-        $form.post("/login",  {
+        $form.clearErrors();
+        $form.post("/login", {
             onError: (errors) => {
-                if(errors.data) {
-                    displayAlert({type: "error", message: errors.data})
+                if (errors.data) {
+                    displayAlert({ type: "error", message: errors.data });
                 }
             },
         });
     }
-    
 </script>
 
 <Alert />
-<main class="bg-background h-screen">
-    <div class="flex flex-col gap-3 items-center justify-center mb-1 py-6">
-        <!-- <img src={secretariaLogo} class="max-w-12 lg:max-w-16" alt="" /> -->
-        <h1 class=" text-4xl tracking-widest">OfficeHandler</h1>
-    </div>
-    <div class="flex justify-center items-center w-full">
-        <!-- <img src={doctor} class="max-w-96 h-96" alt="" /> -->
-
-        <div class="text-center text-gray-300">
-            <form
-                on:submit={handleSubmit}
-                class="mx-auto mt-10 bg-white bg-opacity-5 rounded-lg shadow-2xl p-6 w-[300px] text-center flex flex-col md:h-96 min-h-96"
-            >
-                <legend class=" opacity-70 mb-6">INICIAR SESIÓN</legend>
-                <div>
-                    <Input
-                        type="text"
-                        name="ci"
-                        required={true}
-                        label={"Cédula"}
-                        bind:value={$form.ci}
-                        error={$form.errors?.ci}
-                    />
-                    <!-- {#if $form.errors.ci}
-					<div class="text-white bg-opacity-30 bg-red pt-1">
-						
-                        <span >{$form.errors.ci}</span>
-					</div>
-                    {/if} -->
-
-                    <Input
-                        type="password"
-                        required={true}
-                        name="password"
-                        label={"Contraseña"}
-                        bind:value={$form.password}
-                    />
-                </div>
-                <!-- <button type="submit">Iniciar sesión</button> -->
-
-                <input
-                    type="submit"
-                    disabled={$form.processing}
-                    value={$form.processing ? "Cargando..." : "ENTRAR"}
-                    class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color2 text-black font-bold py-3 rounded-md cursor-pointer"
+<section class="bg-background">
+    <header class="flex justify-between px-1 mx-4 md:mx-12 py-3 lg:mx-20">
+        <p>logo</p>
+        <button
+            class="btn_create inline-block"
+            on:click={(e) => {
+                e.preventDefault();
+                showModal = true;
+            }}>Login</button
+        >
+    </header>
+    <Modal bind:showModal>
+        <legend slot="header" class="text-center opacity-70"
+            >INICIAR SESIÓN</legend
+        >
+        <form on:submit={handleSubmit} class="min-w-[250px]">
+            <div>
+                <Input
+                    type="text"
+                    name="ci"
+                    required={true}
+                    label={"Cédula"}
+                    bind:value={$form.ci}
+                    error={$form.errors?.ci}
                 />
-            </form>
+                <!-- {#if $form.errors.ci}
+            <div class="text-white bg-opacity-30 bg-red pt-1">
+                
+                <span >{$form.errors.ci}</span>
+            </div>
+            {/if} -->
+
+                <Input
+                    type="password"
+                    required={true}
+                    name="password"
+                    label={"Contraseña"}
+                    bind:value={$form.password}
+                />
+            </div>
+            <!-- <button type="submit">Iniciar sesión</button> -->
+
+            <input
+                type="submit"
+                disabled={$form.processing}
+                value={$form.processing ? "Cargando..." : "ENTRAR"}
+                class="hover:bg-color3 hover:text-white duration-200 mt-5 w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
+            />
+        </form>
+    </Modal>
+
+    <main
+        class="bg-background px-1 mx-4 md:py-9 md:mx-12 lg:mx-20 md:grid grid-cols-2 md:gap-x-10 lg:gap-x-24 xl:gap-32 items-center"
+    >
+        <div>
+            <h1 class="md:text-5xl text-color1">
+                Colegio
+                <br />
+                Maestro José Marti
+            </h1>
+            <h2 class="text-xl">
+                Formando mentes brillantes para un mañana prometedor
+            </h2>
+
+            <div class="flex justify-between mt-4 md:mt-14 text-color1">
+                <div>
+                    <span class="flex items-center gap-2 mb-2 lg:mb-3">
+                        <div class="bg-color1 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"><iconify-icon class="text-color4 text-4xl" icon="pajamas:check-xs"></iconify-icon></div>
+                        <b>Prescolar</b>
+                    </span>
+                    <ul class="grid grid-cols-2 gap-x-3">
+                        <li>1er nivel</li>
+                        <li>2do nivel</li>
+                        <li>3er nivel</li>
+                    </ul>
+                </div>
+                <div>
+                    <span class="flex items-center gap-2 mb-2 lg:mb-3">
+                        <div class="bg-color1 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"><iconify-icon class="text-color4 text-4xl" icon="pajamas:check-xs"></iconify-icon></div>
+                        <b>Primaria</b>
+                    </span>
+                    <ul class="grid grid-cols-2 gap-x-3">
+                        <li>1er grado</li>
+                        <li>2do grado</li>
+                        <li>3er grado</li>
+                        <li>4to grado</li>
+                        <li>5to grado</li>
+                        <li>6to grado</li>
+                    </ul>
+                </div>
+                <div>
+                    <span class="flex items-center gap-2 mb-2 lg:mb-3">
+                        <div class="bg-color1 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"><iconify-icon class="text-color4 text-4xl" icon="pajamas:check-xs"></iconify-icon></div>
+                        <b>Secundaria</b>
+                    </span>
+                    <ul class="grid grid-cols-2 gap-x-3">
+                        <li>1er año</li>
+                        <li>2do año</li>
+                        <li>3er año</li>
+                        <li>4to año</li>
+                        <li>5to año</li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <div class="flex justify-between  mt-4 md:mt-16 text-color1">
+
+                <div class="flex divide-x divide-dark ">
+                    <p class="pr-4 col-span-2 leading-5">
+                        Años de
+                        <br>
+                        formación
+                    </p>
+                    <span class="pl-4 text-4xl">33</span>
+                </div>
+
+                <div class="flex divide-x divide-dark ">
+                    <p class="pr-4 col-span-2 leading-5">
+                        Promociones 
+                        <br>
+                        graduadas
+                    </p>
+                    <span class="pl-4 text-4xl">32</span>
+                </div>
+
+                <div class="flex divide-x divide-dark ">
+                    <p class="pr-4 col-span-2 leading-5">
+                        Estudiantes
+                        <br>
+                        activos
+                    </p>
+                    <span class="pl-4 text-4xl">400</span>
+                </div>
+            </div>
+
+
+
         </div>
-        <!-- <img src={ladyDoctor} class="max-w-96 h-96" alt="" /> -->
-    </div>
-</main>
+
+        <div class="pl-5 ">
+            <img    
+                class="rounded-full aspect-square border-4 object-cover border-color1"
+                src="https://notifalcon.com/wp-content/uploads/2023/11/WhatsApp-Image-2023-11-08-at-10.21.36-AM.jpeg"
+                alt=""
+            />
+        </div>
+    </main>
+</section>
 
 <style>
-    /* main {} */
+    * {
+        box-sizing: border-box;
+    }
 </style>
