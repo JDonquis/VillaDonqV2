@@ -11,6 +11,7 @@ use App\Models\CourseSection;
 use App\Services\StudentService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\CreateStudentRequest;
+use App\Http\Requests\UpdateStudentRequest;
 use App\Http\Resources\CourseSectionCollection;
 
 class StudentController extends Controller
@@ -71,12 +72,13 @@ class StudentController extends Controller
             
             DB::rollback();
             
-            return redirect('/dashboard/matricula')->withErrors(['message' => $e->getMessage()]);
+            return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id)->withErrors(['message' => $e->getMessage()]);
         }
     }
 
-    public function update(CreateStudentRequest $request, $id)
+    public function update(UpdateStudentRequest $request, $id)
     {
+
         DB::beginTransaction();
 
         try 
@@ -85,7 +87,7 @@ class StudentController extends Controller
 
             DB::commit();
 
-            return redirect('/dashboard/matricula');
+            return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id);
 
         }
         catch (Exception $e)
@@ -93,7 +95,7 @@ class StudentController extends Controller
             
             DB::rollback();
              
-            return response()->json(['message' => $e->getMessage()],400);
+            return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id)->withErrors(['message' => $e->getMessage()]);
         }
     }
 }

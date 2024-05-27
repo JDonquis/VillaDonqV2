@@ -30,8 +30,6 @@ class EventServiceProvider extends ServiceProvider
         ],
         StudentUpdated::class => [
             UpdateTakeQuota::class,
-            GenerateInscription::class,
-            GenerateBalance::class,
         ]
 
     ];

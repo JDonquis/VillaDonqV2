@@ -2,8 +2,10 @@
 
 namespace App\Listeners;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Models\Quota;
+use App\Models\SchoolLapse;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class UpdateTakeQuota
 {
@@ -22,15 +24,22 @@ class UpdateTakeQuota
     public function handle(object $event): void
     {
         $student = $event->student;
-        $course= CourseSection::where('id',$student->course_section_id)->first();
+        $courseId = $event->courseId;
         $schoolLapseActive = SchoolLapse::where('status',1)->first();
 
         $quota = Quota::where('school_lapse_id', $schoolLapseActive->id)
-        ->where('course_id',$course->course_id)
+        ->where('course_id',$courseId)
         ->first();
-        $quota->decrement('remaining');
-        $quota->increment('accepted');
+        $quota->decrement('accepted');
+        $quota->increment('remaining');
         $quota->save();
+
+        $newQuota = Quota::where('school_lapse_id', $schoolLapseActive->id)
+        ->where('course_id',$student->course_id)
+        ->first();
+        $newQuota->decrement('remaining');
+        $newQuota->increment('accepted');
+        $newQuota->save();
     }
     
 }
