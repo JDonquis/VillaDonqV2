@@ -28,9 +28,9 @@
 </script>
 
 <Alert />
-<section class="bg-background">
+<section class="bg-background min-h-screen">
     <header class="flex justify-between px-1 mx-4 md:mx-12 py-3 lg:mx-20">
-        <p>logo</p>
+        <img src="file:///C:/Users/Juan/Downloads/logo_colegio_negro%20(1).png" alt="">
         <button
             class="btn_create inline-block"
             on:click={(e) => {
@@ -80,9 +80,9 @@
     </Modal>
 
     <main
-        class="bg-background px-1 mx-4 md:py-9 md:mx-12 lg:mx-20 md:grid grid-cols-2 md:gap-x-10 lg:gap-x-24 xl:gap-32 items-center"
+        class="bg-background px-1 mx-4 md:py-9 md:mx-12 lg:mx-20 justify-between md:grid grid-flow-col md:gap-x-10 lg:gap-x-24 xl:gap-32 items-center"
     >
-        <div>
+        <div class="md:min-w-[600px]">
             <h1 class="md:text-5xl text-color1">
                 Colegio
                 <br />
@@ -134,33 +134,33 @@
             </div>
 
 
-            <div class="flex justify-between  mt-4 md:mt-16 text-color1">
+            <div class="flex justify-between  mt-4 md:mt-16 md:gap-10  text-color1">
 
                 <div class="flex divide-x divide-dark ">
-                    <p class="pr-4 col-span-2 leading-5">
-                        Años de
+                    <span class="pr-3 text-4xl">33</span>
+                    <p class="pl-3 col-span-2 leading-5 font-semibold">
+                        AÑOS DE
                         <br>
-                        formación
+                        FORMACIÓN
                     </p>
-                    <span class="pl-4 text-4xl">33</span>
                 </div>
 
                 <div class="flex divide-x divide-dark ">
-                    <p class="pr-4 col-span-2 leading-5">
-                        Promociones 
+                    <span class="pr-3 text-4xl">32</span>
+                    <p class="pl-3 col-span-2 leading-5 font-semibold">
+                        PROMOCIONES 
                         <br>
-                        graduadas
+                        GRADUADAS
                     </p>
-                    <span class="pl-4 text-4xl">32</span>
                 </div>
 
                 <div class="flex divide-x divide-dark ">
-                    <p class="pr-4 col-span-2 leading-5">
-                        Estudiantes
+                    <span class="pr-3 text-4xl">400</span>
+                    <p class="pl-3 col-span-2 leading-5 font-semibold">
+                        ESTUDIANTES
                         <br>
-                        activos
+                        ACTIVOS
                     </p>
-                    <span class="pl-4 text-4xl">400</span>
                 </div>
             </div>
 
@@ -168,9 +168,10 @@
 
         </div>
 
-        <div class="pl-5 ">
+        <div class="pl-5 relative pr-2 max-w-[500px]">
+            <img class="absolute w-full" src="https://cdn.discordapp.com/attachments/1238903237218930802/1244452251028688906/Iconos.png?ex=6655d2b9&is=66548139&hm=13ffaaa80051f10b14f4ac464ba1edc1a2b82a9546f069c85de0dfde2da6309a&" alt="" >
             <img    
-                class="rounded-full aspect-square border-4 object-cover border-color1"
+                class="rounded-full aspect-square border-4 object-cover border-color1   "
                 src="https://notifalcon.com/wp-content/uploads/2023/11/WhatsApp-Image-2023-11-08-at-10.21.36-AM.jpeg"
                 alt=""
             />

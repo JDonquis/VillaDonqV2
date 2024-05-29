@@ -5,27 +5,25 @@
     import debounce from "lodash/debounce";
     import { createEventDispatcher } from "svelte";
 
-    $: console.log($page.url);
-    // $: console.log($page)
     const dispatch = createEventDispatcher();
 
     export let filtersOptions = [];
     export let selectedRow;
     export let serverSideData = {};
     export let pagination = true;
-    $: console.log(filtersOptions);
-    $: console.log(serverSideData.filters);
 
     let filterClientData = {
         ...serverSideData.filters,
     };
     // $: $form, handleFilters()
 
-    const handleFilters = debounce((event) => {
-        console.log("activando");
+    const handleFilters = () => {
+        router.get(`${$page.url}`, filterClientData);
+    }
+
+    const handleSearch = debounce((event) => {
         router.get(`${$page.url}`, filterClientData);
     }, 300);
-    $: console.log(selectedRow);
 </script>
 
 <section class="w-full">
@@ -87,7 +85,7 @@
                 placeholder="Search"
                 bind:value={filterClientData.search}
                 on:input={() => {
-                    handleFilters();
+                    handleSearch();
                 }}
                 class="block w-full py-1.5 pr-5 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
             />
