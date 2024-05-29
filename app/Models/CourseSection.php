@@ -12,7 +12,9 @@ class CourseSection extends Model
     use HasFactory;
 
     protected $table = 'course_sections';  
-  
+    
+    public $timestamps = false;
+
     protected $fillable = 
     [
         'course_id',

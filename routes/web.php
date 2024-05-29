@@ -28,11 +28,11 @@ Route::middleware(['auth'])->group(function ()
     Route::get('/dashboard', [AppController::class, 'dashboard'])->name('dashboard');
     
     Route::get('/dashboard/matricula', [StudentController::class, 'index']);    
-    Route::get('/dashboard/matricula/estudiantes', [StudentController::class, 'getStudents']);
     Route::post('/dashboard/matricula', [StudentController::class, 'store']);    
+    Route::put('/dashboard/matricula/{id}', [StudentController::class, 'update']);    
 
     Route::post('/dashboard/secciones', [SectionController::class, 'store']);    
-    Route::delete('/dashboard/secciones/{id}', [SectionController::class, 'destroy']);    
+    Route::delete('/dashboard/secciones/{course_id}/{section_id}', [SectionController::class, 'destroy']);    
 
     Route::get('/dashboard/pagos', [PaymentController::class, 'index']);    
     

@@ -1,1 +1,5 @@
-<h1>Colegio</h1>
+<script>
+    import Alert from "../../components/Alert.svelte";
+
+</script>
+

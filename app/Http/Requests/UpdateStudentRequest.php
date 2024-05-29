@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateStudentRequest extends FormRequest
+class UpdateStudentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,15 +20,15 @@ class CreateStudentRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
      */
     public function rules(): array
-    {   
-
+    {
+        $id = request()->route('id');
         return [
 
             'student_name' => ['required'],
             'student_last_name' => ['required'],
             'student_date_birth' => ['required'],
             'student_email' => ['sometimes'],
-            'student_ci' => ['required','unique:students,ci'],
+            'student_ci' => ['required','unique:students,ci,'.$id],
             'student_phone_number' => ['sometimes'],
             'student_sex' => ['sometimes'],
             'student_previous_school' => ['sometimes'],

@@ -32,6 +32,7 @@
                 required={required}
                 max={max}
                 min={min}
+                on:input
             />
         {/if}
         {#if error}

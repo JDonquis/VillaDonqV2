@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Course;
+use App\Models\Section;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Student extends Model
 {
@@ -11,7 +13,8 @@ class Student extends Model
 
     protected $fillable = [
         'representative_id',
-        'course_section_id',
+        'course_id',
+        'section_id',
         'name',
         'last_name',
         'date_birth',
@@ -21,6 +24,7 @@ class Student extends Model
         'sex',
         'previous_school',
         'photo',
+        'search',
     ];
 
     public $timestamps = false;
@@ -30,9 +34,14 @@ class Student extends Model
         return $this->belongsTo(Representative::class);
     }
 
-    public function course_section()
+    public function course()
     {
-        return $this->belongsTo(CourseSection::class);
+        return $this->belongsTo(Course::class);
+    }
+    
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
     }
 
     public static function saveDocs($document, $current = false, $documentName)

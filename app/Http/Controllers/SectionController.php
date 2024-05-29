@@ -2,86 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Section;
+use App\Models\Student;
 use Illuminate\Http\Request;
+use App\Models\CourseSection;
 use App\Services\StudentService;
 use Illuminate\Support\Facades\DB;
 
 class SectionController extends Controller
 {
 
-    public function __construct() 
-    {
-        $this->studentService = new StudentService;
-    }
-
-    public function index()
-    {
-        //
-    }
-
-    
-
-    /**
+     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {   
-        $currentlastSectionName_letter = Section::select('name')->orderBy('id','desc')->first()->name;
-        $nextLetter = chr(ord($currentlastSectionName_letter) + 1);
-        
-        $sectionCreated = Section::create(['name' => $nextLetter]);
+        $nextSectionId = $request->section_id + 1;
 
-        DB::table('course_sections')->insert(['course_id' => $request->course_id, 'section_id' => $sectionCreated->id]);
+        CourseSection::create(['course_id' => $request->course_id, 'section_id' => $nextSectionId])->save(); 
 
-        return redirect('/dashboard/matricula');
-
+        return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$nextSectionId);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+    public function destroy($course_id, $section_id)
+    {      
+        $previousSectionId = $section_id - 1;
+        Student::where('course_id',$course_id)->where('section_id',$section_id)->update(['section_id' => $previousSectionId]);
+              
+        CourseSection::where('course_id',$course_id)->where('section_id',$section_id)->delete(); 
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {   
-        
-        $sections = Section::orderBy('id', 'desc')->limit(2)->get();
-
-        
-
-        $currentlastSectionName_letter = Section::select('name')->orderBy('id','desc')->first()->name;
-        
-        $previousLetter = chr(ord($currentlastSectionName_letter) - 1);
-
-        Section::where('name',$previousLetter)->first();
-
-        DB::table('course_sections')->where('section_id',$id)->delete();
-        Section::delete($id);
-
-        return redirect('/dashboard/matricula');
+        return redirect('/dashboard/matricula?course_id='.$course_id.'&section_id='.$previousSectionId);
 
     }
 }

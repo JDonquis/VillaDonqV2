@@ -32,7 +32,7 @@
     <div class="mt-6 md:flex md:items-center md:justify-between">
         <div class="flex gap-2 md:gap-7">
             <div
-                class="inline-flex overflow-hidden bg-white border border-dark border-opacity-50 divide-x rounded-lg rtl:flex-row-reverse"
+                class="inline-flex overflow-hidden bg-gray-200 border border-dark border-opacity-30 divide-x divide-gray-300 rounded-lg rtl:flex-row-reverse"
             >
                 <!-- <button
                     on:click={(e) => {
@@ -46,15 +46,15 @@
                     Todos
                 </button> -->
                 {#each Object.entries(filtersOptions) as [filterKey, filterOption]}
-                    {#each filterOption as filter}
+                    {#each filterOption as filter ,i}
                         <button
                             on:click={(e) => {
                                 filterClientData[filterKey] = filter.id;
                                 handleFilters();
                             }}
                             class="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-100"
-                            class:bg-gray-200={filterClientData[filterKey] ==
-                                filter.id}
+                            class:bg-gray-50={serverSideData.filters[filterKey] ==
+                                filter.id ||( i == 0 && !filterClientData[filterKey])}
                         >
                             {filter.name}
                         </button>
