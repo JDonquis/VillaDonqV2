@@ -43,26 +43,26 @@
     };
     
     let formCreate = useForm({
-        student_name: "Fabian Vidal",
-        student_last_name: "Villasmil Tovar",
-        student_date_birth: "1999-06-25",
-        student_email: "juanvillans16@gmail.com",
-        student_ci: "27253194",
-        student_phone_number: "04124393123",
+        student_name: "",
+        student_last_name: "",
+        student_date_birth: "",
+        student_email: "",
+        student_ci: "",
+        student_phone_number: "",
         course_id: 1,
         section_id: "",
-        student_sex: "Masculino",
-        student_previous_school: "Libertadores de america jeje",
-        state: "Falcón",
-        city: "Coro",
-        address: "Conjunto residencial Juan crisóstomo Falcón",
-        rep_name: "Mildred",
-        rep_last_name: "Tovar",
-        rep_ci: "385560",
-        rep_phone_number: "048271281",
-        rep_email: "msocratis@gmail.com",
-        rep_profession: "Economista",
-        rep_workplace: "Fundefal",
+        student_sex: "",
+        student_previous_school: "",
+        state: "",
+        city: "",
+        address: "",
+        rep_name: "",
+        rep_last_name: "",
+        rep_ci: "",
+        rep_phone_number: "",
+        rep_email: "",
+        rep_profession: "",
+        rep_workplace: "",
         second_rep_name: "",
         second_rep_last_name: "",
         second_rep_ci: "",
@@ -194,14 +194,14 @@
             <Input
                 type="text"
                 required={true}
-                label={"Nombre"}
+                label={"Nombres"}
                 bind:value={$formCreate.student_name}
                 error={$formCreate.errors?.student_name}
             />
             <Input
                 type="text"
                 required={true}
-                label={"Apellido"}
+                label={"Apellidos"}
                 bind:value={$formCreate.student_last_name}
                 error={$formCreate.errors?.student_last_name}
             />
@@ -277,7 +277,7 @@
         >
             <legend
                 class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
-                >DIRECCIÓNES</legend
+                >DIRECCION DE HABITACION</legend
             >
             <Input
                 type="text"
@@ -369,7 +369,7 @@
         >
             <legend
                 class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
-                >2DO REPRESENTANTE</legend
+                >SEGUNDO REPRESENTANTE</legend
             >
             <Input
                 type="text"

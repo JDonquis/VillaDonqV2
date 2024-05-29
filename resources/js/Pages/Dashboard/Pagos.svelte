@@ -294,7 +294,7 @@
         }}>Registrar pago</button
     >
 </div>
-<!--  
+
 <Table
     {selectedRow}
     on:fillFormToEdit={fillFormToEdit}
