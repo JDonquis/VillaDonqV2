@@ -4,9 +4,10 @@
     import Input from "../../components/Input.svelte";
     import Alert from "../../components/Alert.svelte";
     import { displayAlert } from "../../stores/alertStore";
-    import { useForm, router,page  } from "@inertiajs/svelte";
+    import { useForm, router, page } from "@inertiajs/svelte";
+    import { claim_svg_element } from "svelte/internal";
     export let data = [];
-    
+
     const emptyDataForm = {
         student_id: "",
         student_name: "",
@@ -38,9 +39,10 @@
         second_rep_workplace: "",
         rep_id: "",
     };
-    
-    $: sectionsOfThisYear =  data.course_sections?.data?.[`course_${data.filters.course_id}`]
-    $: lastSectionId = sectionsOfThisYear?.[sectionsOfThisYear?.length-1].id
+
+    $: sectionsOfThisYear =
+        data.course_sections?.data?.[`course_${data.filters.course_id}`];
+    $: lastSectionId = sectionsOfThisYear?.[sectionsOfThisYear?.length - 1].id;
     let formCreate = useForm({
         student_name: "Nombre de estudiante",
         student_last_name: "Villasmil Tovar",
@@ -79,11 +81,11 @@
     $: showModalFormEdit = false;
     let selectedRow = { status: false, id: 0 };
 
-    document.addEventListener("keydown", ({key}) => {
-            if (key === "Escape")  {
-                selectedRow = { status: false, id: 0 };
-            }
-    })
+    document.addEventListener("keydown", ({ key }) => {
+        if (key === "Escape") {
+            selectedRow = { status: false, id: 0 };
+        }
+    });
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -125,13 +127,11 @@
             },
         });
     }
-    
+
     function handleDelete(id) {
         $formCreate.delete(`/dashboard/matricula/${id}`, {
             onBefore: () =>
-                confirm(
-                    `¿Está seguro de eliminar a este estudiante?`,
-                ),
+                confirm(`¿Está seguro de eliminar a este estudiante?`),
         });
     }
 
@@ -141,32 +141,54 @@
     }
 
     function createSection() {
-       
-        router.post("/dashboard/secciones",{course_id: data.filters.course_id, section_id: lastSectionId}, {
-            onError: (errors) => {
-                if (errors.data) {
-                    displayAlert({ type: "error", message: errors.data });
-                }
+        router.post(
+            "/dashboard/secciones",
+            { course_id: data.filters.course_id, section_id: lastSectionId },
+            {
+                onError: (errors) => {
+                    if (errors.data) {
+                        displayAlert({ type: "error", message: errors.data });
+                    }
+                },
+                onSuccess: (mensaje) => {
+                    displayAlert({
+                        type: "success",
+                        message: "Ok todo salió bien",
+                    });
+                },
             },
-            onSuccess: (mensaje) => {
-                displayAlert({
-                    type: "success",
-                    message: "Ok todo salió bien",
-                });
-            },
-        });
+        );
     }
 
     function deleteSection() {
-        router.delete(`/dashboard/secciones/${data.filters.course_id}/${lastSectionId}`, {
-            onBefore: () =>
-                confirm(
-                    `¿Está seguro de eliminar esta sección?`,
-                ),
-        });
+        router.delete(
+            `/dashboard/secciones/${data.filters.course_id}/${lastSectionId}`,
+            {
+                onBefore: () =>
+                    confirm(`¿Está seguro de eliminar esta sección?`),
+            },
+        );
     }
-    function changeYear(course_id){
-        router.get($page.url,{course_id, section_id: 1})
+    function changeYear(course_id) {
+        router.get($page.url, { course_id, section_id: 1 });
+    }
+
+    function search_rep1(ci) {
+        router.get(
+            `/dashboard/matricula/search-representative/${ci}`, {},
+            {
+                only: ['representative'],
+                onProgress: (progress) => {},
+                onSuccess: (page) => { console.log(page, data)},
+                onError: (errors) => {},
+            },
+        );
+    }
+
+    function search_second(ci) {
+        router.get(`/dashboard/matricula/search-second_representative/`, {
+            ci,
+        });
     }
 </script>
 
@@ -256,9 +278,7 @@
                 error={$formCreate.errors?.section_id}
             >
                 {#each data.course_sections?.data?.[`course_${$formCreate.course_id}`] as section}
-                    <option value={section.id}
-                        >{section.name}</option
-                    >
+                    <option value={section.id}>{section.name}</option>
                 {/each}
             </Input>
 
@@ -306,6 +326,14 @@
                 >REPRESENTANTE LEGAL</legend
             >
             <Input
+                type="number"
+                required={true}
+                label={"Cédula"}
+                bind:value={$formCreate.rep_ci}
+                error={$formCreate.errors?.rep_ci}
+                on:input={(e) => search_rep1(e.target.value)}
+            />
+            <Input
                 type="text"
                 required={true}
                 label={"Nombres"}
@@ -319,13 +347,7 @@
                 bind:value={$formCreate.rep_last_name}
                 error={$formCreate.errors?.rep_last_name}
             />
-            <Input
-                type="number"
-                required={true}
-                label={"Cédula"}
-                bind:value={$formCreate.rep_ci}
-                error={$formCreate.errors?.rep_ci}
-            />
+
             <Input
                 type="date"
                 label={"Fecha de nacimiento"}
@@ -370,6 +392,13 @@
                 >2DO REPRESENTANTE</legend
             >
             <Input
+                type="number"
+                label={"Cédula"}
+                bind:value={$formCreate.second_rep_ci}
+                error={$formCreate.errors?.second_rep_ci}
+                on:input={() => console.log("2")}
+            />
+            <Input
                 type="text"
                 label={"Nombres"}
                 bind:value={$formCreate.second_rep_name}
@@ -393,12 +422,7 @@
                 bind:value={$formCreate.second_rep_email}
                 error={$formCreate.errors?.second_rep_email}
             />
-            <Input
-                type="number"
-                label={"Cédula"}
-                bind:value={$formCreate.second_rep_ci}
-                error={$formCreate.errors?.second_rep_ci}
-            />
+
             <Input
                 type="tel"
                 label={"Teléfono"}
@@ -509,9 +533,7 @@
                 error={$formEdit.errors?.section_id}
             >
                 {#each data.course_sections?.data?.[`course_${$formEdit.course_id}`] as section}
-                    <option value={section.id}
-                        >{section.name}</option
-                    >
+                    <option value={section.id}>{section.name}</option>
                 {/each}
             </Input>
 
@@ -686,7 +708,11 @@
 <div class="flex justify-between items-center">
     <div class="w-44">
         <label for="filterYear " class="text-lg"> Año escolar </label>
-        <select id="filterYear" class="w-full p-2 rounded-xl" on:change={(e) => changeYear(e.target.value)}>
+        <select
+            id="filterYear"
+            class="w-full p-2 rounded-xl"
+            on:change={(e) => changeYear(e.target.value)}
+        >
             {#each data.courses as course}
                 <option class="bg-gray-50" value={course.id}
                     >{course.name}</option
@@ -697,10 +723,9 @@
     <button
         class="btn_create inline-block"
         on:click={(e) => {
-
             e.preventDefault();
-            $formCreate.section_id = +data.filters.section_id
-            $formCreate.course_id = +data.filters.course_id
+            $formCreate.section_id = +data.filters.section_id;
+            $formCreate.course_id = +data.filters.course_id;
             showModal = true;
         }}>Inscribir</button
     >
@@ -711,26 +736,29 @@
     on:clickDeleteIcon={() => {
         handleDelete(selectedRow.id);
     }}
-    serverSideData={{filters: data.filters}}
-    filtersOptions={{section_id : sectionsOfThisYear}}
+    serverSideData={{ filters: data.filters }}
+    filtersOptions={{ section_id: sectionsOfThisYear }}
     pagination={false}
 >
     <div slot="filterBox">
         {#if lastSectionId < 6}
-            <button 
+            <button
                 on:click={() => createSection()}
-                class="rounded border border-color3 text-color3 h-full cursor-pointer hover:bg-color3 hover:text-gray-100 px-4">
+                class="rounded border border-color3 text-color3 h-full cursor-pointer hover:bg-color3 hover:text-gray-100 px-4"
+            >
                 Crear sección
             </button>
         {/if}
 
-        {#if  sectionsOfThisYear.length !== 1 && lastSectionId == data.filters.section_id}
-            <button 
-            on:click={() => deleteSection(data.filters.section_id)}
-            class="ml-3 p-2 px-3 bg-gray-100" title="Elimar Sección">
-                <iconify-icon class="text-xl relative top-1" icon="ph:trash"></iconify-icon>
+        {#if sectionsOfThisYear.length !== 1 && lastSectionId == data.filters.section_id}
+            <button
+                on:click={() => deleteSection(data.filters.section_id)}
+                class="ml-3 p-2 px-3 bg-gray-100"
+                title="Elimar Sección"
+            >
+                <iconify-icon class="text-xl relative top-1" icon="ph:trash"
+                ></iconify-icon>
             </button>
-        
         {/if}
     </div>
     <thead slot="thead" class="sticky top-0 z-50">
