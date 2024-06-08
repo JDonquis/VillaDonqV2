@@ -3,13 +3,10 @@
     import Modal from "../../components/Modal.svelte";
     import Input from "../../components/Input.svelte";
     import Alert from "../../components/Alert.svelte";
-
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, router,page  } from "@inertiajs/svelte";
-    import { claim_svg_element, onMount } from "svelte/internal";
     export let data = [];
-
-
+    
     const emptyDataForm = {
         student_id: "",
         student_name: "",

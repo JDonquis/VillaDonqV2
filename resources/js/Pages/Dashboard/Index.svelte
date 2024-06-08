@@ -224,9 +224,10 @@
                 alt=""
             />
 
+            
             <img
                 class="rounded-full aspect-square border-4 object-cover border-color1 bg-blend-overlay hover:bg-blend-darken"
-                src="https://notifalcon.com/wp-content/uploads/2023/11/WhatsApp-Image-2023-11-08-at-10.21.36-AM.jpeg"
+                src="http://127.0.0.1:8000/storage/institution/institution.jpeg"
                 alt=""
             />
 
