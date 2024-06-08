@@ -98,4 +98,18 @@ class StudentController extends Controller
             return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id)->withErrors(['message' => $e->getMessage()]);
         }
     }
+
+    public function searchRepresentative($ci)
+    {
+        $info = $this->studentService->searchRepresentative($ci);
+        
+        return response()->json(['data' => $info]);
+    }
+
+    public function searchSecondRepresentative($ci)
+    {
+        $info = $this->studentService->searchSecondRepresentative($ci);
+        
+        return response()->json(['data' => $info]);
+    }
 }

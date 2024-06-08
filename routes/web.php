@@ -31,6 +31,9 @@ Route::middleware(['auth'])->group(function ()
     Route::post('/dashboard/matricula', [StudentController::class, 'store']);    
     Route::put('/dashboard/matricula/{id}', [StudentController::class, 'update']);    
 
+    Route::get('/dashboard/matricula/search-representative/{ci}', [StudentController::class, 'searchRepresentative']);
+    Route::get('/dashboard/matricula/search-second_representative/{ci}', [StudentController::class, 'searchSecondRepresentative']);
+
     Route::post('/dashboard/secciones', [SectionController::class, 'store']);    
     Route::delete('/dashboard/secciones/{course_id}/{section_id}', [SectionController::class, 'destroy']);    
 

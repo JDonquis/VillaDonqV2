@@ -228,6 +228,63 @@ class StudentService
         return $newStudent;
     }
 
+    public function searchRepresentative($ci)
+    {
+        $user = User::where('ci',$ci)->first();
+
+        if(!isset($user->id))
+            return response()->json(['data' => null]);
+        
+        $representative = Representative::where('user_id',$user->id)->first();
+
+        if(!isset($representative->id))
+            return response()->json(['data' => null]);
+
+        $data = 
+        [
+
+            'rep_id' => $representative->id,
+            'rep_name' => $user->name,
+            'rep_last_name' => $user->last_name,
+            'rep_ci' => $user->ci,
+            'rep_phone_number' => $user->phone_number,
+            'rep_email' => $user->email ?? null,
+            'rep_profession' => $representative->profession ?? null,
+            'rep_workplace' => $representative->workplace ?? null,
+
+        ];
+
+        return response()->json(['data' => $data]);
+    }
+
+    public function searchSecondRepresentative($ci)
+    {
+        $user = User::where('ci',$ci)->first();
+
+        if(!isset($user->id))
+            return response()->json(['data' => null]);
+        
+        $representative = Representative::where('user_id',$user->id)->first();
+
+        if(!isset($representative->id))
+            return response()->json(['data' => null]);
+
+        $data = 
+        [
+
+            'second_rep_name' => $representative->second_representative_name,
+            'second_rep_last_name' => $representative->second_representative_last_name,
+            'second_rep_ci' => $representative->second_representative_ci,
+            'second_rep_phone_number' => $representative->second_representative_phone_number,
+            'second_rep_email' => $representative->second_representative_email ?? null,
+            'second_rep_profession' => $representative->second_representative_profession ?? null,
+            'second_rep_workplace' => $representative->second_representative_workplace ?? null,
+
+        ];
+
+        return response()->json(['data' => $data]);
+    }
+
     private function generateSearch($student)
     {
 
@@ -247,6 +304,7 @@ class StudentService
 
         return $search;
     }
+    
 
 
 
