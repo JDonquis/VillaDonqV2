@@ -103,13 +103,18 @@ class StudentController extends Controller
     {
         $info = $this->studentService->searchRepresentative($ci);
         
-        return response()->json(['data' => $info]);
+        return redirect()->back()->with([
+            'representative' => $info,
+        ]);
     }
 
     public function searchSecondRepresentative($ci)
     {
         $info = $this->studentService->searchSecondRepresentative($ci);
         
-        return response()->json(['data' => $info]);
+        return redirect()->back()->with([
+            'second_representative' => $info,
+        ]);
+
     }
 }

@@ -233,12 +233,12 @@ class StudentService
         $user = User::where('ci',$ci)->first();
 
         if(!isset($user->id))
-            return response()->json(['data' => null]);
+            return redirect('/dashboard/matricula')->withErrors(['data' => null]);
         
         $representative = Representative::where('user_id',$user->id)->first();
 
         if(!isset($representative->id))
-            return response()->json(['data' => null]);
+            return redirect('/dashboard/matricula')->withErrors(['data' => null]);
 
         $data = 
         [
@@ -262,12 +262,12 @@ class StudentService
         $user = User::where('ci',$ci)->first();
 
         if(!isset($user->id))
-            return response()->json(['data' => null]);
+            return redirect('/dashboard/matricula')->withErrors(['data' => null]);
         
         $representative = Representative::where('user_id',$user->id)->first();
 
         if(!isset($representative->id))
-            return response()->json(['data' => null]);
+            return redirect('/dashboard/matricula')->withErrors(['data' => null]);
 
         $data = 
         [
