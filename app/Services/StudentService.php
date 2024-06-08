@@ -233,12 +233,12 @@ class StudentService
         $user = User::where('ci',$ci)->where('type_user_id',2)->first();
 
         if(!isset($user->id))
-            return null;
+            return redirect('/dashboard/matricula')->withErrors(['data' => null]);
         
         $representative = Representative::where('user_id',$user->id)->first();
 
         if(!isset($representative->id))
-            return null;
+            return redirect('/dashboard/matricula')->withErrors(['data' => null]);
 
         $data = 
         [
@@ -254,35 +254,35 @@ class StudentService
 
         ];
 
-        return $data;
+        return response()->json(['data' => $data]);
     }
 
     public function searchSecondRepresentative($ci)
     {
-        $user = User::where('ci',$ci)->where('type_user_id',2)->first();
+        $user = User::where('ci',$ci)->where('type_user_id')->first();
 
         if(!isset($user->id))
-            return null;
+            return response()->json(['data' => null]);
         
-        $representative = Representative::where('user_id',$user->id)->first();
+            $representative = Representative::where('user_id',$user->id)->first();
 
         if(!isset($representative->id))
-            return null;
-
+            return response()->json(['data' => null]);
+        
         $data = 
         [
 
-            'second_rep_name' => $representative->second_representative_name,
-            'second_rep_last_name' => $representative->second_representative_last_name,
-            'second_rep_ci' => $representative->second_representative_ci,
-            'second_rep_phone_number' => $representative->second_representative_phone_number,
+            'second_rep_name' => $representative->second_representative_name ?? null,
+            'second_rep_last_name' => $representative->second_representative_last_name ?? null,
+            'second_rep_ci' => $representative->second_representative_ci ?? null,
+            'second_rep_phone_number' => $representative->second_representative_phone_number ?? null,
             'second_rep_email' => $representative->second_representative_email ?? null,
             'second_rep_profession' => $representative->second_representative_profession ?? null,
             'second_rep_workplace' => $representative->second_representative_workplace ?? null,
 
         ];
 
-        return $data;
+        return response()->json(['data' => $data]);
     }
 
     private function generateSearch($student)
