@@ -99,22 +99,19 @@ class StudentController extends Controller
         }
     }
 
-    public function searchRepresentative($ci)
-    {
-        $info = $this->studentService->searchRepresentative($ci);
+    public function searchRepresentative(Request $request)
+    {   
+ 
+        $info = $this->studentService->searchRepresentative($request->ci);
         
-        return redirect()->back()->with([
-            'representative' => $info,
-        ]);
+        return redirect('/dashboard/matricula')->with([ 'representative' => $info, ]);
     }
 
-    public function searchSecondRepresentative($ci)
+    public function searchSecondRepresentative(Request $request)
     {
-        $info = $this->studentService->searchSecondRepresentative($ci);
+        $info = $this->studentService->searchSecondRepresentative($request->ci);
         
-        return redirect()->back()->with([
-            'second_representative' => $info,
-        ]);
+        return redirect('/dashboard/matricula')->with([ 'second_representative' => $info, ]);
 
     }
 }

@@ -230,15 +230,15 @@ class StudentService
 
     public function searchRepresentative($ci)
     {
-        $user = User::where('ci',$ci)->first();
+        $user = User::where('ci',$ci)->where('type_user_id',2)->first();
 
         if(!isset($user->id))
-            return redirect('/dashboard/matricula')->withErrors(['data' => null]);
+            return null;
         
         $representative = Representative::where('user_id',$user->id)->first();
 
         if(!isset($representative->id))
-            return redirect('/dashboard/matricula')->withErrors(['data' => null]);
+            return null;
 
         $data = 
         [
@@ -254,20 +254,20 @@ class StudentService
 
         ];
 
-        return response()->json(['data' => $data]);
+        return $data;
     }
 
     public function searchSecondRepresentative($ci)
     {
-        $user = User::where('ci',$ci)->first();
+        $user = User::where('ci',$ci)->where('type_user_id',2)->first();
 
         if(!isset($user->id))
-            return redirect('/dashboard/matricula')->withErrors(['data' => null]);
+            return null;
         
         $representative = Representative::where('user_id',$user->id)->first();
 
         if(!isset($representative->id))
-            return redirect('/dashboard/matricula')->withErrors(['data' => null]);
+            return null;
 
         $data = 
         [
@@ -282,7 +282,7 @@ class StudentService
 
         ];
 
-        return response()->json(['data' => $data]);
+        return $data;
     }
 
     private function generateSearch($student)
