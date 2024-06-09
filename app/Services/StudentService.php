@@ -254,7 +254,7 @@ class StudentService
 
         ];
 
-        return response()->json(['data' => $data]);
+        return $data;
     }
 
     public function searchSecondRepresentative($ci)
@@ -282,7 +282,7 @@ class StudentService
 
         ];
 
-        return response()->json(['data' => $data]);
+        return $data;
     }
 
     private function generateSearch($student)
