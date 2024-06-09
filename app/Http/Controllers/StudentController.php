@@ -99,17 +99,20 @@ class StudentController extends Controller
         }
     }
 
+    // public function 
+
     public function searchRepresentative($ci)
     {
         $info = $this->studentService->searchRepresentative($ci);
         
-        return response()->json(['data' => $info]);
+        return response()->json($info);
     }
 
     public function searchSecondRepresentative($ci)
     {
         $info = $this->studentService->searchSecondRepresentative($ci);
         
-        return response()->json(['data' => $info]);
+        return response()->json($info);
     }
+
 }
