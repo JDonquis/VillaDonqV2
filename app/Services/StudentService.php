@@ -34,6 +34,7 @@ class StudentService
         $sectionId = $request->input('section_id') ?? 1;
 
         $students = Student::query()
+        ->where('status','!=',0)
         ->where('course_id',$courseId)
         ->where('section_id',$sectionId)
         ->when($request->input('search'), function ($query, $search) 
@@ -285,11 +286,11 @@ class StudentService
         return $data;
     }
 
-    public function destroy($studentId)
+    public function delete($studentId)
     {
         $student = Student::find($studentId);
         $student->update(['status' => 0]);
-        
+
         return 0;
     }
 
