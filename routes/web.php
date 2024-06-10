@@ -30,6 +30,7 @@ Route::middleware(['auth'])->group(function ()
     Route::get('/dashboard/matricula', [StudentController::class, 'index']);    
     Route::post('/dashboard/matricula', [StudentController::class, 'store']);    
     Route::put('/dashboard/matricula/{id}', [StudentController::class, 'update']);    
+    Route::delete('/dashboard/matricula/{studentId}', [StudentController::class, 'destroy']);    
 
     Route::get('/dashboard/matricula/search-representative/{ci}', [StudentController::class, 'searchRepresentative']);
     Route::get('/dashboard/matricula/search-second_representative/{ci}', [StudentController::class, 'searchSecondRepresentative']);

@@ -99,7 +99,12 @@ class StudentController extends Controller
         }
     }
 
-    // public function 
+    public function destroy(Request $request, $studentId)
+    {
+        $this->studentService->delete($studentId);
+
+        return redirect('/dashboard/matricula');
+    }
 
     public function searchRepresentative($ci)
     {

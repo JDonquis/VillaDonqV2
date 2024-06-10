@@ -285,6 +285,14 @@ class StudentService
         return $data;
     }
 
+    public function destroy($studentId)
+    {
+        $student = Student::find($studentId);
+        $student->update(['status' => 0]);
+        
+        return 0;
+    }
+
     private function generateSearch($student)
     {
 

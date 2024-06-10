@@ -27,6 +27,7 @@ class CreateStudentsTable extends Migration
             $table->string("sex",30)->nullable();
             $table->string("previous_school",200)->nullable();
             $table->string("photo",100)->default('guest.webp');
+            $table->integer("status")->default(1);
             $table->string("search")->nullable();
             
         });
