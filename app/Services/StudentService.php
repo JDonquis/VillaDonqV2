@@ -34,6 +34,7 @@ class StudentService
         $sectionId = $request->input('section_id') ?? 1;
 
         $students = Student::query()
+        ->where('status','!=',0)
         ->where('course_id',$courseId)
         ->where('section_id',$sectionId)
         ->when($request->input('search'), function ($query, $search) 
@@ -228,6 +229,71 @@ class StudentService
         return $newStudent;
     }
 
+    public function searchRepresentative($ci)
+    {
+        $user = User::where('ci',$ci)->where('type_user_id',2)->first();
+
+        if(!isset($user->id))
+            return redirect('/dashboard/matricula')->withErrors(['data' => null]);
+        
+        $representative = Representative::where('user_id',$user->id)->first();
+
+        if(!isset($representative->id))
+            return redirect('/dashboard/matricula')->withErrors(['data' => null]);
+
+        $data = 
+        [
+
+            'rep_id' => $representative->id,
+            'rep_name' => $user->name,
+            'rep_last_name' => $user->last_name,
+            'rep_ci' => $user->ci,
+            'rep_phone_number' => $user->phone_number,
+            'rep_email' => $user->email ?? null,
+            'rep_profession' => $representative->profession ?? null,
+            'rep_workplace' => $representative->workplace ?? null,
+
+        ];
+
+        return $data;
+    }
+
+    public function searchSecondRepresentative($ci)
+    {
+        $user = User::where('ci',$ci)->where('type_user_id')->first();
+
+        if(!isset($user->id))
+            return response()->json(['data' => null]);
+        
+            $representative = Representative::where('user_id',$user->id)->first();
+
+        if(!isset($representative->id))
+            return response()->json(['data' => null]);
+        
+        $data = 
+        [
+
+            'second_rep_name' => $representative->second_representative_name ?? null,
+            'second_rep_last_name' => $representative->second_representative_last_name ?? null,
+            'second_rep_ci' => $representative->second_representative_ci ?? null,
+            'second_rep_phone_number' => $representative->second_representative_phone_number ?? null,
+            'second_rep_email' => $representative->second_representative_email ?? null,
+            'second_rep_profession' => $representative->second_representative_profession ?? null,
+            'second_rep_workplace' => $representative->second_representative_workplace ?? null,
+
+        ];
+
+        return $data;
+    }
+
+    public function delete($studentId)
+    {
+        $student = Student::find($studentId);
+        $student->update(['status' => 0]);
+
+        return 0;
+    }
+
     private function generateSearch($student)
     {
 
@@ -247,6 +313,7 @@ class StudentService
 
         return $search;
     }
+    
 
 
 
