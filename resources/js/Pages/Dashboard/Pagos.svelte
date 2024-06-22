@@ -3,6 +3,7 @@
     import Modal from "../../components/Modal.svelte";
     import Input from "../../components/Input.svelte";
     import Alert from "../../components/Alert.svelte";
+    import { getMonitor } from "consulta-dolar-venezuela";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm } from "@inertiajs/svelte";
     export let data = [];

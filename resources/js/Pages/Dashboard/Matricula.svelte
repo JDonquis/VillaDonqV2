@@ -9,7 +9,6 @@
     import { claim_svg_element, onMount } from "svelte/internal";
     export let data = [];
 
-    console.log(data);
 
     const emptyDataForm = {
         student_id: "",
@@ -45,7 +44,6 @@
     
     $: sectionsOfThisYear =  data.course_sections?.data?.[`course_${data.filters.course_id}`]
     $: lastSectionId = sectionsOfThisYear?.[sectionsOfThisYear?.length-1].id
-    $: console.log(lastSectionId)
     let formCreate = useForm({
         student_name: "",
         student_last_name: "",
@@ -173,9 +171,6 @@
     function changeYear(course_id){
         router.get($page.url,{course_id, section_id: 1})
     }
-    $: console.log(data.filters.course_id);
-    
-    $: console.log(lastSectionId , data.filters.section_id)
 </script>
 
 <svelte:head>

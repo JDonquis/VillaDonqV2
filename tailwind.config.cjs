@@ -23,6 +23,7 @@ module.exports = {
           ligthGreen: "#54ffaf",
           redLight: "#ff6464",
           background: "#ececec",
+          transparent: "transparent",
         },
         extend: {}
       },
