@@ -27,6 +27,8 @@
 <section class="bg-background">
     <div class="py-5"></div>
 
+    <h2>Configuración del perfil</h2>
+
     <form
         class="bg-background px-1 mx-4 md:py-9 md:grid justify-between grid-flow-col md:gap-x-10 lg:gap-x-24 items-center"
     >
@@ -246,6 +248,38 @@
             >
         {/if}
     </form>
+
+    <div class="Configuracion_tarifas">
+        <h2>Configuración de tarifas</h2>
+
+        <div class="#">
+            <label>
+                <input
+                type="number"
+                required={true}
+                class={"z-50 mx-auto p-2 mt-6 md:w-60 bg-color6 text-black border rounded-md"}>  
+            </label>
+
+            <label>
+                <input
+                type="number"
+                required={true}
+                class={"z-50 mx-auto p-2 mt-6 md:w-60 bg-color6 text-black border rounded-md"}>  
+            </label>
+
+            <label>
+                <input
+                type="number"
+                required={true}
+                class={"z-50 mx-auto p-2 mt-6 md:w-60 bg-color6 text-black border rounded-md"}>  
+            </label>   
+        </div>
+    </div>
+
+    <div class="#">
+        <h2>Configuracion de metodos de pago</h2>
+
+    </div>
 
 </section>
 
