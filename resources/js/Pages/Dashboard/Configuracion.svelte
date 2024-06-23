@@ -1,14 +1,15 @@
-<!-- <script>
+<script>
     import { useForm } from "@inertiajs/svelte";
+    import clickOutside from "../../components/ClickOutside";
 
     // import secretariaLogo from '$lib/images/logo_secretaria-circle-main.png';
     // import Input from "../../components/Input.svelte";
-    import Modal from "../../components/Modal.svelte";
+    // import Modal from "../../components/Modal.svelte";
 
     import Alert from "../../components/Alert.svelte";
     import { displayAlert } from "../../stores/alertStore";
     let showModal = false;
-    const data = useForm({
+    const institution = useForm({
         name: "Maestro José Marti",
         active_students: "400",
         promotions: "33",
@@ -16,21 +17,23 @@
         slogan: "Formando mentes brillantes para un mañana prometedor",
         courses: [1, 2, 3],
     });
-    $: console.log(data);
+    $: console.log(institution);
 
     // function resizeInput(event) {
     //     event.target.style.width = event.target.value.length + "ch";
     // }
+
+    let showPaymentOptions = false;
 </script>
 
 <Alert />
 <section class="bg-background">
     <div class="py-5"></div>
 
-    <h2>Configuración del perfil</h2>
+    <h2 class="font-bold text-xl">Configuración del perfil</h2>
 
     <form
-        class="bg-background px-1 mx-4 md:py-9 md:grid justify-between grid-flow-col md:gap-x-10 lg:gap-x-24 items-center"
+        class="bg-background px-1 mx-4 md:py-9 md:pb-12 md:grid justify-between grid-flow-col md:gap-x-10 lg:gap-x-24 items-center relative"
     >
         <div class="md:min-w-[600px] max-w-[690px]">
             <span class="md:text-5xl text-color1 font-bold">
@@ -39,14 +42,14 @@
                 <input
                     class="md:text-5xl bg-transparent"
                     type="text"
-                    bind:value={$data.name}
-                    style={`width:${$data.name.length - 3}ch`}
+                    bind:value={$institution.name}
+                    style={`width:${$institution.name.length - 3}ch`}
                 />
             </span>
             <textarea
                 class="block w-full bg-transparent md:text-xl"
                 type="text"
-                bind:value={$data.slogan}
+                bind:value={$institution.slogan}
             />
 
             <div class="flex justify-between mt-4 md:mt-14 text-color1">
@@ -56,12 +59,12 @@
                     >
                         <input
                             type="checkbox"
-                            bind:group={$data.courses}
+                            bind:group={$institution.courses}
                             value={1}
                             class="hidden"
                         />
 
-                        {#if $data.courses.includes(1)}
+                        {#if $institution.courses.includes(1)}
                             <div
                                 class="bg-color1 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"
                             >
@@ -95,11 +98,11 @@
                     >
                         <input
                             type="checkbox"
-                            bind:group={$data.courses}
+                            bind:group={$institution.courses}
                             value={2}
                             class="hidden"
                         />
-                        {#if $data.courses.includes(2)}
+                        {#if $institution.courses.includes(2)}
                             <div
                                 class="bg-color1 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"
                             >
@@ -136,12 +139,12 @@
                     >
                         <input
                             type="checkbox"
-                            bind:group={$data.courses}
+                            bind:group={$institution.courses}
                             value={3}
                             class="hidden"
                         />
 
-                        {#if $data.courses.includes(3)}
+                        {#if $institution.courses.includes(3)}
                             <div
                                 class="bg-color1 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"
                             >
@@ -179,8 +182,8 @@
                 <div class="flex divide-x divide-dark">
                     <input
                         class="px-1 text-4xl bg-transparent"
-                        bind:value={$data.years}
-                        style={`width:${$data.years.length}ch`}
+                        bind:value={$institution.years}
+                        style={`width:${$institution.years.length}ch`}
                     />
                     <p class="pl-3 col-span-2 leading-5 font-semibold">
                         AÑOS DE
@@ -192,8 +195,8 @@
                 <div class="flex divide-x divide-dark">
                     <input
                         class="px-1 text-4xl bg-transparent"
-                        bind:value={$data.promotions}
-                        style={`width:${$data.promotions.length + 0.5}ch`}
+                        bind:value={$institution.promotions}
+                        style={`width:${$institution.promotions.length + 0.5}ch`}
                     />
                     <p class="pl-3 col-span-2 leading-5 font-semibold">
                         PROMOCIONES
@@ -205,8 +208,8 @@
                 <div class="flex divide-x divide-dark">
                     <input
                         class="px-1 text-4xl bg-transparent"
-                        bind:value={$data.active_students}
-                        style={`width:${$data.active_students.length + 0.5}ch`}
+                        bind:value={$institution.active_students}
+                        style={`width:${$institution.active_students.length + 0.5}ch`}
                     />
                     <p class="pl-3 col-span-2 leading-5 font-semibold">
                         ESTUDIANTES
@@ -226,7 +229,6 @@
                 alt=""
             />
 
-            
             <img
                 class="rounded-full aspect-square border-4 object-cover border-color1 bg-blend-overlay hover:bg-blend-darken"
                 src="http://127.0.0.1:8000/storage/institution/institution.jpeg"
@@ -239,48 +241,188 @@
             ></iconify-icon>
             <input type="file" name="" id="" class="hidden" />
         </label>
-        {#if $data.isDirty}
-            <button class="shadow-xl  fixed flex items-center right-20 px-10 py-4 rounded bottom-10 bg-color1 gap-3 text-color4"
-                >GUARDAR 
-                <iconify-icon icon="material-symbols:save" class="text-3xl"></iconify-icon>
-                
-                </button
-            >
-        {/if}
     </form>
+    {#if $institution.isDirty}
+        <button
+            class="shadow-xl flex items-center justify-center mb-3 ml-auto py-4 rounded w-64 bg-color1 gap-3 text-color4"
+        >
+            <span> GUARDAR PERFIL </span>
+            <iconify-icon icon="material-symbols:save" class="text-3xl"
+            ></iconify-icon>
+        </button>
+    {/if}
 
-    <div class="Configuracion_tarifas">
-        <h2>Configuración de tarifas</h2>
+    <hr class=" border-gray-300" />
 
-        <div class="#">
-            <label>
+    <form class="Configuracion_tarifas my-10 py-3">
+        <h2 class="font-bold text-xl mb-4">Configuración de tarifas</h2>
+
+        <div class="flex gap-4 pl-4">
+            <label class="flex flex-col">
+                <span> Mensualidad ($): </span>
                 <input
-                type="number"
-                required={true}
-                class={"z-50 mx-auto p-2 mt-6 md:w-60 bg-color6 text-black border rounded-md"}>  
+                    type="number"
+                    required={true}
+                    class={"z-50  p-2 mt-1 md:w-60 bg-color6 text-black border rounded-md"}
+                />
             </label>
 
-            <label>
+            <label class="flex flex-col">
+                <span> Inscripción nuevo ingreso ($): </span>
                 <input
-                type="number"
-                required={true}
-                class={"z-50 mx-auto p-2 mt-6 md:w-60 bg-color6 text-black border rounded-md"}>  
+                    type="number"
+                    required={true}
+                    class={"z-50  p-2 mt-1 md:w-60 bg-color6 text-black border rounded-md"}
+                />
             </label>
 
-            <label>
+            <label class="flex flex-col">
+                <span> Inscripción de regulares ($): </span>
                 <input
-                type="number"
-                required={true}
-                class={"z-50 mx-auto p-2 mt-6 md:w-60 bg-color6 text-black border rounded-md"}>  
-            </label>   
+                    type="number"
+                    required={true}
+                    class={"z-50  p-2 mt-1 md:w-60 bg-color6 text-black border rounded-md"}
+                />
+            </label>
         </div>
-    </div>
+    </form>
+    <button
+        class="shadow-xl flex items-center justify-center mb-3 ml-auto py-4 rounded w-64 bg-color1 gap-3 text-color4"
+    >
+        <span> GUARDAR TARIFAS </span>
+        <iconify-icon icon="material-symbols:save" class="text-3xl"
+        ></iconify-icon>
+    </button>
+    <hr class=" border-gray-300" />
 
-    <div class="#">
-        <h2>Configuracion de metodos de pago</h2>
+    <section class="my-10">
+        <header class="flex justify-between mb-6">
+            <h2 class="font-bold text-xl mb-4">
+                Configuración de metodos de pago
+            </h2>
+            <div class="relative z-30">
+                <button
+                    on:click={() => (showPaymentOptions = !showPaymentOptions)}
+                    class="btn_create gap-3 flex items-center"
+                    use:clickOutside={() => {
+                        showPaymentOptions = false;
+                    }}
+                >
+                    <span> Nuevo Método </span>
+                    <iconify-icon icon="line-md:plus"></iconify-icon>
+                    <iconify-icon icon="mingcute:down-line"></iconify-icon>
+                </button>
+                {#if showPaymentOptions}
+                    <div
+                        class="payment_options absolute top-12 w-full bg-color3 text-white p-1 rounded"
+                    >
+                        <ul class="flex flex-col gap-1">
+                            <li>
+                                <a
+                                    class="hover:bg-color2 duration-100"
+                                    href="#"
+                                >
+                                    Pago Movil</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    class="hover:bg-color2 duration-100"
+                                    href="#"
+                                >
+                                    Transferencia</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    class="hover:bg-color2 duration-100"
+                                    href="#"
+                                >
+                                    Zelle</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    class="hover:bg-color2 duration-100"
+                                    href="#"
+                                >
+                                    Binance</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    class="hover:bg-color2 duration-100"
+                                    href="#"
+                                >
+                                    AirTm</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+                {/if}
+            </div>
+        </header>
+        <div class="flex flex-col gap-4">
+            <article
+                class="rounded-md bg-white border-l-8 border-color2 pb-5 pt-3 md:px-8"
+            >
+                <header class="flex justify-between">
+                    <h3 class="text-color1 font-semibold text-xl">
+                        Pago móvil
+                    </h3>
+                    <div class="butons">
+                        <iconify-icon
+                            class="text-xl relative top-1"
+                            icon="ph:trash"
+                        ></iconify-icon>
 
-    </div>
+                        <iconify-icon
+                            class="relative -bottom-1"
+                            icon="line-md:edit"
+                        ></iconify-icon>
+                    </div>
+                </header>
+                <div class="flex gap-10 py-2">
+                    <div>
+                        <h4 class="text-opacity-75">Banco:</h4>
+                        <p class="text-xl">Provincial</p>
+                    </div>
+                    <div>
+                        <h4 class="text-opacity-75">Teléfono:</h4>
+                        <p class="text-xl">04146846012</p>
+                    </div>
+                    <div>
+                        <h4 class="text-opacity-75">Cédula:</h4>
+                        <p class="text-xl">10478463</p>
+                    </div>
+                </div>
+            </article>
 
+            <article
+                class="rounded-md bg-white border-l-8 border-color1 pb-5 pt-3 md:px-8"
+            >
+                <h3 class="text-color1 font-semibold text-xl">Transferencia</h3>
+                <div class="flex gap-10 py-2">
+                    <div>
+                        <h4 class="text-opacity-75">Banco:</h4>
+                        <p class="text-xl">Provincial</p>
+                    </div>
+                    <div>
+                        <h4 class="text-opacity-75">Nro de cuenta:</h4>
+                        <p class="text-xl">04146846012</p>
+                    </div>
+                    <div>
+                        <h4 class="text-opacity-75">Cédula:</h4>
+                        <p class="text-xl">10478463</p>
+                    </div>
+                    <div>
+                        <h4 class="text-opacity-75">Nombre del titular:</h4>
+                        <p class="text-xl">El papá de Fabian</p>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
 </section>
 
 <style>
@@ -293,4 +435,25 @@
     .big_picture_label:hover iconify-icon {
         display: block;
     }
-</style> -->
+    .payment_options ul a {
+        width: 100%;
+        padding: 5px 10px;
+        display: inline-block;
+        /* background: red; */
+    }
+    .payment_options {
+        animation-duration: 0.3s;
+        animation-fill-mode: forwards;
+        animation-name: slideIn;
+    }
+    @keyframes slideIn {
+        0% {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
