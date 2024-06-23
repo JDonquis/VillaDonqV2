@@ -8,6 +8,11 @@
 
     const navPages = [
         {
+            icon: "uil:setting",
+            href: "/dashboard/configuracion",
+            name: "Configuración",
+        },
+        {
             icon: "mdi:google-classroom",
             href: "/dashboard/matricula",
             name: "Matricula",

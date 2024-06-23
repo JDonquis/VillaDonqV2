@@ -1,4 +1,4 @@
-<script>
+<!-- <script>
     import { useForm } from "@inertiajs/svelte";
 
     // import secretariaLogo from '$lib/images/logo_secretaria-circle-main.png';
@@ -293,4 +293,4 @@
     .big_picture_label:hover iconify-icon {
         display: block;
     }
-</style>
+</style> -->
