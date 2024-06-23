@@ -8,6 +8,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\BitacoraController;
+use App\Http\Controllers\MainConfigController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -38,7 +39,12 @@ Route::middleware(['auth'])->group(function ()
     Route::post('/dashboard/secciones', [SectionController::class, 'store']);    
     Route::delete('/dashboard/secciones/{course_id}/{section_id}', [SectionController::class, 'destroy']);    
 
-    Route::get('/dashboard/pagos', [PaymentController::class, 'index']);    
+    Route::get('/dashboard/pagos', [PaymentController::class, 'index']);
+
+    Route::get('/dashboard/configuracion', [MainConfigController::class, 'index']);
+
+    
+    // Route::get('/dashboard/pagos', [PaymentController::class
     
     
 });
