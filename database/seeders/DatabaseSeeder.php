@@ -6,6 +6,10 @@ use DB;
 
 use Illuminate\Database\Seeder;
 use Database\Seeders\QuotaSeeder;
+use Database\Seeders\MobilePaymentSeeder;
+use Database\Seeders\PaymentMethodSeeder;
+use Database\Seeders\AccountPaymentSeeder;
+use Database\Seeders\TransferPaymentSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,6 +24,10 @@ class DatabaseSeeder extends Seeder
 
         $this->truncateTable([
 
+            'payment_methods',
+            'mobile_payments',
+            'transfer_payments',
+            'account_payments',
             'courses',
             'sections',
             'course_sections',
@@ -36,6 +44,10 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
 
+            PaymentMethodSeeder::class,
+            AccountPaymentSeeder::class,
+            MobilePaymentSeeder::class,
+            TransferPaymentSeeder::class,
             CourseSeeder::class,
             SectionSeeder::class,
             CourseSectionSeeder::class,
