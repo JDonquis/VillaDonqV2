@@ -31,7 +31,7 @@ class MainConfigController extends Controller
     {   
         $this->mainConfigService->updatePaymentConfig($request);
 
-        return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id);
+        return redirect('/dashboard/configuracion');
 
     }
 
