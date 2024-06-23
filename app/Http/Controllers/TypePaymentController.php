@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use inertia;
 use Illuminate\Http\Request;
 
-class PaymentController extends Controller
+class TypePaymentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return inertia('Dashboard/Pagos');
+        //
     }
 
     /**
@@ -62,5 +61,4 @@ class PaymentController extends Controller
     {
         //
     }
-
 }

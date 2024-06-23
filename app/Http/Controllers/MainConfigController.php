@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use inertia;
 use Illuminate\Http\Request;
+use App\Services\MainConfigService;
+use App\Http\Requests\PaymentConfigRequest;
 
-class PaymentController extends Controller
+class MainConfigController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct()
+    {
+        $this->mainConfigService = new MainConfigService;
+    }
+
     public function index()
     {
-        return inertia('Dashboard/Pagos');
+        return inertia('Dashboard/Configuracion');
+        
     }
 
     /**
@@ -21,6 +25,14 @@ class PaymentController extends Controller
     public function create()
     {
         //
+    }
+
+    public function updatePaymentConfig(PaymentConfigRequest $request)
+    {   
+        $this->mainConfigService->updatePaymentConfig($request);
+
+        return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id);
+
     }
 
     /**
@@ -62,5 +74,4 @@ class PaymentController extends Controller
     {
         //
     }
-
 }
