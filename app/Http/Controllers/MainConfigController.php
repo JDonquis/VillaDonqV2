@@ -67,6 +67,12 @@ class MainConfigController extends Controller
 
     }
 
+    public function deleteAccount($id)
+    {
+        $this->mainConfigService->deleteAccount($id);
+        return redirect('/dashboard/configuracion');
+    }
+
     public function updatePaymentConfig(PaymentConfigRequest $request)
     {   
         $this->mainConfigService->updatePaymentConfig($request);

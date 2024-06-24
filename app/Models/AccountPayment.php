@@ -21,6 +21,7 @@ class AccountPayment extends Model
         'account_number',
         'username',
         'email',
+        'status'
     ];
 
     
