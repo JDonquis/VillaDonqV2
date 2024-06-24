@@ -24,6 +24,8 @@ module.exports = {
           redLight: "#ff6464",
           background: "#ececec",
           transparent: "transparent",
+          zelle: "#6a1ccd",
+          binance: "#F3BA2F",
         },
         extend: {}
       },

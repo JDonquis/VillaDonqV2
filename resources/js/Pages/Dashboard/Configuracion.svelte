@@ -2,13 +2,18 @@
     import { useForm } from "@inertiajs/svelte";
     import clickOutside from "../../components/ClickOutside";
     import { inertia } from "@inertiajs/svelte";
-
-    // import secretariaLogo from '$lib/images/logo_secretaria-circle-main.png';
-    // import Input from "../../components/Input.svelte";
-    // import Modal from "../../components/Modal.svelte";
-
     import Alert from "../../components/Alert.svelte";
     import { displayAlert } from "../../stores/alertStore";
+
+    const paymentMethodColors = {
+        Efectivo: "green",
+        "Pago Movil": "color3",
+        Transferencia: "color1",
+        Zelle: "zelle",
+        Binance: "binance",
+    };
+    export let data;
+    console.log({ data });
     let showModal = false;
     const institution = useForm({
         name: "Maestro José Marti",
@@ -19,7 +24,6 @@
         courses: [1, 2, 3],
     });
     $: console.log(institution);
-
     // function resizeInput(event) {
     //     event.target.style.width = event.target.value.length + "ch";
     // }
@@ -294,7 +298,7 @@
         <iconify-icon icon="material-symbols:save" class="text-3xl"
         ></iconify-icon>
     </button>
-    <hr class=" border-gray-300"/>
+    <hr class=" border-gray-300" />
 
     <section class="my-10">
         <header class="flex justify-between mb-6">
@@ -315,18 +319,22 @@
                 </button>
                 {#if showPaymentOptions}
                     <div
-                        class="payment_options absolute top-12 w-full bg-color3 text-white p-1 rounded"
+                        class="payment_options absolute top-12 w-full bg-gray-400 text-white p-1 rounded"
                     >
-                        <ul class="flex flex-col gap-1">
-                            <li>
-                                <a
-                                    class="hover:bg-color2 duration-100"
-                                    href="#"
-                                >
-                                    Pago Movil</a
-                                >
-                            </li>
-                            <li>
+                    <ul class="flex flex-col gap-1">
+                            {#each data.methods as method }
+                                <li>
+                                    <a
+                                        class="hover:bg-color2 duration-100"
+                                        use:inertia
+                                        href={`/dashboard/configuracion/crear-cuenta/${method.id}`}
+                                    >
+                                        {method.name}</a
+                                    >
+                                </li>
+                                
+                            {/each}
+                            <!-- <li>
                                 <a
                                     class="hover:bg-color2 duration-100"
                                     href="#"
@@ -357,76 +365,101 @@
                                 >
                                     AirTm</a
                                 >
-                            </li>
+                            </li> -->
                         </ul>
                     </div>
                 {/if}
             </div>
         </header>
         <div class="flex flex-col gap-4">
-            <article
-                class="rounded-md bg-white border-l-8 border-color2 pb-5 pt-3 md:px-8"
-            >
-                <header class="flex justify-between">
-                    <h3 class="text-color1 font-semibold text-xl">
-                        Pago móvil
-                    </h3>
-                    <div class="butons">
-                        <a href="/dashboard/MetodosDePago/Crear" use:inertia>
-                            <iconify-icon
-                                class="text-xl relative top-1"
-                                icon="ph:trash"
-                            ></iconify-icon>
-                        </a>
+            {#each data.accounts.data as payMethod}
+                <article
+                    class={`rounded-md bg-white border-l-8 border-${paymentMethodColors[payMethod.payment_method_name]} pb-5 pt-3 md:px-8`}
+                >
+                    <header class="flex justify-between">
+                        <h3 class="text-color1 font-semibold">
+                            {payMethod.payment_method_name}
+                        </h3>
+                        {#if payMethod.payment_method_name != "Efectivo"}
+                        <div class="butons flex gap-3 text-gray-600">
+                            <a
+                                href="/dashboard/MetodosDePago/Editar"
+                                use:inertia
+                                class="hover:bg-color3 bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-xl rounded border hover:border-color3 px-4 py-1"
+                                title="Editar"
+                            >
+                                <iconify-icon
+                                    class="relative -bottom-1"
+                                    icon="ic:outline-edit"
+                                ></iconify-icon>
+                            </a>
 
-                    
-                        <a href="/dashboard/MetodosDePago/Editar" use:inertia>
-                            <iconify-icon
-                                class="relative -bottom-1"
-                                icon="line-md:edit"
-                            ></iconify-icon>
-                        </a>
-                    </div>
-                </header>
-                <div class="flex gap-10 py-2">
-                    <div>
-                        <h4 class="text-opacity-75">Banco:</h4>
-                        <p class="text-xl">Provincial</p>
-                    </div>
-                    <div>
-                        <h4 class="text-opacity-75">Teléfono:</h4>
-                        <p class="text-xl">04146846012</p>
-                    </div>
-                    <div>
-                        <h4 class="text-opacity-75">Cédula:</h4>
-                        <p class="text-xl">10478463</p>
-                    </div>
-                </div>
-            </article>
+                            <a
+                                href="/dashboard/MetodosDePago/Crear"
+                                use:inertia
+                                class="hover:bg-red bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-xl rounded border hover:border-red px-4 py-1"
+                                title="Eliminar"
+                            >
+                                <iconify-icon
+                                    class="text-xl relative top-1"
+                                    icon="ph:trash"
+                                ></iconify-icon>
+                            </a>
 
-            <article
-                class="rounded-md bg-white border-l-8 border-color1 pb-5 pt-3 md:px-8"
-            >
-                <h3 class="text-color1 font-semibold text-xl">Transferencia</h3>
-                <div class="flex gap-10 py-2">
-                    <div>
-                        <h4 class="text-opacity-75">Banco:</h4>
-                        <p class="text-xl">Provincial</p>
+                            
+                        </div>
+                        {/if}
+                    </header>
+                    <div
+                        class="grid grid-cols-3 justify-items-start gap-4 py-2"
+                    >
+                        {#if payMethod?.bank}
+                            <div>
+                                <h4 class="text-gray-500">Banco:</h4>
+                                <p>{payMethod.bank}</p>
+                            </div>
+                        {/if}
+                        {#if payMethod?.phone_number}
+                            <div>
+                                <h4 class="text-gray-500">Teléfono:</h4>
+                                <p>{payMethod.phone_number}</p>
+                            </div>
+                        {/if}
+                        {#if payMethod?.ci}
+                            <div>
+                                <h4 class="text-gray-500">Cédula:</h4>
+                                <p>{payMethod.ci}</p>
+                            </div>
+                        {/if}
+                        {#if payMethod?.person_name}
+                            <div>
+                                <h4 class="text-gray-500">Titular:</h4>
+                                <p>{payMethod.person_name}</p>
+                            </div>
+                        {/if}
+                        {#if payMethod?.account_number}
+                            <div>
+                                <h4 class="text-gray-500">N° de cuenta:</h4>
+                                <p>{payMethod.account_number}</p>
+                            </div>
+                        {/if}
+                        {#if payMethod?.email}
+                            <div>
+                                <h4 class="text-gray-500">Correo:</h4>
+                                <p>{payMethod.email}</p>
+                            </div>
+                        {/if}
+                        {#if payMethod?.username}
+                            <div>
+                                <h4 class="text-gray-500">
+                                    Nombre de usuario:
+                                </h4>
+                                <p>{payMethod.username}</p>
+                            </div>
+                        {/if}
                     </div>
-                    <div>
-                        <h4 class="text-opacity-75">Nro de cuenta:</h4>
-                        <p class="text-xl">04146846012</p>
-                    </div>
-                    <div>
-                        <h4 class="text-opacity-75">Cédula:</h4>
-                        <p class="text-xl">10478463</p>
-                    </div>
-                    <div>
-                        <h4 class="text-opacity-75">Nombre del titular:</h4>
-                        <p class="text-xl">El papá de Fabian</p>
-                    </div>
-                </div>
-            </article>
+                </article>
+            {/each}
         </div>
     </section>
 </section>

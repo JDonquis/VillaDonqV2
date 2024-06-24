@@ -82,7 +82,7 @@
 
             <input
                 type="search"
-                placeholder="Search"
+                placeholder="Buscar"
                 bind:value={filterClientData.search}
                 on:input={() => {
                     handleSearch();

@@ -23,6 +23,11 @@
             href: "/dashboard/pagos",
             name: "Pagos",
         },
+        {
+            icon: "streamline:payment-10",
+            href: "/dashboard/registrar-pago",
+            name: "Registrar pago",
+        },
     ];
     console.log($page);
 </script>

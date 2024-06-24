@@ -2,6 +2,9 @@
     import Table from "../../components/Table.svelte";
     import Modal from "../../components/Modal.svelte";
     import Input from "../../components/Input.svelte";
+    import axios from 'axios';
+    import debounce from "lodash/debounce";
+
     import Alert from "../../components/Alert.svelte";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, router, page } from "@inertiajs/svelte";
@@ -43,6 +46,7 @@
     $: sectionsOfThisYear =
         data.course_sections?.data?.[`course_${data.filters.course_id}`];
     $: lastSectionId = sectionsOfThisYear?.[sectionsOfThisYear?.length - 1].id;
+
     let formCreate = useForm({
         student_name: "",
         student_last_name: "",
@@ -173,18 +177,12 @@
         router.get($page.url, { course_id, section_id: 1 });
     }
 
-    function search_rep1(ci) {
-        router.get(
-            `/dashboard/matricula/search-representative/${ci}`, {},
-            {
-                only: ['representative'],
-                onProgress: (progress) => {},
-                onSuccess: (page) => { console.log(page, data)},
-                onError: (errors) => {},
-            },
-        );
-    }
-
+    const search_rep1 = debounce( async (ci) => {
+        try {
+           const response = await axios.get(`/dashboard/matricula/search-representative/${ci}`);
+        } catch (error) {}
+    },300)
+  
     function search_second(ci) {
         router.get(`/dashboard/matricula/search-second_representative/`, {
             ci,
@@ -240,6 +238,7 @@
             />
             <Input
                 type="number"
+                required={true}
                 label={"Cédula"}
                 bind:value={$formCreate.student_ci}
                 error={$formCreate.errors?.student_ci}
