@@ -1,6 +1,7 @@
 <script>
     import { useForm } from "@inertiajs/svelte";
     import clickOutside from "../../components/ClickOutside";
+    import { inertia } from "@inertiajs/svelte";
 
     // import secretariaLogo from '$lib/images/logo_secretaria-circle-main.png';
     // import Input from "../../components/Input.svelte";
@@ -293,7 +294,7 @@
         <iconify-icon icon="material-symbols:save" class="text-3xl"
         ></iconify-icon>
     </button>
-    <hr class=" border-gray-300" />
+    <hr class=" border-gray-300"/>
 
     <section class="my-10">
         <header class="flex justify-between mb-6">
@@ -371,15 +372,20 @@
                         Pago móvil
                     </h3>
                     <div class="butons">
-                        <iconify-icon
-                            class="text-xl relative top-1"
-                            icon="ph:trash"
-                        ></iconify-icon>
+                        <a href="/dashboard/MetodosDePago/Crear" use:inertia>
+                            <iconify-icon
+                                class="text-xl relative top-1"
+                                icon="ph:trash"
+                            ></iconify-icon>
+                        </a>
 
-                        <iconify-icon
-                            class="relative -bottom-1"
-                            icon="line-md:edit"
-                        ></iconify-icon>
+                    
+                        <a href="/dashboard/MetodosDePago/Editar" use:inertia>
+                            <iconify-icon
+                                class="relative -bottom-1"
+                                icon="line-md:edit"
+                            ></iconify-icon>
+                        </a>
                     </div>
                 </header>
                 <div class="flex gap-10 py-2">
