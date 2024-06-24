@@ -13,6 +13,14 @@ class AccountPayment extends Model
     protected $fillable = 
     [
         'payment_method_id',
+        'person_name',
+        'email',
+        'ci',
+        'phone_number',
+        'bank',
+        'account_number',
+        'username',
+        'email',
     ];
 
     

@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('phone_number')->nullable();
             $table->string('bank')->nullable();
             $table->string('account_number')->nullable();
+            $table->string('username')->nullable();
+            $table->string('email')->nullable();
             $table->timestamps();
         });
     }

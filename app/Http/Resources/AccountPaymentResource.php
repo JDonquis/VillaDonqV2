@@ -24,6 +24,9 @@ class AccountPaymentResource extends JsonResource
             'phone_number' => $this->when($this->phone_number !== null, $this->phone_number),
             'bank' => $this->when($this->bank !== null, $this->bank),
             'account_number' => $this->when($this->account_number !== null, $this->account_number),
+            'username' => $this->when($this->username !== null, $this->username),
+            'email' => $this->when($this->email !== null, $this->email),
+
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

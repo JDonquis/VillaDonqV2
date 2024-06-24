@@ -29,6 +29,13 @@ class MainConfigService
         $this->mainConfigModel = MainConfig::first();
     }
 
+    public function getAccounts()
+    {
+        $accounts = AccountPayment::with('method')->get();
+
+        return new AccountPaymentCollection($accounts);
+    }
+
     public function updatePaymentConfig($request)
     {
         $this->mainConfigModel->update(
@@ -40,11 +47,37 @@ class MainConfigService
         
     }
 
-    public function getAccounts()
-    {
-        $accounts = AccountPayment::with('method')->get();
 
-        return new AccountPaymentCollection($accounts);
+    public function createAccount($request)
+    {
+        AccountPayment::create($request->all());
+        return 0;
     }
+
+    public function UpdateAccount($id, $request)
+    {
+        $account = AccountPayment::find($id);
+
+        $account->update($request->all());
+
+        $account->touch();
+
+        return 0;
+    }
+
+    public function getFieldsFromMethod($methodID)
+    {
+        // switch ($methodID) {
+        //     case 2:
+        //         return ['','']
+        //         break;
+            
+        //     default:
+        //         # code...
+        //         break;
+        // }
+    }
+
+    
 
 }

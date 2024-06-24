@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\AccountPayment;
 use App\Services\MainConfigService;
+use App\Http\Requests\AccountRequest;
 use App\Http\Requests\PaymentConfigRequest;
+use App\Http\Resources\AccountPaymentResource;
 
 class MainConfigController extends Controller
 {
@@ -30,12 +33,33 @@ class MainConfigController extends Controller
         
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function showCreateAccount($methodID)
     {
-        //
+        $fields = $this->mainConfigService->getFieldsFromMethod($methodID);
+        return inertia('Dashboard/MetodosDePago/Crear');
+    }
+
+    public function showEditAccount($id)
+    {
+        $account = AccountPayment::where('id',$id)->with('method')->first();
+        $accountResource = new AccountPaymentResource($account);
+
+        return inertia('Dashboard/MetodosDePago/Editar', ['data' => ['account' => $accountResource]]);
+    }
+
+
+    public function createAccount(AccountRequest $request)
+    {
+       
+        $this->mainConfigService->createAccount($request);
+        return redirect('/dashboard/configuracion');
+    }
+
+    public function editAccount(AccountRequest $request, $id)
+    {
+        $this->mainConfigService->UpdateAccount($id, $request);
+        return redirect('/dashboard/configuracion');
+
     }
 
     public function updatePaymentConfig(PaymentConfigRequest $request)
