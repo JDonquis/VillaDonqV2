@@ -74,7 +74,8 @@ class MainConfigService
 
     public function deleteAccount($id)
     {
-        // AccountPayment
+        AccountPayment::where('id',$id)->update(['status' => 2]);
+        return 0;   
     }
 
     public function getFieldsFromMethod($methodID)
