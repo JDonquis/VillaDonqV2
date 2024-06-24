@@ -82,27 +82,19 @@ class MainConfigService
         switch ($methodID) 
         {
             case 2:
-                $array =  ['ci','phone_number','bank'];
-                $object = (object) $array;
-                return $object;
+                return json_decode(json_encode(['ci','phone_number','bank']),true);
             break;
             
             case 3:
-                $array = ['account_number','person_name','ci','phone_number','bank'];
-                $object = (object) $array; 
-                return $object;
+                return json_decode(json_encode(['account_number','person_name','ci','phone_number','bank']),true);
             break;
 
             case 4:
-                $array = ['username','email'];
-                $object = (object) $array;
-                return $object;
+                return json_decode(json_encode(['username','email']),true);
             break;
 
             case 5:
-                $array = ['email'];
-                $object = (object) $array;
-                return $object;
+                return json_decode(json_encode(['email']),true);
             break;
             
             default:
