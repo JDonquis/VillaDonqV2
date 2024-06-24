@@ -39,7 +39,7 @@ class MainConfigService
 
     public function getMethods()
     {
-        $methods = PaymentMethod::get();
+        $methods = PaymentMethod::whereNot('id',1)->get();
 
         return $methods;
     }
