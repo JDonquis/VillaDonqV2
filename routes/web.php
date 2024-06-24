@@ -40,7 +40,7 @@ Route::middleware(['auth'])->group(function ()
     Route::delete('/dashboard/secciones/{course_id}/{section_id}', [SectionController::class, 'destroy']);    
 
     Route::get('/dashboard/pagos', [PaymentController::class, 'index']);
-    Route::get('/dashboard/registrar-pagos', [PaymentController::class, 'showCreatePayment']);
+    Route::get('/dashboard/registrar-pago', [PaymentController::class, 'showCreatePayment']);
 
 
     Route::get('/dashboard/configuracion', [MainConfigController::class, 'index']);
