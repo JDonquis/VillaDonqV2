@@ -82,19 +82,19 @@ class MainConfigService
         switch ($methodID) 
         {
             case 2:
-                return json_decode(json_encode(['ci','phone_number','bank']));
+                return ['ci','phone_number','bank'];
             break;
             
             case 3:
-                return json_decode(json_encode(['account_number','person_name','ci','phone_number','bank']));
+                return ['account_number','person_name','ci','phone_number','bank'];
             break;
 
             case 4:
-                return json_decode(json_encode(['username','email']));
+                return ['username','email'];
             break;
 
             case 5:
-                return json_decode(json_encode(['email']));
+                return ['email'];
             break;
             
             default:
