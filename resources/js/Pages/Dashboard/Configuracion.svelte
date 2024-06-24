@@ -4,14 +4,8 @@
     import { inertia } from "@inertiajs/svelte";
     import Alert from "../../components/Alert.svelte";
     import { displayAlert } from "../../stores/alertStore";
+    import ColorsPayMethods from "../../components/ColorsPayMethods"
 
-    const paymentMethodColors = {
-        Efectivo: "green",
-        "Pago Movil": "color3",
-        Transferencia: "color1",
-        Zelle: "zelle",
-        Binance: "binance",
-    };
     export let data;
     console.log({ data });
     let showModal = false;
@@ -319,13 +313,13 @@
                 </button>
                 {#if showPaymentOptions}
                     <div
-                        class="payment_options absolute top-12 w-full bg-gray-400 text-white p-1 rounded"
+                        class="payment_options absolute top-12 w-full bg-gray-100 text-dark shadow-xl p-1 rounded"
                     >
                     <ul class="flex flex-col gap-1">
                             {#each data.methods as method }
                                 <li>
                                     <a
-                                        class="hover:bg-color2 duration-100"
+                                        class={`hover:bg-${ColorsPayMethods()[method.name]} hover:font-bold hover:text-gray-100 duration-100  border-l-4 border-${ColorsPayMethods()[method.name]} `}
                                         use:inertia
                                         href={`/dashboard/configuracion/crear-cuenta/${method.id}`}
                                     >
@@ -374,7 +368,7 @@
         <div class="flex flex-col gap-4">
             {#each data.accounts.data as payMethod}
                 <article
-                    class={`rounded-md bg-white border-l-8 border-${paymentMethodColors[payMethod.payment_method_name]} pb-5 pt-3 md:px-8`}
+                    class={`rounded-md bg-white border-l-8 border-${ColorsPayMethods()[payMethod.payment_method_name]} pb-5 pt-3 md:px-8`}
                 >
                     <header class="flex justify-between">
                         <h3 class="text-color1 font-semibold">
@@ -383,7 +377,7 @@
                         {#if payMethod.payment_method_name != "Efectivo"}
                         <div class="butons flex gap-3 text-gray-600">
                             <a
-                                href="/dashboard/MetodosDePago/Editar"
+                                href={`/dashboard/configuracion/editar-cuenta/${payMethod.id}`}
                                 use:inertia
                                 class="hover:bg-color3 bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-xl rounded border hover:border-color3 px-4 py-1"
                                 title="Editar"
