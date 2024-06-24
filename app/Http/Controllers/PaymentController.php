@@ -23,6 +23,11 @@ class PaymentController extends Controller
         //
     }
 
+    public function showCreatePayment()
+    {
+        return inertia('Dashboard/RegistrarPago');
+    }
+
     /**
      * Store a newly created resource in storage.
      */
