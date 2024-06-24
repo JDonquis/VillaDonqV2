@@ -56,14 +56,14 @@ class MainConfigController extends Controller
     public function createAccount(AccountRequest $request)
     {
        
-        $this->mainConfigService->createAccount($request);
-        return redirect('/dashboard/configuracion');
+        $account = $this->mainConfigService->createAccount($request);
+        return redirect('/dashboard/configuracion#account-'.$account->id);
     }
 
     public function editAccount(AccountRequest $request, $id)
     {
         $this->mainConfigService->updateAccount($id, $request);
-        return redirect('/dashboard/configuracion');
+        return redirect('/dashboard/configuracion#account-'.$id);
 
     }
 
