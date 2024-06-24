@@ -55,14 +55,13 @@ class MainConfigService
         
     }
 
-
     public function createAccount($request)
     {
         AccountPayment::create($request->all());
         return 0;
     }
 
-    public function UpdateAccount($id, $request)
+    public function updateAccount($id, $request)
     {
         $account = AccountPayment::find($id);
 
@@ -73,24 +72,37 @@ class MainConfigService
         return 0;
     }
 
+    public function deleteAccount($id)
+    {
+        // AccountPayment
+    }
+
     public function getFieldsFromMethod($methodID)
     {
         switch ($methodID) 
         {
             case 2:
-                return ['ci','phone_number','bank'];
+                $array =  ['ci','phone_number','bank'];
+                $object = (object) $array;
+                return $object;
             break;
             
             case 3:
-                return ['account_number','person_name','ci','phone_number','bank'];
+                $array = ['account_number','person_name','ci','phone_number','bank'];
+                $object = (object) $array; 
+                return $object;
             break;
 
             case 4:
-                return ['username','email'];
+                $array = ['username','email'];
+                $object = (object) $array;
+                return $object;
             break;
 
             case 5:
-                return ['email'];
+                $array = ['email'];
+                $object = (object) $array;
+                return $object;
             break;
             
             default:

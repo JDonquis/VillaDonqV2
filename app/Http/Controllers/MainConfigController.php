@@ -59,7 +59,7 @@ class MainConfigController extends Controller
 
     public function editAccount(AccountRequest $request, $id)
     {
-        $this->mainConfigService->UpdateAccount($id, $request);
+        $this->mainConfigService->updateAccount($id, $request);
         return redirect('/dashboard/configuracion');
 
     }
