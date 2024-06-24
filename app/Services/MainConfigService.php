@@ -8,6 +8,7 @@ use App\Models\Student;
 use App\Models\Activity;
 use App\Models\MainConfig;
 use App\Models\CourseSection;
+use App\Models\PaymentMethod;
 use App\Events\StudentCreated;
 use App\Events\StudentUpdated;
 use App\Models\AccountPayment;
@@ -34,6 +35,13 @@ class MainConfigService
         $accounts = AccountPayment::with('method')->get();
 
         return new AccountPaymentCollection($accounts);
+    }
+
+    public function getMethods()
+    {
+        $methods = PaymentMethod::get();
+
+        return $methods;
     }
 
     public function updatePaymentConfig($request)
@@ -67,15 +75,28 @@ class MainConfigService
 
     public function getFieldsFromMethod($methodID)
     {
-        // switch ($methodID) {
-        //     case 2:
-        //         return ['','']
-        //         break;
+        switch ($methodID) 
+        {
+            case 2:
+                return ['ci','phone_number','bank'];
+            break;
             
-        //     default:
-        //         # code...
-        //         break;
-        // }
+            case 3:
+                return ['account_number','person_name','ci','phone_number','bank'];
+            break;
+
+            case 4:
+                return ['username','email'];
+            break;
+
+            case 5:
+                return ['email'];
+            break;
+            
+            default:
+                return null;
+                break;
+        }
     }
 
     

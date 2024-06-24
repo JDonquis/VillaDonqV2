@@ -19,12 +19,14 @@ class MainConfigController extends Controller
     public function index()
     {
 
+        $methods = $this->mainConfigService->getMethods();
         $accounts  = $this->mainConfigService->getAccounts();
         return inertia('Dashboard/Configuracion',
         [
             'data' =>
             [
                 'accounts' => $accounts,
+                'methods' => $methods,
             ]
         
         ]
@@ -36,7 +38,7 @@ class MainConfigController extends Controller
     public function showCreateAccount($methodID)
     {
         $fields = $this->mainConfigService->getFieldsFromMethod($methodID);
-        return inertia('Dashboard/MetodosDePago/Crear');
+        return inertia('Dashboard/MetodosDePago/Crear', ['data' => ['fields' => $fields]]);
     }
 
     public function showEditAccount($id)
