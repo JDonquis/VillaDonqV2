@@ -21,7 +21,7 @@ class MainConfigController extends Controller
         [
             'data' =>
             [
-                 $accounts,
+                'accounts' => $accounts,
             ]
         
         ]
