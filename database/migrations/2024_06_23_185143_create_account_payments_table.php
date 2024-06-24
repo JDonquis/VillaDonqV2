@@ -14,7 +14,12 @@ return new class extends Migration
         Schema::create('account_payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('payment_method_id');
-            $table->integer('specific_id');
+            $table->string('person_name')->nullable();
+            $table->string('email')->nullable();
+            $table->string('ci')->nullable();
+            $table->string('phone_number')->nullable();
+            $table->string('bank')->nullable();
+            $table->string('account_number')->nullable();
             $table->timestamps();
         });
     }

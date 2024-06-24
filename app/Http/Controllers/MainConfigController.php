@@ -15,7 +15,18 @@ class MainConfigController extends Controller
 
     public function index()
     {
-        return inertia('Dashboard/Configuracion');
+
+        $accounts  = $this->mainConfigService->getAccounts();
+        return inertia('Dashboard/Configuracion',
+        [
+            'data' =>
+            [
+                'accounts' => $accounts,
+            ]
+        
+        ]
+        
+        );
         
     }
 

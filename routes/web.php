@@ -46,10 +46,6 @@ Route::middleware(['auth'])->group(function ()
     Route::get('/dashboard/configuracion', [MainConfigController::class, 'index']);
     Route::put('/dashboard/configuracion/pagos', [MainConfigController::class, 'updatePaymentConfig']);
 
-
-    
-    // Route::get('/dashboard/pagos', [PaymentController::class
-    
     
 });
 

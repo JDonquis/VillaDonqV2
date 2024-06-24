@@ -10,7 +10,9 @@ class MainConfig extends Model
     use HasFactory;
 
     protected $table = 'main_configs';
+    
     public $timestamps = false;
+
     protected $fillable = [
         'name',
         'rif',
