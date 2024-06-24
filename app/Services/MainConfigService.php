@@ -57,8 +57,8 @@ class MainConfigService
 
     public function createAccount($request)
     {
-        AccountPayment::create($request->all());
-        return 0;
+        return AccountPayment::create($request->all());
+        
     }
 
     public function updateAccount($id, $request)
