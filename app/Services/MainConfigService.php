@@ -44,6 +44,11 @@ class MainConfigService
         return $methods;
     }
 
+    public function getConfigData()
+    {
+        return $this->mainConfigModel->first();
+    }
+
     public function updatePaymentConfig($request)
     {
         $this->mainConfigModel->update(
