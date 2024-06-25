@@ -2,7 +2,6 @@
     import { useForm } from "@inertiajs/svelte";
     import clickOutside from "../../components/ClickOutside";
     import { inertia, router } from "@inertiajs/svelte";
-    import Alert from "../../components/Alert.svelte";
     import ColorsPayMethods from "../../components/ColorsPayMethods";
 
     import Alert from "../../components/Alert.svelte";
@@ -33,6 +32,11 @@
                     message: "Método de pago eliminado",
                 });
                
+            },
+            onError: (errors) => {
+                if (errors.data) {
+                    displayAlert({ type: "error", message: errors.data });
+                }
             },
         });
     }
