@@ -32,7 +32,7 @@ class MainConfigService
 
     public function getAccounts()
     {
-        $accounts = AccountPayment::with('method')->get();
+        $accounts = AccountPayment::where('status',1)->with('method')->get();
 
         return new AccountPaymentCollection($accounts);
     }
