@@ -16,7 +16,7 @@
         console.log('enviando')
         event.preventDefault();
         $formData.clearErrors();
-        $formData.put("/dashboard/configuracion/crear-cuenta", {
+        $formData.put(`/dashboard/configuracion/editar-cuenta/${$formData.id}`, {
             onError: (errors) => {
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
@@ -26,7 +26,7 @@
                 $formData.reset();
                 displayAlert({
                     type: "success",
-                    message: `${data.method.name} añadido correctamente`,
+                    message: `${data.method.name} actualizado correctamente`,
                 });
                 showModal = false;
             },

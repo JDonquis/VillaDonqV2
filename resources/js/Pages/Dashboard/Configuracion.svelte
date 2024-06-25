@@ -1,14 +1,15 @@
 <script>
     import { useForm } from "@inertiajs/svelte";
     import clickOutside from "../../components/ClickOutside";
-    import { inertia } from "@inertiajs/svelte";
+    import { inertia, router } from "@inertiajs/svelte";
+    import Alert from "../../components/Alert.svelte";
+    import ColorsPayMethods from "../../components/ColorsPayMethods";
+
     import Alert from "../../components/Alert.svelte";
     import { displayAlert } from "../../stores/alertStore";
-    import ColorsPayMethods from "../../components/ColorsPayMethods"
-
     export let data;
     console.log({ data });
-    let showModal = false;
+
     const institution = useForm({
         name: "Maestro José Marti",
         active_students: "400",
@@ -21,6 +22,20 @@
     // function resizeInput(event) {
     //     event.target.style.width = event.target.value.length + "ch";
     // }
+
+    function deleteAccount(id) {
+        router.delete(`/dashboard/configuracion/eliminar-cuenta/${id}`, {
+            onBefore: () => confirm("¿Está seguro de eliminar este metodo de pago?"),
+            onSuccess: (mensaje) => {
+                
+                displayAlert({
+                    type: "success",
+                    message: "Método de pago eliminado",
+                });
+               
+            },
+        });
+    }
 
     let showPaymentOptions = false;
 </script>
@@ -315,8 +330,8 @@
                     <div
                         class="payment_options absolute top-12 w-full bg-gray-100 text-dark shadow-xl p-1 rounded"
                     >
-                    <ul class="flex flex-col gap-1">
-                            {#each data.methods as method }
+                        <ul class="flex flex-col gap-1">
+                            {#each data.methods as method}
                                 <li>
                                     <a
                                         class={`hover:bg-${ColorsPayMethods()[method.name]} hover:font-bold hover:text-gray-100 duration-100  border-l-4 border-${ColorsPayMethods()[method.name]} `}
@@ -326,7 +341,6 @@
                                         {method.name}</a
                                     >
                                 </li>
-                                
                             {/each}
                             <!-- <li>
                                 <a
@@ -368,6 +382,7 @@
         <div class="flex flex-col gap-4">
             {#each data.accounts.data as payMethod}
                 <article
+                    id={`account-${payMethod.id}`}
                     class={`rounded-md bg-white border-l-8 border-${ColorsPayMethods()[payMethod.payment_method_name]} pb-5 pt-3 md:px-8`}
                 >
                     <header class="flex justify-between">
@@ -375,33 +390,30 @@
                             {payMethod.payment_method_name}
                         </h3>
                         {#if payMethod.payment_method_name != "Efectivo"}
-                        <div class="butons flex gap-3 text-gray-600">
-                            <a
-                                href={`/dashboard/configuracion/editar-cuenta/${payMethod.id}`}
-                                use:inertia
-                                class="hover:bg-color3 bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-xl rounded border hover:border-color3 px-4 py-1"
-                                title="Editar"
-                            >
-                                <iconify-icon
-                                    class="relative -bottom-1"
-                                    icon="ic:outline-edit"
-                                ></iconify-icon>
-                            </a>
+                            <div class="butons flex gap-3 text-gray-600">
+                                <a
+                                    href={`/dashboard/configuracion/editar-cuenta/${payMethod.id}`}
+                                    use:inertia
+                                    class="hover:bg-color3 bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-xl rounded border hover:border-color3 px-4 py-1"
+                                    title="Editar"
+                                >
+                                    <iconify-icon
+                                        class="relative -bottom-1"
+                                        icon="ic:outline-edit"
+                                    ></iconify-icon>
+                                </a>
 
-                            <a
-                                href="/dashboard/MetodosDePago/Crear"
-                                use:inertia
-                                class="hover:bg-red bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-xl rounded border hover:border-red px-4 py-1"
-                                title="Eliminar"
-                            >
-                                <iconify-icon
-                                    class="text-xl relative top-1"
-                                    icon="ph:trash"
-                                ></iconify-icon>
-                            </a>
-
-                            
-                        </div>
+                                <button
+                                    on:click={() => deleteAccount(payMethod.id)}
+                                    class="hover:bg-red bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-xl rounded border hover:border-red px-4 py-1"
+                                    title="Eliminar"
+                                >
+                                    <iconify-icon
+                                        class="text-xl relative top-1"
+                                        icon="ph:trash"
+                                    ></iconify-icon>
+                                </button>
+                            </div>
                         {/if}
                     </header>
                     <div
