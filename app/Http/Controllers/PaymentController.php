@@ -33,7 +33,7 @@ class PaymentController extends Controller
         if(isset($request->method_payment))
             $methodPayment = $request->method_payment;
         $methods = $this->mainConfigService->getMethods();
-        $accounts  = $this->mainConfigService->getAccountsWhereId(methodPayment);
+        $accounts  = $this->mainConfigService->getAccountsWhereId($methodPayment);
         
 
         return inertia('Dashboard/RegistrarPago',['data' => ['methods' => $methods, 'accounts' => $accounts] ]);
