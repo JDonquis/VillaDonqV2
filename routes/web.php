@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function ()
     Route::get('/dashboard/registrar-pago', [PaymentController::class, 'showCreatePayment']);
 
 
+
     Route::get('/dashboard/configuracion', [MainConfigController::class, 'index']);
     Route::get('/dashboard/configuracion/editar-cuenta/{id}', [MainConfigController::class, 'showEditAccount']);
     Route::get('/dashboard/configuracion/crear-cuenta/{methodID}', [MainConfigController::class, 'showCreateAccount']);

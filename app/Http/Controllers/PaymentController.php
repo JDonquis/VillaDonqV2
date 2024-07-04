@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use inertia;
 use Illuminate\Http\Request;
+use App\Services\MainConfigService;
 
 class PaymentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
+    public function __construct()
+    {
+        $this->mainConfigService = new MainConfigService;
+    }
+
     public function index()
     {
         return inertia('Dashboard/Pagos');
@@ -24,8 +28,10 @@ class PaymentController extends Controller
     }
 
     public function showCreatePayment()
-    {
-        return inertia('Dashboard/RegistrarPago');
+    {   
+        $methods = $this->mainConfigService->getMethods();
+
+        return inertia('Dashboard/RegistrarPago',['data' => $methods]);
     }
 
     /**
