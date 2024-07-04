@@ -45,11 +45,12 @@
 </script>
 
 <Alert />
+
 <section class="bg-background">
     <div class="py-5"></div>
 
     <h2 class="font-bold text-xl">Configuración del perfil</h2>
-
+    
     <form
         class="bg-background px-1 mx-4 md:py-9 md:pb-12 md:grid justify-between grid-flow-col md:gap-x-10 lg:gap-x-24 items-center relative"
     >
