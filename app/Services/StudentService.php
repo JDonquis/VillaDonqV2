@@ -290,6 +290,7 @@ class StudentService
     {
         $user = User::where('type_user_id', 2)
           ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%'])
+          ->orWhereRaw('LOWER(last_name) LIKE ?', ['%' . strtolower($search) . '%'])
           ->orWhereRaw('LOWER(ci) LIKE ?', ['%' . strtolower($search) . '%'])
           ->with('representative')
           ->get();

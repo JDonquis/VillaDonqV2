@@ -27,12 +27,19 @@ class PaymentController extends Controller
         //
     }
 
-    public function showCreatePayment()
+    public function showCreatePayment(Request $request)
     {   
+        $methodPayment = 2;        
+        if(isset($request->method_payment))
+            $methodPayment = $request->method_payment;
         $methods = $this->mainConfigService->getMethods();
+        $accounts  = $this->mainConfigService->getAccountsWhereId(methodPayment);
+        
 
-        return inertia('Dashboard/RegistrarPago',['data' => $methods]);
+        return inertia('Dashboard/RegistrarPago',['data' => ['methods' => $methods, 'accounts' => $accounts] ]);
     }
+
+  
 
     /**
      * Store a newly created resource in storage.
