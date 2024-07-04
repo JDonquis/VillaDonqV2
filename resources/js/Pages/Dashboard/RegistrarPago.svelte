@@ -7,7 +7,7 @@
     import { getMonitor } from "consulta-dolar-venezuela";
     const currentDate = new Date();
     const currentDateString = currentDate.toISOString().split("T")[0];
-    let data;
+    export let data;
     console.log({data});
     let dolarPrice;
     let formCreate = useForm({
