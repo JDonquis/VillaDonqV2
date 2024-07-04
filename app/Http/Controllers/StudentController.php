@@ -106,16 +106,23 @@ class StudentController extends Controller
         return redirect('/dashboard/matricula');
     }
 
-    public function searchRepresentative($ci)
+    public function searchRepresentativeByCI($ci)
     {
-        $info = $this->studentService->searchRepresentative($ci);
+        $info = $this->studentService->searchRepresentativeByCI($ci);
         
         return response()->json($info);
     }
 
-    public function searchSecondRepresentative($ci)
+    public function searchSecondRepresentativeByCI($ci)
     {
-        $info = $this->studentService->searchSecondRepresentative($ci);
+        $info = $this->studentService->searchSecondRepresentativeByCI($ci);
+        
+        return response()->json($info);
+    }
+
+    public function searchRepresentative($search)
+    {
+        $info = $this->studentService->searchRepresentative($search);
         
         return response()->json($info);
     }

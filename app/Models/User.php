@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Module;
+use App\Models\Representative;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,6 +43,12 @@ class User extends Authenticatable
     public function modules()
     {
         return $this->belongsToMany(Module::class, 'user_modules', 'user_id', 'module_id');
+    }
+
+    
+    public function representative()
+    {
+        return $this->hasMany(Representative::class, 'user_id', 'id');
     }
 
     public function findForCi($ci)

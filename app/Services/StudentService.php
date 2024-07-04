@@ -229,7 +229,7 @@ class StudentService
         return $newStudent;
     }
 
-    public function searchRepresentative($ci)
+    public function searchRepresentativeByCI($ci)
     {
         $user = User::where('ci',$ci)->where('type_user_id',2)->first();
 
@@ -258,7 +258,7 @@ class StudentService
         return $data;
     }
 
-    public function searchSecondRepresentative($ci)
+    public function searchSecondRepresentativeByCI($ci)
     {
         $user = User::where('ci',$ci)->where('type_user_id')->first();
 
@@ -284,6 +284,17 @@ class StudentService
         ];
 
         return $data;
+    }
+
+    public function searchRepresentative($search)
+    {
+        $user = User::where('type_user_id', 2)
+          ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%'])
+          ->orWhereRaw('LOWER(ci) LIKE ?', ['%' . strtolower($search) . '%'])
+          ->with('representative')
+          ->get();
+
+        return $user;
     }
 
     public function delete($studentId)
