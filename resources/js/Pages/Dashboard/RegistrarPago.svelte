@@ -2,19 +2,47 @@
     import axios from "axios";
     import debounce from "lodash/debounce";
     import BalanceBar from "../../components/BalanceBar.svelte";
+    import { useForm } from "@inertiajs/svelte";
+
+    import { getMonitor } from "consulta-dolar-venezuela";
+    const currentDate = new Date();
+    const currentDateString = currentDate.toISOString().split("T")[0];
+    export let data;
+    console.log({data});
+    let dolarPrice;
+    let formCreate = useForm({
+        date: currentDateString,
+        name: "Fabian",
+        currency: "Bolivar",
+        payment_method: "",
+        amount: "",
+        bs: "",
+        vaucher: "1234568",
+    });
+
+    getMonitor("BCV", "lastUpdate")
+        .then((response) => {
+            dolarPrice = response.bcv.price;
+            console.log(dolarPrice);
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+        });
+    $: console.log(dolarPrice);
     let representatives = [
         {
-            rep_name: "Mildred",
-            rep_last_name: "Tovar",
-            rep_ci: "7054285",
+            name: "",
+            rep_last_name: "",
+            rep_ci: "",
         },
     ];
 
-    const search_rep1 = debounce(async (ci) => {
+    const search_rep1 = debounce(async (search) => {
         try {
             const response = await axios.get(
-                `/dashboard/matricula/search-representative/${ci}`,
+                `/dashboard/pagos/search-representative/${search}`,
             );
+            representatives = response.data;
             console.log(response);
         } catch (error) {
             console.log(error);
@@ -63,6 +91,16 @@
         </tr>
     </thead>
     <tbody>
+        {#each representatives as representative}
+            <tr
+                class="hover:bg-color3 cursor-pointer hover:text-gray-100 border-b"
+            >
+                <td class="px-2 text-left py-2"
+                    >{representatives.name}</td
+                >
+                <td class="px-2 text-left py-2">27253194</td>
+            </tr>
+        {/each}
         <tr class="hover:bg-color3 cursor-pointer hover:text-gray-100 border-b">
             <td class="px-2 text-left py-2">Juan Francisco Villasmil Tovar</td>
             <td class="px-2 text-left py-2">27253194</td>
@@ -156,15 +194,23 @@
                 <td class="text-right">140$</td>
             </tr>
         </tbody>
-        <tfoot class="bg-gray-300">
+        <tfoot class="bg-gray-300 rounded-lg">
             <tr class="[&_td]:px-2 [&_td]:py-1.5 [&_td]:text-right">
-                <td colspan="2" class="text-right">TOTALES:</td>
+                <td colspan="2" class="text-right text-color1 font-semibold"
+                    >TOTALES:</td
+                >
                 <td class="">50$</td>
                 <td
                     ><input
                         class="max-w-[100px] py-1 text-right font-bold border border-color1 rounded-lg"
                         type="number"
-                        value="80"
+                        bind:value={$formCreate.amount}
+                        error={$formCreate.errors?.amount}
+                        on:input={(e) => {
+                            $formCreate.bs = (
+                                e.target.value * dolarPrice
+                            ).toFixed(2);
+                        }}
                     /></td
                 >
                 <td class="">
@@ -182,9 +228,9 @@
 
 <section class="mt-4">
     <label>
-        <span>Metodo de pago</span>
+        <span>Método de pago</span>
         <select
-            class="block w-44 py-1 text-left font-bold border border-color1 rounded-lg"
+            class="block w-44 p-3 py-1 text-left font-bold border border-color1 rounded-lg"
             name=""
             id=""
         >
@@ -217,6 +263,27 @@
             </div>
         </article>
     </div>
+</section>
+
+<section class="flex gap-4 mt-3">
+    <label>
+        <span>Fecha:</span>
+        <input
+            class="block w-44 p-3 py-1 text-left font-bold border border-color1 rounded-lg"
+            type="date"
+            name=""
+            id=""
+        />
+    </label>
+    <label>
+        <span>Referencia:</span>
+        <input
+            class="block w-44 p-3 py-1 text-left font-bold border border-color1 rounded-lg"
+            type="text"
+            name=""
+            id=""
+        />
+    </label>
 </section>
 
 <style>
