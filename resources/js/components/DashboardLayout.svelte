@@ -23,8 +23,8 @@
     <section class="bg-gray-200 h-full  dashboard_container p-2 rounded-2xl" class:menuStatus-false={$navStatus.isContracted}>
         
         <Header />
-        <div class=" main_and_footer_container " bing:this="main_and_footer_container">
-            <main  style={mainWidth}  class={`mx-auto  main_dashboard   relative px-10 duration-100 pb-10`} >
+        <div class=" main_and_footer_container  " bing:this="main_and_footer_container" scroll-region>
+            <main  style={mainWidth}  class={`mx-auto  main_dashboard   relative px-10 duration-100 pb-10 pt-3`} >
                 <slot />
             </main>
             <Footer />

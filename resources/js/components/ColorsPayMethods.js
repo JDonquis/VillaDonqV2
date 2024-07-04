@@ -1,6 +1,6 @@
 export default function ColorsPayMethods() {
     return {
-        Efectivo: "green",
+        Efectivo: "gray-300",
         "Pago Movil": "color3",
         Transferencia: "color1",
         Zelle: "zelle",
