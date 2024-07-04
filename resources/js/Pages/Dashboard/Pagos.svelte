@@ -165,8 +165,8 @@
                 <thead class="bg-color2">
                     <tr>
                         <th>Estudiante</th>
-                        <th>C.I</th>
-                        <th>Año</th>
+                        <th>Fecha</th>
+                        <th>Metodo d </th>
                         <th>Sección</th>
                         <th>Rep Legal</th>
                         <th>Quitar</th>
@@ -336,14 +336,15 @@
 >
     <thead slot="thead" class="sticky top-0 z-50">
         <tr>
-            <th>Estudiante</th>
-            <th>Año</th>
+            <th>Nro</th>
+            <th>Fecha</th>
             <th>Sección</th>
             <!-- <th>Representante</th> -->
-            <th>Fecha</th>
-            <th>Monto</th>
+            <th>Nombre repre</th>
             <th>Metodo de pago</th>
             <th>Ref</th>
+            <th>Monto ($)</th>
+            <th>Monto (bs)</th>
             <th>Estado</th>
         </tr>
     </thead>
