@@ -17,10 +17,34 @@
         slogan: "Formando mentes brillantes para un mañana prometedor",
         courses: [1, 2, 3],
     });
-    $: console.log(institution);
     // function resizeInput(event) {
     //     event.target.style.width = event.target.value.length + "ch";
     // }
+
+    const prices = useForm({
+        ...data.prices
+    });
+
+    function updatePrices(e) {
+        e.preventDefault()
+        $prices.put(`/dashboard/configuracion/pagos`, {
+            onBefore: () => confirm("¿Está seguro de guardar estos cambios?"),
+            onSuccess: (mensaje) => {
+                $prices.reset()
+                displayAlert({
+                    type: "success",
+                    message: "Precios actualizados",
+                });
+               
+            },
+            onError: (errors) => {
+                if (errors.data) {
+                    displayAlert({ type: "error", message: errors.data });
+                }
+            },
+        });
+    }
+
 
     function deleteAccount(id) {
         router.delete(`/dashboard/configuracion/eliminar-cuenta/${id}`, {
@@ -263,7 +287,7 @@
     </form>
     {#if $institution.isDirty}
         <button
-            class="shadow-xl flex items-center justify-center mb-3 ml-auto py-4 rounded w-64 bg-color1 gap-3 text-color4"
+            class="shadow-xl slideIn flex items-center justify-center mb-3 ml-auto py-4 rounded w-64 bg-color1 gap-3 text-color4"
         >
             <span> GUARDAR PERFIL </span>
             <iconify-icon icon="material-symbols:save" class="text-3xl"
@@ -273,7 +297,7 @@
 
     <hr class=" border-gray-300" />
 
-    <form class="Configuracion_tarifas my-10 py-3">
+    <form class="Configuracion_tarifas my-10 py-3" id="pricesForm" on:submit={updatePrices}>
         <h2 class="font-bold text-xl mb-4">Configuración de tarifas</h2>
 
         <div class="flex gap-4 pl-4">
@@ -282,6 +306,7 @@
                 <input
                     type="number"
                     required={true}
+                    bind:value={$prices.monthly_payment}
                     class={"z-50  p-2 mt-1 md:w-60 bg-color6 text-black border rounded-md"}
                 />
             </label>
@@ -291,6 +316,7 @@
                 <input
                     type="number"
                     required={true}
+                    bind:value={$prices.new_inscription_price}
                     class={"z-50  p-2 mt-1 md:w-60 bg-color6 text-black border rounded-md"}
                 />
             </label>
@@ -299,21 +325,26 @@
                 <span> Inscripción de regulares ($): </span>
                 <input
                     type="number"
+                    bind:value={$prices.regular_inscription_price}
                     required={true}
                     class={"z-50  p-2 mt-1 md:w-60 bg-color6 text-black border rounded-md"}
                 />
             </label>
         </div>
     </form>
+    {#if $prices.isDirty}
+
     <button
-        class="shadow-xl flex items-center justify-center mb-3 ml-auto py-4 rounded w-64 bg-color1 gap-3 text-color4"
+        class="shadow-xl slideIn flex items-center justify-center mb-3 ml-auto py-4 rounded w-64 bg-color1 gap-3 text-color4"
+        type="submit"
+        form={"pricesForm"}
     >
         <span> GUARDAR TARIFAS </span>
         <iconify-icon icon="material-symbols:save" class="text-3xl"
         ></iconify-icon>
     </button>
+    {/if}
     <hr class=" border-gray-300" />
-
     <section class="my-10">
         <header class="flex justify-between mb-6">
             <h2 class="font-bold text-xl mb-4">
@@ -333,7 +364,7 @@
                 </button>
                 {#if showPaymentOptions}
                     <div
-                        class="payment_options absolute top-12 w-full bg-gray-100 text-dark shadow-xl p-1 rounded"
+                        class="payment_options slideIn absolute top-12 w-full bg-gray-100 text-dark shadow-xl p-1 rounded"
                     >
                         <ul class="flex flex-col gap-1">
                             {#each data.methods as method}
@@ -349,34 +380,11 @@
                             {/each}
                             <!-- <li>
                                 <a
-                                    class="hover:bg-color2 duration-100"
-                                    href="#"
+                                    class={` hover:bg-binance hover:font-bold hover:text-gray-100 duration-100  border-l-4 border-${ColorsPayMethods()[method.name]} `}
+                                    use:inertia
+                                    href={`/dashboard/configuracion/crear-cuenta/${method.id}`}
                                 >
-                                    Transferencia</a
-                                >
-                            </li>
-                            <li>
-                                <a
-                                    class="hover:bg-color2 duration-100"
-                                    href="#"
-                                >
-                                    Zelle</a
-                                >
-                            </li>
-                            <li>
-                                <a
-                                    class="hover:bg-color2 duration-100"
-                                    href="#"
-                                >
-                                    Binance</a
-                                >
-                            </li>
-                            <li>
-                                <a
-                                    class="hover:bg-color2 duration-100"
-                                    href="#"
-                                >
-                                    AirTm</a
+                                    {method.name}</a
                                 >
                             </li> -->
                         </ul>
@@ -398,7 +406,6 @@
                             <div class="butons flex gap-3 text-gray-600">
                                 <a
                                     href={`/dashboard/configuracion/editar-cuenta/${payMethod.id}`}
-                                    use:inertia
                                     class="hover:bg-color3 bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-xl rounded border hover:border-color3 px-4 py-1"
                                     title="Editar"
                                 >
@@ -491,8 +498,8 @@
         display: inline-block;
         /* background: red; */
     }
-    .payment_options {
-        animation-duration: 0.3s;
+    .slideIn {
+        animation-duration: 0.2s;
         animation-fill-mode: forwards;
         animation-name: slideIn;
     }
