@@ -33,13 +33,14 @@ Route::middleware(['auth'])->group(function ()
     Route::put('/dashboard/matricula/{id}', [StudentController::class, 'update']);    
     Route::delete('/dashboard/matricula/{studentId}', [StudentController::class, 'destroy']);    
 
-    Route::get('/dashboard/matricula/search-representative/{ci}', [StudentController::class, 'searchRepresentative']);
-    Route::get('/dashboard/matricula/search-second_representative/{ci}', [StudentController::class, 'searchSecondRepresentative']);
-
+    Route::get('/dashboard/matricula/search-representative/{ci}', [StudentController::class, 'searchRepresentativeByCI']);
+    Route::get('/dashboard/matricula/search-second_representative/{ci}', [StudentController::class, 'searchSecondRepresentativeByCI']);
+    
     Route::post('/dashboard/secciones', [SectionController::class, 'store']);    
     Route::delete('/dashboard/secciones/{course_id}/{section_id}', [SectionController::class, 'destroy']);    
-
+    
     Route::get('/dashboard/pagos', [PaymentController::class, 'index']);
+    Route::get('/dashboard/pagos/search-representative/{search}', [StudentController::class, 'searchRepresentative']);
     Route::get('/dashboard/registrar-pago', [PaymentController::class, 'showCreatePayment']);
 
 

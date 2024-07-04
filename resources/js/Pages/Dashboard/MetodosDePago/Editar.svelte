@@ -17,6 +17,7 @@
         event.preventDefault();
         $formData.clearErrors();
         $formData.put(`/dashboard/configuracion/editar-cuenta/${$formData.id}`, {
+            preserveScroll: false,
             onError: (errors) => {
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
