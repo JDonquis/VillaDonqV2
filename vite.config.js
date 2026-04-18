@@ -1,16 +1,13 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import {svelte} from "@sveltejs/vite-plugin-svelte";
+import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 export default defineConfig({
     plugins: [
-        laravel.default({
+        laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
         }),
-        svelte(),
+        svelte({}),
     ],
-    optimizeDeps: {
-        exclude: ['js-big-decimal']
-      }
 });
