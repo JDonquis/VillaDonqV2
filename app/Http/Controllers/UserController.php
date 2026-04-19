@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Services\UserService;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Services\LoginService;
-use App\Http\Requests\LoginRequest;
-use Illuminate\Support\Facades\Auth;
+use App\Services\UserService;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
     private LoginService $loginService;
+
     private UserService $userService;
 
     public function __construct()
@@ -20,73 +20,96 @@ class UserController extends Controller
         $this->userService = new UserService;
     }
 
-    // public function index()
-    // {
-    //     return Inertia::render('Login/Index');
-    // }
-
-
-
-    public function login(LoginRequest $request)
+    public function index(Request $request)
     {
 
-        $dataUser = ['ci' => $request->ci, 'password' => $request->password];
-        if (!$this->loginService->tryLoginOrFail($dataUser))
-            return redirect('/')->withErrors(['data' => 'Datos incorrectos, intente nuevamente']);
+        $users = $this->userService->getUsers($request->all());
 
-        $token = $this->loginService->generateToken($dataUser);
-        $user = auth()->user();
-        $permissionsArray = $this->userService->getPermissions($user->id);
-        $permissionsWithFormat = $this->userService->formatToPermissions($permissionsArray);
-
-        return Inertia::location('/dashboard');
+        return response()->json([
+            'status' => true,
+            'message' => 'OK',
+            'data' => $users,
+        ], 200);
     }
 
-    public function logout(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        Auth::logout();
+        $data = $request->validated();
 
-        return redirect()->route('login');
+        $randomPassword = bin2hex(random_bytes(8));
+        $data['password'] = bcrypt($randomPassword);
+
+        $user = $this->userService->createUser($data);
+
+        $this->userService->sendPasswordSetupEmail($user);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Usuario creado exitosamente. Se ha enviado un correo para establecer la contraseña.',
+            'data' => $user,
+        ], 201);
     }
 
-    public function changePassword(UpdatePasswordRequest $request)
+    public function show(int $id)
     {
-        $data = [
-            'oldPassword' => $request->oldPassword,
-            'newPassword' => $request->newPassword,
-            'confirmPassword' => $request->confirmPassword
-        ];
+        $user = $this->userService->getUserById($id);
 
-        try {
-            $this->loginService->tryChangePassword($data);
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Contraseña cambiada',
-            ], 200);
-        } catch (GeneralExceptions $e) {
-
-            if ($e->getCustomCode() == 401) {
-                return response()->json([
-                    'status' => false,
-                    'message' => $e->getMessage()
-                ], 401);
-            }
-
+        if (! $user) {
             return response()->json([
                 'status' => false,
-                'message' => $e->getMessage()
-            ], 500);
+                'message' => 'Usuario no encontrado',
+            ], 404);
         }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'OK',
+            'data' => $user,
+        ], 200);
     }
 
-    public function username()
+    public function update(UpdateUserRequest $request, int $id)
     {
-        return 'ci';
+        $user = $this->userService->getUserById($id);
+
+        if (! $user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Usuario no encontrado',
+            ], 404);
+        }
+
+        $data = $request->validated();
+
+        if (isset($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
+        }
+
+        $user = $this->userService->updateUser($user, $data);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Usuario actualizado exitosamente',
+            'data' => $user,
+        ], 200);
     }
 
-    public function failLogin()
+    public function destroy(int $id)
     {
-        return 'No tiene los permisos para ingresar a esta url';
+        $user = $this->userService->getUserById($id);
+
+        if (! $user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Usuario no encontrado',
+            ], 404);
+        }
+
+        $this->userService->deleteUser($user);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Usuario eliminado exitosamente',
+        ], 200);
     }
 }

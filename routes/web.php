@@ -1,14 +1,14 @@
 <?php
 
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AppController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MainConfigController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\StudentController;
-use App\Http\Controllers\BitacoraController;
-use App\Http\Controllers\MainConfigController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -21,8 +21,11 @@ use App\Http\Controllers\MainConfigController;
 */
 
 Route::get('/', [AppController::class, 'index'])->name('login');
-Route::post('/login', [UserController::class, 'login']);
-Route::get('/logout', [UserController::class, 'logout'])->middleware('auth')->name('logout');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+Route::get('/establecer-contrasena', [AuthController::class, 'showSetupPassword']);
+Route::post('/establecer-contrasena', [AuthController::class, 'setupPassword']);
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AppController::class, 'dashboard'])->name('dashboard');
@@ -46,8 +49,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/pagos', [PaymentController::class, 'index']);
     Route::get('/dashboard/pagos/search-representative/{search}', [StudentController::class, 'searchRepresentative']);
     Route::get('/dashboard/registrar-pago', [PaymentController::class, 'showCreatePayment']);
-
-
 
     Route::get('/dashboard/configuracion', [MainConfigController::class, 'index']);
     Route::get('/dashboard/configuracion/editar-cuenta/{id}', [MainConfigController::class, 'showEditAccount']);

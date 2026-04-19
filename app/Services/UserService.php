@@ -1,29 +1,46 @@
-<?php  
+<?php
 
 namespace App\Services;
 
-use DB;
-use App\Models\User;
-use App\Models\Activity;
+use App\Enums\UserType;
 use App\Http\Resources\UserResource;
-use Illuminate\Support\Facades\Auth;
+use App\Mail\PasswordSetupMail;
+use App\Models\PasswordSetupToken;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 
 class UserService
-{	
-	private User $userModel;
-
+{
+    private User $userModel;
 
     public function __construct()
     {
         $this->userModel = new User;
     }
 
+    public function getUsers($filters)
+    {
+        $query = $this->userModel->query();
+
+        $query->where('type_user_id', UserType::Administrator->value);
+
+        $query->when(isset($filters['search']), function ($q) use ($filters) {
+            $q->where('name', 'like', '%' . $filters['search'] . '%')
+                ->orWhere('last_name', 'like', '%' . $filters['search'] . '%')
+                ->orWhere('ci', 'like', '%' . $filters['search'] . '%')
+                ->orWhere('email', 'like', '%' . $filters['search'] . '%');
+        });
+
+        $users = $query->orderBy('id', 'desc')->get();
+
+        return $users;
+    }
 
     // public function createUser($dataToCreateUser)
-    // {   
+    // {
 
     //     // $password = $this->userModel->generateNewRandomPassword();
-    //     $entity = $this->hierarchyModel->where('code',$dataToCreateUser['entity_code'])->first();    
+    //     $entity = $this->hierarchyModel->where('code',$dataToCreateUser['entity_code'])->first();
     //     $dataToCreateUser['username'] = $dataToCreateUser['ci'];
 
     //     $search = $dataToCreateUser['name'] . ' ' . $dataToCreateUser['last_name'] . ' ' . $entity->name . ' ' . $dataToCreateUser['charge'] . ' ' . $dataToCreateUser['username'] . ' ' . $dataToCreateUser['ci'] . ' ' . $dataToCreateUser['phone_number'] . ' ' . $dataToCreateUser['address'] . ' ' . $dataToCreateUser['email'];
@@ -38,7 +55,7 @@ class UserService
     //     $this->userModel->fresh();
 
     //     $userWithFormat = new UserResource($this->userModel);
-        
+
     //     //Envio de correo
     //     //Username  = ostisaludfalcon@gmail.com
     //     //Password = Ostifalcon01
@@ -47,11 +64,10 @@ class UserService
     // }
 
     // public function updateUser($dataToUpdateUser,$user)
-    // {   
-        
-    //     $entity = $this->hierarchyModel->where('code',$dataToUpdateUser['entity_code'])->first();    
+    // {
+
+    //     $entity = $this->hierarchyModel->where('code',$dataToUpdateUser['entity_code'])->first();
     //     $dataToUpdateUser['username'] = $dataToUpdateUser['ci'];
-        
 
     //     $search = $dataToUpdateUser['name'] . ' ' . $dataToUpdateUser['last_name'] . ' ' . $entity->name . ' ' . $dataToUpdateUser['charge'] . ' ' . $dataToUpdateUser['username'] . ' ' . $dataToUpdateUser['ci'] . ' ' . $dataToUpdateUser['phone_number'] . ' ' . $dataToUpdateUser['address'] . ' ' . $dataToUpdateUser['email'];
 
@@ -93,50 +109,82 @@ class UserService
     //     return ['message' => 'Usuario eliminado exitosamente'];
     // }
 
-
     // public function isCurrentUserDeletingIdMatch($id)
     // {
     //     $userID = Auth::id();
-        
+
     //     if($userID == $id)
-    //         throw new GeneralExceptions('No puede eliminarse asi mismo',500);  
+    //         throw new GeneralExceptions('No puede eliminarse asi mismo',500);
 
     // }
 
     public function getPermissions($id)
     {
-        $user = $this->userModel->where('id',$id)->with('modules')->first();
-        
+        $user = $this->userModel->where('id', $id)->with('modules')->first();
+
         return $user->modules->toArray();
     }
 
     public function formatToPermissions($permissionsArray)
     {
-        if(count($permissionsArray) == 0)
+        if (count($permissionsArray) == 0) {
             return [];
+        }
 
         $format = [];
-        foreach ($permissionsArray as $module)
-        {
-            $format[$module['id']] = $module['name'];    
+        foreach ($permissionsArray as $module) {
+            $format[$module['id']] = $module['name'];
         }
         $format = json_decode(json_encode($format));
-       
+
         return $format;
     }
 
+    public function createUser(array $data): User
+    {
+        $user = new User;
+        $user->fill($data);
+        $user->save();
+
+        return $user;
+    }
+
+    public function updateUser(User $user, array $data): User
+    {
+        $user->fill($data);
+        $user->save();
+
+        return $user;
+    }
+
+    public function deleteUser(User $user): void
+    {
+        $user->delete();
+    }
+
+    public function getUserById(int $id): ?User
+    {
+        return User::find($id);
+    }
+
+    public function sendPasswordSetupEmail(User $user): string
+    {
+        $setupToken = PasswordSetupToken::generateForUser($user, 12);
+
+        $setupUrl = config('app.frontend_url', 'http://localhost:3000') . '/establecer-contrasena?token=' . $setupToken->token;
+
+        Mail::to($user->email)->send(new PasswordSetupMail($user, $setupUrl));
+
+        return $setupToken->token;
+    }
 
     private function transformToStringPermissions($permissions)
-    {   
+    {
         $result = [];
-        foreach ($permissions as $permission)
-        {
-            $result[] = strval($permission);    
+        foreach ($permissions as $permission) {
+            $result[] = strval($permission);
         }
 
         return $result;
     }
-
-    
-
 }
