@@ -106,7 +106,7 @@ class UserController extends Controller
 
         $this->userService->deleteUser($user);
 
-        return redirect('/dashboard/usuarios')->with([
+        return redirect('/dashboard/personal')->with([
             'status' => true,
             'message' => 'Usuario eliminado exitosamente',
         ]);

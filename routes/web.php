@@ -33,10 +33,10 @@ Route::post('/establecer-contrasena', [AuthController::class, 'setupPassword']);
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AppController::class, 'dashboard'])->name('dashboard');
 
-    Route::get('/dashboard/usuarios', [UserController::class, 'index']);
-    Route::post('/dashboard/usuarios', [UserController::class, 'store']);
-    Route::put('/dashboard/usuarios/{id}', [UserController::class, 'update']);
-    Route::delete('/dashboard/usuarios/{id}', [UserController::class, 'destroy']);
+    Route::get('/dashboard/personal', [UserController::class, 'index']);
+    Route::post('/dashboard/personal', [UserController::class, 'store']);
+    Route::put('/dashboard/personal/{id}', [UserController::class, 'update']);
+    Route::delete('/dashboard/personal/{id}', [UserController::class, 'destroy']);
 
     Route::get('/dashboard/matricula', [StudentController::class, 'index']);
     Route::post('/dashboard/matricula', [StudentController::class, 'store']);
