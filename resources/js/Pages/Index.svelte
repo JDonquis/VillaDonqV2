@@ -76,6 +76,12 @@
                 value={$form.processing ? "Cargando..." : "ENTRAR"}
                 class="hover:bg-color3 hover:text-white duration-200 mt-5 w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
             />
+            
+            <div class="mt-4 text-center">
+                <a href="/olvidar-contrasena" class="text-sm text-gray-400 hover:text-color2">
+                    ¿Olvidaste tu contraseña?
+                </a>
+            </div>
         </form>
     </Modal>
 

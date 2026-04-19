@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\SetupPasswordRequest;
 use App\Models\PasswordSetupToken;
+use App\Models\User;
 use App\Services\LoginService;
 use App\Services\UserService;
 use Exception;
@@ -80,6 +82,23 @@ class AuthController extends Controller
         return 'No tiene los permisos para ingresar a esta url';
     }
 
+    public function showForgotPassword()
+    {
+        return inertia('ForgotPassword');
+    }
+
+    public function requestResetPassword(ForgotPasswordRequest $request)
+    {
+        $ci = $request->ci;
+        $user = User::where('ci', $ci)->first();
+
+        if ($user && $user->email) {
+            $this->userService->sendPasswordResetEmail($user);
+        }
+
+        return back()->with('success', 'Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.');
+    }
+
     public function showSetupPassword(Request $request)
     {
         $token = $request->query('token');
@@ -88,9 +107,9 @@ class AuthController extends Controller
             return redirect('/')->with('error', 'Token no proporcionado');
         }
 
-        $tokenRecord = PasswordSetupToken::where('token', $token)->first();
+        $tokenRecord = PasswordSetupToken::findValidToken($token);
 
-        if (! $tokenRecord || ! $tokenRecord->isValid()) {
+        if (! $tokenRecord) {
             return redirect('/')->with('error', 'Token inválido o expirado');
         }
 
@@ -99,14 +118,10 @@ class AuthController extends Controller
 
     public function setupPassword(SetupPasswordRequest $request)
     {
-        $tokenRecord = PasswordSetupToken::where('token', $request->token)->first();
+        $tokenRecord = PasswordSetupToken::findValidToken($request->token);
 
         if (! $tokenRecord) {
-            return back()->with('error', 'Token inválido');
-        }
-
-        if (! $tokenRecord->isValid()) {
-            return back()->with('error', 'El token ha expirado o ya fue utilizado');
+            return back()->with('error', 'Token inválido o expirado');
         }
 
         $user = $tokenRecord->user;

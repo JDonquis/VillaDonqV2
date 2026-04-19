@@ -15,20 +15,29 @@ class PasswordSetupMail extends Mailable
 
     public function __construct(
         public User $user,
-        public string $setupUrl
+        public string $setupUrl,
+        public string $type = 'setup'
     ) {}
 
     public function envelope(): Envelope
     {
+        $subject = $this->type === 'reset'
+            ? 'Restablece tu contraseña - VillaDonq'
+            : 'Establece tu contraseña - VillaDonq';
+
         return new Envelope(
-            subject: 'Establece tu contraseña - VillaDonq',
+            subject: $subject,
         );
     }
 
     public function content(): Content
     {
+        $view = $this->type === 'reset'
+            ? 'emails.password-reset'
+            : 'emails.password-setup';
+
         return new Content(
-            view: 'emails.password-setup',
+            view: $view,
         );
     }
 }

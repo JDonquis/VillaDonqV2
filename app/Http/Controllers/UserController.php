@@ -25,11 +25,12 @@ class UserController extends Controller
 
         $users = $this->userService->getUsers($request->all());
 
-        return response()->json([
-            'status' => true,
-            'message' => 'OK',
+        return inertia('Dashboard/Personal', [
             'data' => $users,
-        ], 200);
+            'filters' => [
+                'search' => $request->input('search') ?? null,
+            ],
+        ]);
     }
 
     public function store(StoreUserRequest $request)
@@ -43,11 +44,11 @@ class UserController extends Controller
 
         $this->userService->sendPasswordSetupEmail($user);
 
-        return response()->json([
+        return inertia([
             'status' => true,
             'message' => 'Usuario creado exitosamente. Se ha enviado un correo para establecer la contraseña.',
             'data' => $user,
-        ], 201);
+        ]);
     }
 
     public function show(int $id)

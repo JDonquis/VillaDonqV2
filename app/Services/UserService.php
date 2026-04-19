@@ -25,10 +25,10 @@ class UserService
         $query->where('type_user_id', UserType::Administrator->value);
 
         $query->when(isset($filters['search']), function ($q) use ($filters) {
-            $q->where('name', 'like', '%' . $filters['search'] . '%')
-                ->orWhere('last_name', 'like', '%' . $filters['search'] . '%')
-                ->orWhere('ci', 'like', '%' . $filters['search'] . '%')
-                ->orWhere('email', 'like', '%' . $filters['search'] . '%');
+            $q->where('name', 'like', '%'.$filters['search'].'%')
+                ->orWhere('last_name', 'like', '%'.$filters['search'].'%')
+                ->orWhere('ci', 'like', '%'.$filters['search'].'%')
+                ->orWhere('email', 'like', '%'.$filters['search'].'%');
         });
 
         $users = $query->orderBy('id', 'desc')->get();
@@ -169,13 +169,24 @@ class UserService
 
     public function sendPasswordSetupEmail(User $user): string
     {
-        $setupToken = PasswordSetupToken::generateForUser($user, 12);
+        $setupToken = PasswordSetupToken::generateForUser($user, 12, 'setup');
 
-        $setupUrl = config('app.frontend_url', 'http://localhost:3000') . '/establecer-contrasena?token=' . $setupToken->token;
+        $setupUrl = config('app.frontend_url', 'http://localhost:3000').'/establecer-contrasena?token='.$setupToken->token;
 
         Mail::to($user->email)->send(new PasswordSetupMail($user, $setupUrl));
 
         return $setupToken->token;
+    }
+
+    public function sendPasswordResetEmail(User $user): string
+    {
+        $resetToken = PasswordSetupToken::generateForUser($user, 12, 'reset');
+
+        $resetUrl = config('app.frontend_url', 'http://localhost:3000').'/establecer-contrasena?token='.$resetToken->token;
+
+        Mail::to($user->email)->send(new PasswordSetupMail($user, $resetUrl, 'reset'));
+
+        return $resetToken->token;
     }
 
     private function transformToStringPermissions($permissions)

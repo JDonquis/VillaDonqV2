@@ -12,6 +12,7 @@ class PasswordSetupToken extends Model
 
     protected $fillable = [
         'user_id',
+        'type',
         'token',
         'expires_at',
         'used_at',
@@ -21,6 +22,8 @@ class PasswordSetupToken extends Model
         'expires_at' => 'datetime',
         'used_at' => 'datetime',
     ];
+
+    protected $enumValues = ['setup', 'reset'];
 
     public function user()
     {
@@ -38,14 +41,23 @@ class PasswordSetupToken extends Model
         $this->save();
     }
 
-    public static function generateForUser(User $user, int $expiresInHours = 12): self
+    public static function generateForUser(User $user, int $expiresInHours = 12, string $type = 'setup'): self
     {
         $token = self::create([
             'user_id' => $user->id,
+            'type' => $type,
             'token' => Str::random(64),
             'expires_at' => now()->addHours($expiresInHours),
         ]);
 
         return $token;
+    }
+
+    public static function findValidToken(string $token): ?self
+    {
+        return self::where('token', $token)
+            ->whereNull('used_at')
+            ->where('expires_at', '>', now())
+            ->first();
     }
 }

@@ -24,6 +24,9 @@ Route::get('/', [AppController::class, 'index'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
+Route::get('/olvidar-contrasena', [AuthController::class, 'showForgotPassword']);
+Route::post('/olvidar-contrasena', [AuthController::class, 'requestResetPassword']);
+
 Route::get('/establecer-contrasena', [AuthController::class, 'showSetupPassword']);
 Route::post('/establecer-contrasena', [AuthController::class, 'setupPassword']);
 
