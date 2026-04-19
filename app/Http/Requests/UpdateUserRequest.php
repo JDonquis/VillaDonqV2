@@ -28,6 +28,7 @@ class UpdateUserRequest extends FormRequest
             'phone_number' => 'nullable|string|max:30',
             'address' => 'nullable|string|max:100',
             'photo' => 'nullable|string|max:100',
+            'email_verified_status' => 'nullable|boolean',
         ];
     }
 }
