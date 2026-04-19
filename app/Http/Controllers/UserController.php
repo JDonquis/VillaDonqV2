@@ -56,10 +56,9 @@ class UserController extends Controller
         $user = $this->userService->getUserById($id);
 
         if (! $user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Usuario no encontrado',
-            ], 404);
+            return redirect()->back()->withErrors([
+                'message' => 'El usuario solicitado no existe.'
+            ]);
         }
 
         return response()->json([
@@ -88,11 +87,11 @@ class UserController extends Controller
 
         $user = $this->userService->updateUser($user, $data);
 
-        return response()->json([
+        return inertia('Dashboard/Personal', [
             'status' => true,
             'message' => 'Usuario actualizado exitosamente',
             'data' => $user,
-        ], 200);
+        ]);
     }
 
     public function destroy(int $id)
@@ -100,17 +99,16 @@ class UserController extends Controller
         $user = $this->userService->getUserById($id);
 
         if (! $user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Usuario no encontrado',
-            ], 404);
+            return redirect()->back()->withErrors([
+                'message' => 'El usuario solicitado no existe.'
+            ]);
         }
 
         $this->userService->deleteUser($user);
 
-        return response()->json([
+        return redirect('/dashboard/usuarios')->with([
             'status' => true,
             'message' => 'Usuario eliminado exitosamente',
-        ], 200);
+        ]);
     }
 }
