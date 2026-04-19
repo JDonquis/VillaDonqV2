@@ -18,26 +18,28 @@ class UserController extends Controller
     {
         $this->loginService = new LoginService;
         $this->userService = new UserService;
-
     }
 
-    
+    // public function index()
+    // {
+    //     return Inertia::render('Login/Index');
+    // }
+
+
 
     public function login(LoginRequest $request)
     {
 
-            $dataUser = ['ci' => $request->ci, 'password' => $request->password];
-            if(!$this->loginService->tryLoginOrFail($dataUser))
-    			return redirect('/')->withErrors(['data' => 'Datos incorrectos, intente nuevamente']);
+        $dataUser = ['ci' => $request->ci, 'password' => $request->password];
+        if (!$this->loginService->tryLoginOrFail($dataUser))
+            return redirect('/')->withErrors(['data' => 'Datos incorrectos, intente nuevamente']);
 
-            $token = $this->loginService->generateToken($dataUser);
-            $user = auth()->user();
-            $permissionsArray = $this->userService->getPermissions($user->id);
-            $permissionsWithFormat = $this->userService->formatToPermissions($permissionsArray);
+        $token = $this->loginService->generateToken($dataUser);
+        $user = auth()->user();
+        $permissionsArray = $this->userService->getPermissions($user->id);
+        $permissionsWithFormat = $this->userService->formatToPermissions($permissionsArray);
 
-            return Inertia::location('/dashboard');
-
-
+        return Inertia::location('/dashboard');
     }
 
     public function logout(Request $request)
@@ -48,7 +50,7 @@ class UserController extends Controller
     }
 
     public function changePassword(UpdatePasswordRequest $request)
-    {   
+    {
         $data = [
             'oldPassword' => $request->oldPassword,
             'newPassword' => $request->newPassword,
@@ -62,16 +64,15 @@ class UserController extends Controller
                 'status' => true,
                 'message' => 'Contraseña cambiada',
             ], 200);
-            
         } catch (GeneralExceptions $e) {
-            
+
             if ($e->getCustomCode() == 401) {
                 return response()->json([
                     'status' => false,
                     'message' => $e->getMessage()
                 ], 401);
             }
-            
+
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage()

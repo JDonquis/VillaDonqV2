@@ -3,33 +3,28 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Module;
-use App\Models\Representative;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-
-    protected $fillable = 
-    [    
-        'type_user_id',
-        'ci',
-        'name',
-        'last_name',
-        'email',
-        'password',
-        'phone_number',
-        'address',
-        'date_birth',
-        'state',
-        'city',
-        'photo'
-    ];
+    protected $fillable =
+        [
+            'type_user_id',
+            'ci',
+            'name',
+            'last_name',
+            'email',
+            'password',
+            'phone_number',
+            'address',
+            'photo',
+            'email_verified_status',
+        ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -45,7 +40,6 @@ class User extends Authenticatable
         return $this->belongsToMany(Module::class, 'user_modules', 'user_id', 'module_id');
     }
 
-    
     public function representative()
     {
         return $this->hasMany(Representative::class, 'user_id', 'id');
@@ -53,32 +47,29 @@ class User extends Authenticatable
 
     public function findForCi($ci)
     {
-        return self::where('ci',$ci)->with('modules')->first();
-
+        return self::where('ci', $ci)->with('modules')->first();
     }
 
     public function getPermissions($user)
-    {   
+    {
         $permissions = [];
 
         $modules = $user->modules;
 
-        foreach ($modules as $module) 
-        {
-            $permissions[] = strval($module->id);       
+        foreach ($modules as $module) {
+            $permissions[] = strval($module->id);
         }
 
         $rol = null;
-        
-        switch ($user->type_user_id) 
-        {
+
+        switch ($user->type_user_id) {
             case 1:
                 $rol = 'Administrador';
                 break;
             case 2:
                 $rol = 'Representante';
                 break;
-            
+
             case 3:
                 $rol = 'Profesor';
                 break;
@@ -86,12 +77,10 @@ class User extends Authenticatable
             default:
                 $rol = 'Representante';
                 break;
-
         }
 
         $permissions[] = $rol;
 
         return $permissions;
     }
-
 }
