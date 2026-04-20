@@ -44,10 +44,9 @@ class UserController extends Controller
 
         $this->userService->sendPasswordSetupEmail($user);
 
-        return inertia('Dashboard/Personal', [
+        return to_route('personal.index')->with([
             'status' => true,
             'message' => 'Usuario creado exitosamente. Se ha enviado un correo para establecer la contraseña.',
-            'data' => $user,
         ]);
     }
 
@@ -87,10 +86,9 @@ class UserController extends Controller
 
         $user = $this->userService->updateUser($user, $data);
 
-        return inertia('Dashboard/Personal', [
+        return to_route('personal.index')->with([
             'status' => true,
             'message' => 'Usuario actualizado exitosamente',
-            'data' => $user,
         ]);
     }
 
@@ -106,7 +104,7 @@ class UserController extends Controller
 
         $this->userService->deleteUser($user);
 
-        return redirect('/dashboard/personal')->with([
+        return to_route('personal.index')->with([
             'status' => true,
             'message' => 'Usuario eliminado exitosamente',
         ]);
