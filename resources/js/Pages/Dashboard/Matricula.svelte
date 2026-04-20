@@ -11,6 +11,12 @@
     import { claim_svg_element } from "svelte/internal";
     export let data = [];
 
+    let selectedCourseId = new URLSearchParams($page.url.split('?')[1] || '').get('course_id') || data.filters?.course_id || '';
+
+    $: if (data.filters?.course_id && !selectedCourseId) {
+        selectedCourseId = data.filters.course_id;
+    }
+
     const emptyDataForm = {
         student_id: "",
         student_name: "",
@@ -174,7 +180,14 @@
         );
     }
     function changeYear(course_id) {
-        router.get($page.url, { course_id, section_id: 1 });
+        const urlParams = new URLSearchParams($page.url.split('?')[1] || '');
+        const params = { course_id, section_id: 1 };
+        urlParams.forEach((value, key) => {
+            if (key !== 'course_id' && key !== 'section_id') {
+                params[key] = value;
+            }
+        });
+        router.get($page.url.split('?')[0], params);
     }
 
     const search_rep1 = debounce(async (ci) => {
@@ -735,7 +748,7 @@
             id="filterYear"
             type="select"
             on:change={(e) => changeYear(e.target.value)}
-            bind:value={data.filters.course_id}
+            bind:value={selectedCourseId}
             >
             {#each data.courses as course}
                 <option class="bg-gray-50" value={course.id}

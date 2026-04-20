@@ -14,6 +14,7 @@
     export let allowFilters = true;
 
     let filterClientData = {
+        search: new URLSearchParams($page.url.split('?')[1] || '').get('search') || '',
         ...serverSideData.filters,
     };
     // $: $form, handleFilters()
