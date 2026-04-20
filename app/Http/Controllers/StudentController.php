@@ -15,7 +15,8 @@ use App\Http\Requests\UpdateStudentRequest;
 use App\Http\Resources\CourseSectionCollection;
 
 class StudentController extends Controller
-{   
+{
+    private StudentService $studentService;
 
     public function __construct()
     {
@@ -23,56 +24,52 @@ class StudentController extends Controller
     }
 
     public function index(Request $request)
-    {   
-        
+    {
+
 
         $courses = Course::all();
         $sections = Section::all();
 
-        $course_sections = new CourseSectionCollection(CourseSection::with('section','course')->get());
+        $course_sections = new CourseSectionCollection(CourseSection::with('section', 'course')->get());
         $studentsPerCourse = $this->studentService->getStudentsPerCourse($request);
 
-        return inertia('Dashboard/Matricula',
-        [
-            'data' =>
+        return inertia(
+            'Dashboard/Matricula',
             [
-                'courses' => $courses,
-                'sections' => $sections,
-                'course_sections' => $course_sections,
-                'students' => $studentsPerCourse,
-                'filters' => 
+                'data' =>
                 [
-                    'course_id' =>  $request->input('course_id') ?? 1,
-                    'section_id' => $request->input('section_id') ?? 1,
-                    'search' => $request->input('search') ?? null,
+                    'courses' => $courses,
+                    'sections' => $sections,
+                    'course_sections' => $course_sections,
+                    'students' => $studentsPerCourse,
+                    'filters' =>
+                    [
+                        'course_id' =>  $request->input('course_id') ?? 1,
+                        'section_id' => $request->input('section_id') ?? 1,
+                        'search' => $request->input('search') ?? null,
+                    ]
                 ]
+
+
             ]
-
-            
-        ]);
-
-
+        );
     }
 
     public function store(CreateStudentRequest $request)
-    {   
+    {
         DB::beginTransaction();
 
-        try 
-        {
+        try {
             $this->studentService->create($request);
 
             DB::commit();
 
-            return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id);
+            return redirect('/dashboard/matricula?course_id=' . $request->course_id . '&section_id=' . $request->section_id);
+        } catch (Exception $e) {
 
-        }
-        catch (Exception $e)
-        {   
-            
             DB::rollback();
-            
-            return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id)->withErrors(['message' => $e->getMessage()]);
+
+            return redirect('/dashboard/matricula?course_id=' . $request->course_id . '&section_id=' . $request->section_id)->withErrors(['message' => $e->getMessage()]);
         }
     }
 
@@ -81,26 +78,22 @@ class StudentController extends Controller
 
         DB::beginTransaction();
 
-        try 
-        {
+        try {
             $this->studentService->update($request, $id);
 
             DB::commit();
 
-            return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id);
+            return redirect('/dashboard/matricula?course_id=' . $request->course_id . '&section_id=' . $request->section_id);
+        } catch (Exception $e) {
 
-        }
-        catch (Exception $e)
-        {   
-            
             DB::rollback();
-             
-            return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id)->withErrors(['message' => $e->getMessage()]);
+
+            return redirect('/dashboard/matricula?course_id=' . $request->course_id . '&section_id=' . $request->section_id)->withErrors(['message' => $e->getMessage()]);
         }
     }
 
     public function destroy(Request $request, $studentId)
-    {   
+    {
         $this->studentService->delete($studentId);
 
         return redirect('/dashboard/matricula');
@@ -109,22 +102,21 @@ class StudentController extends Controller
     public function searchRepresentativeByCI($ci)
     {
         $info = $this->studentService->searchRepresentativeByCI($ci);
-        
+
         return response()->json($info);
     }
 
     public function searchSecondRepresentativeByCI($ci)
     {
         $info = $this->studentService->searchSecondRepresentativeByCI($ci);
-        
+
         return response()->json($info);
     }
 
     public function searchRepresentative($search)
     {
         $info = $this->studentService->searchRepresentative($search);
-        
+
         return response()->json($info);
     }
-
 }
