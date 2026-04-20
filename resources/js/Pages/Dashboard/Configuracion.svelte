@@ -5,6 +5,7 @@
     import ColorsPayMethods from "../../components/ColorsPayMethods";
 
     import Alert from "../../components/Alert.svelte";
+    import Input from "../../components/Input.svelte";
     import { displayAlert } from "../../stores/alertStore";
     export let data;
     console.log({ data });
@@ -22,20 +23,19 @@
     // }
 
     const prices = useForm({
-        ...data.prices
+        ...data.prices,
     });
 
     function updatePrices(e) {
-        e.preventDefault()
+        e.preventDefault();
         $prices.put(`/dashboard/configuracion/pagos`, {
             onBefore: () => confirm("¿Está seguro de guardar estos cambios?"),
             onSuccess: (mensaje) => {
-                $prices.reset()
+                $prices.reset();
                 displayAlert({
                     type: "success",
                     message: "Precios actualizados",
                 });
-               
             },
             onError: (errors) => {
                 if (errors.data) {
@@ -45,17 +45,15 @@
         });
     }
 
-
     function deleteAccount(id) {
         router.delete(`/dashboard/configuracion/eliminar-cuenta/${id}`, {
-            onBefore: () => confirm("¿Está seguro de eliminar este metodo de pago?"),
+            onBefore: () =>
+                confirm("¿Está seguro de eliminar este metodo de pago?"),
             onSuccess: (mensaje) => {
-                
                 displayAlert({
                     type: "success",
                     message: "Método de pago eliminado",
                 });
-               
             },
             onError: (errors) => {
                 if (errors.data) {
@@ -74,7 +72,7 @@
     <div class="py-5"></div>
 
     <h2 class="font-bold text-xl">Configuración del perfil</h2>
-    
+
     <form
         class="bg-background px-1 mx-4 md:py-9 md:pb-12 md:grid justify-between grid-flow-col md:gap-x-10 lg:gap-x-24 items-center relative"
     >
@@ -109,7 +107,7 @@
 
                         {#if $institution.courses.includes(1)}
                             <div
-                                class="bg-color1 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"
+                                class="bg-color1 w-6 md:w-8 aspect-square -full overflow-hidden flex items-center justify-center"
                             >
                                 <iconify-icon
                                     class="text-color4 text-4xl"
@@ -119,7 +117,7 @@
                             <b>Prescolar</b>
                         {:else}
                             <div
-                                class="bg-gray-400 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"
+                                class="bg-gray-400 w-6 md:w-8 aspect-square -full overflow-hidden flex items-center justify-center"
                             >
                                 <iconify-icon
                                     icon="octicon:no-entry-16"
@@ -147,7 +145,7 @@
                         />
                         {#if $institution.courses.includes(2)}
                             <div
-                                class="bg-color1 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"
+                                class="bg-color1 w-6 md:w-8 aspect-square -full overflow-hidden flex items-center justify-center"
                             >
                                 <iconify-icon
                                     class="text-color4 text-4xl"
@@ -157,7 +155,7 @@
                             <b>Primaria</b>
                         {:else}
                             <div
-                                class="bg-gray-400 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"
+                                class="bg-gray-400 w-6 md:w-8 aspect-square -full overflow-hidden flex items-center justify-center"
                             >
                                 <iconify-icon
                                     icon="octicon:no-entry-16"
@@ -189,7 +187,7 @@
 
                         {#if $institution.courses.includes(3)}
                             <div
-                                class="bg-color1 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"
+                                class="bg-color1 w-6 md:w-8 aspect-square -full overflow-hidden flex items-center justify-center"
                             >
                                 <iconify-icon
                                     class="text-color4 text-4xl"
@@ -199,7 +197,7 @@
                             <b>Secundaria</b>
                         {:else}
                             <div
-                                class="bg-gray-400 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"
+                                class="bg-gray-400 w-6 md:w-8 aspect-square -full overflow-hidden flex items-center justify-center"
                             >
                                 <iconify-icon
                                     icon="octicon:no-entry-16"
@@ -264,7 +262,7 @@
         </div>
 
         <label
-            class="pl-5 relative pr-2 max-w-[500px] flex items-center justify-center rounded-full big_picture_label cursor-pointer"
+            class="pl-5 relative pr-2 max-w-[500px] flex items-center justify-center -full big_picture_label cursor-pointer"
         >
             <img
                 class="absolute w-full"
@@ -273,21 +271,21 @@
             />
 
             <img
-                class="rounded-full aspect-square border-4 object-cover border-color1 bg-blend-overlay hover:bg-blend-darken"
+                class="-full aspect-square border-4 object-cover border-color1 bg-blend-overlay hover:bg-blend-darken"
                 src="http://127.0.0.1:8000/storage/institution/institution.jpeg"
                 alt=""
             />
 
             <iconify-icon
                 icon="line-md:edit"
-                class="text-dark text-6xl bg-white bg-opacity-40 p-20 md:p-32 xl:p-48 hidden absolute rounded-full mx-auto"
+                class="text-dark text-6xl bg-white bg-opacity-40 p-20 md:p-32 xl:p-48 hidden absolute -full mx-auto"
             ></iconify-icon>
             <input type="file" name="" id="" class="hidden" />
         </label>
     </form>
     {#if $institution.isDirty}
         <button
-            class="shadow-xl slideIn flex items-center justify-center mb-3 ml-auto py-4 rounded w-64 bg-color1 gap-3 text-color4"
+            class="shadow-xl slideIn flex items-center justify-center mb-3 ml-auto py-4 w-64 bg-color1 gap-3 text-color4"
         >
             <span> GUARDAR PERFIL </span>
             <iconify-icon icon="material-symbols:save" class="text-3xl"
@@ -297,52 +295,46 @@
 
     <hr class=" border-gray-300" />
 
-    <form class="Configuracion_tarifas my-10 py-3" id="pricesForm" on:submit={updatePrices}>
+    <form
+        class="Configuracion_tarifas my-10 py-3"
+        id="pricesForm"
+        on:submit={updatePrices}
+    >
         <h2 class="font-bold text-xl mb-4">Configuración de tarifas</h2>
 
         <div class="flex gap-4 pl-4">
-            <label class="flex flex-col">
-                <span> Mensualidad ($): </span>
-                <input
-                    type="number"
-                    required={true}
-                    bind:value={$prices.monthly_payment}
-                    class={"z-50  p-2 mt-1 md:w-60 bg-color6 text-black border rounded-md"}
-                />
-            </label>
+            <Input
+                label="Mensualidad ($)"
+                type="number"
+                required={true}
+                bind:value={$prices.monthly_payment}
+            />
 
-            <label class="flex flex-col">
-                <span> Inscripción nuevo ingreso ($): </span>
-                <input
-                    type="number"
-                    required={true}
-                    bind:value={$prices.new_inscription_price}
-                    class={"z-50  p-2 mt-1 md:w-60 bg-color6 text-black border rounded-md"}
-                />
-            </label>
+            <!-- <Input
+                label="Inscripción nuevo ingreso ($)"
+                type="number"
+                required={true}
+                bind:value={$prices.new_inscription_price}
+            /> -->
 
-            <label class="flex flex-col">
-                <span> Inscripción de regulares ($): </span>
-                <input
-                    type="number"
-                    bind:value={$prices.regular_inscription_price}
-                    required={true}
-                    class={"z-50  p-2 mt-1 md:w-60 bg-color6 text-black border rounded-md"}
-                />
-            </label>
+            <Input
+                label="Inscripción de regulares ($)"
+                type="number"
+                required={true}
+                bind:value={$prices.regular_inscription_price}
+            />
         </div>
     </form>
     {#if $prices.isDirty}
-
-    <button
-        class="shadow-xl slideIn flex items-center justify-center mb-3 ml-auto py-4 rounded w-64 bg-color1 gap-3 text-color4"
-        type="submit"
-        form={"pricesForm"}
-    >
-        <span> GUARDAR TARIFAS </span>
-        <iconify-icon icon="material-symbols:save" class="text-3xl"
-        ></iconify-icon>
-    </button>
+        <button
+            class="shadow-xl slideIn flex items-center justify-center mb-3 ml-auto py-4 w-64 bg-color1 gap-3 text-color4"
+            type="submit"
+            form={"pricesForm"}
+        >
+            <span> GUARDAR TARIFAS </span>
+            <iconify-icon icon="material-symbols:save" class="text-3xl"
+            ></iconify-icon>
+        </button>
     {/if}
     <hr class=" border-gray-300" />
     <section class="my-10">
@@ -353,7 +345,7 @@
             <div class="relative z-30">
                 <button
                     on:click={() => (showPaymentOptions = !showPaymentOptions)}
-                    class="btn_create gap-3 flex items-center"
+                    class="btn gap-3 flex items-center"
                     use:clickOutside={() => {
                         showPaymentOptions = false;
                     }}
@@ -364,7 +356,7 @@
                 </button>
                 {#if showPaymentOptions}
                     <div
-                        class="payment_options slideIn absolute top-12 w-full bg-gray-100 text-dark shadow-xl p-1 rounded"
+                        class="payment_options slideIn absolute top-14 w-full bg-gray-100 text-dark shadow-xl p-1"
                     >
                         <ul class="flex flex-col gap-1">
                             {#each data.methods as method}
@@ -392,22 +384,26 @@
                 {/if}
             </div>
         </header>
-        <div class="flex flex-col gap-4">
+        <div class="flex flex-wrap gap-4">
             {#each data.accounts.data as payMethod}
                 <article
                     id={`account-${payMethod.id}`}
-                    class={`rounded-md bg-white border-l-8 border-${ColorsPayMethods()[payMethod.payment_method_name]} pb-5 pt-3 md:px-8`}
+                    class={`border-3 relative medium-shadow bg-white w-fit pb-5 pt-3 md:px-8 pl-9`}
                 >
+                    <div
+                        class={`h-full bg-${ColorsPayMethods()[payMethod.payment_method_name]} w-5 absolute left-0 top-0`}
+                    ></div>
                     <header class="flex justify-between">
-                        <h3 class="text-color1 font-semibold">
+                        <h3 class={` font-semibold `}>
                             {payMethod.payment_method_name}
                         </h3>
                         {#if payMethod.payment_method_name != "Efectivo"}
-                            <div class="butons flex gap-3 text-gray-600">
+                            <div class="butons flex gap-1 text-gray-500">
                                 <a
                                     href={`/dashboard/configuracion/editar-cuenta/${payMethod.id}`}
-                                    class="hover:bg-color3 bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-xl rounded border hover:border-color3 px-4 py-1"
+                                    class="hover:bg-yellow cursor-pointer text-xl hover:border-2 border-black hover:text-black hover:small-shadow px-4 py-1"
                                     title="Editar"
+                                    use:inertia
                                 >
                                     <iconify-icon
                                         class="relative -bottom-1"
@@ -417,7 +413,7 @@
 
                                 <button
                                     on:click={() => deleteAccount(payMethod.id)}
-                                    class="hover:bg-red bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-xl rounded border hover:border-red px-4 py-1"
+                                    class="hover:bg-red bg-opacity-10 cursor-pointer text-xl hover:border-2 border-black hover:text-black hover:small-shadow px-4 py-1"
                                     title="Eliminar"
                                 >
                                     <iconify-icon
@@ -429,7 +425,7 @@
                         {/if}
                     </header>
                     <div
-                        class="grid grid-cols-3 justify-items-start gap-4 py-2"
+                        class="flex text-black justify-items-start gap-4 md:gap-6 py-2"
                     >
                         {#if payMethod?.bank}
                             <div>

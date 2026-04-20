@@ -39,10 +39,10 @@
     action=""
     id="a-form" 
     on:submit={handleSubmit}
-    class="bg-color1 p max-w-[450px] mx-auto rounded-md text-gray-50"
+    class="border-4 medium-shadow border-black p max-w-[450px] mx-auto "
 >
-    <header class={`bg-gray-100 text-dark py-4 pl-3`}>
-        <h2 class={`border-l-4 border-${ColorsPayMethods()[data.method.name]} inline pl-3`}>
+    <header class={`bg-black/5 text-dark py-4 pl-3`}>
+        <h2 class={`border-l-8 border-${ColorsPayMethods()[data.method.name]} inline pl-3`}>
             Editar método: <b>{data.method.name}</b>
         </h2>
 
@@ -112,11 +112,23 @@
                 error={$formData.errors?.email}
             />
         {/if}
-        <input
-            form="a-form"
-            type="submit"
-            value={$formData.processing ? "Cargando..." : "Guardar"}
-            class="hover:bg-color3 hover:text-white duration-200 w-full mt-5 bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
-        />
+            <button
+        form="a-form"
+        type="submit"
+        class="btn btn-green w-full mt-6 mr-7 flex items-center justify-center gap-3"
+        disabled={$formData.processing}
+    >
+        {#if $formData.processing}
+            Cargando...
+        {:else}
+            <iconify-icon
+                icon="material-symbols:save-sharp"
+                width="24"
+                height="24"
+            />
+            <span> Guardar </span>
+        {/if}
+    </button>
+        
     </div>
 </form>

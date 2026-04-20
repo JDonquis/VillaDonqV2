@@ -2,7 +2,7 @@
     import Table from "../../components/Table.svelte";
     import Modal from "../../components/Modal.svelte";
     import Input from "../../components/Input.svelte";
-    import axios from 'axios';
+    import axios from "axios";
     import debounce from "lodash/debounce";
 
     import Alert from "../../components/Alert.svelte";
@@ -177,12 +177,14 @@
         router.get($page.url, { course_id, section_id: 1 });
     }
 
-    const search_rep1 = debounce( async (ci) => {
+    const search_rep1 = debounce(async (ci) => {
         try {
-           const response = await axios.get(`/dashboard/matricula/search-representative/${ci}`);
+            const response = await axios.get(
+                `/dashboard/matricula/search-representative/${ci}`,
+            );
         } catch (error) {}
-    },300)
-  
+    }, 300);
+
     function search_second(ci) {
         router.get(`/dashboard/matricula/search-second_representative/`, {
             ci,
@@ -196,17 +198,17 @@
 
 <Alert />
 
-<Modal bind:showModal>
-    <h2 slot="header" class="text-sm text-center">
-        INSCRIBIR NUEVO ESTUDIANTE
-    </h2>
-
-    <form id="a-form" on:submit={handleSubmit} action="" class="w-[600px]">
+<Modal bind:showModal classes={"w-fit"}>
+    <form
+        id="a-form"
+        on:submit={handleSubmit}
+        action=""
+        class="max-w-[1260px] gap-10 flex justify-around pt-2 px-7"
+    >
         <fieldset
-            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+            class="  border-3 medium-shadow border-black pb-9 px-5 bg-gray-50 grid grid-cols-2 gap-x-10 h-fit md:px-9 md:pt-2"
         >
-            <legend
-                class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
+            <legend class="text-center px-5 font-bold rounded-sm bg"
                 >DATOS DEL ESTUDIANTE</legend
             >
             <Input
@@ -232,7 +234,7 @@
             />
             <Input
                 type="email"
-                label="correo"
+                label="Correo"
                 bind:value={$formCreate.student_email}
                 error={$formCreate.errors?.student_email}
             />
@@ -289,8 +291,147 @@
             />
         </fieldset>
 
-        <fieldset
-            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+        <div>
+            <fieldset
+                class=" border-3 medium-shadow border-black pb-9 px-5 bg-gray-50 grid grid-cols-2 gap-x-10 h-fit md:px-9 md:pt-2"
+            >
+                <legend class="text-center px-5 font-bold rounded-sm bg"
+                    >REPRESENTANTE LEGAL</legend
+                >
+                <Input
+                    type="text"
+                    required={true}
+                    label={"Nombres"}
+                    bind:value={$formCreate.rep_name}
+                    error={$formCreate.errors?.rep_name}
+                />
+                <Input
+                    type="text"
+                    required={true}
+                    label={"Apellidos"}
+                    bind:value={$formCreate.rep_last_name}
+                    error={$formCreate.errors?.rep_last_name}
+                />
+                <Input
+                    type="number"
+                    required={true}
+                    label={"Cédula"}
+                    bind:value={$formCreate.rep_ci}
+                    error={$formCreate.errors?.rep_ci}
+                    on:input={(e) => search_rep1(e.target.value)}
+                />
+                <Input
+                    type="text"
+                    label={"Parentesco"}
+                    bind:value={$formCreate.rep_relationship}
+                    error={$formCreate.errors?.rep_relationship}
+                />
+
+                <!-- <Input
+                    type="date"
+                    label={"Fecha de nacimiento"}
+                    bind:value={$formCreate.rep_date_birth}
+                    error={$formCreate.errors?.rep_date_birth}
+                /> -->
+                <Input
+                    type="email"
+                    required={true}
+                    label="Correo"
+                    bind:value={$formCreate.rep_email}
+                    error={$formCreate.errors?.rep_email}
+                />
+                <Input
+                    type="tel"
+                    required={true}
+                    label={"Teléfono"}
+                    bind:value={$formCreate.rep_phone_number}
+                    error={$formCreate.errors?.rep_phone_number}
+                />
+
+                <!-- <Input
+                    type="text"
+                    label={"Profesión"}
+                    bind:value={$formCreate.rep_profession}
+                    error={$formCreate.errors?.rep_profession}
+                />
+
+                <Input
+                    type="textarea"
+                    label={"Lugar de trabajo"}
+                    bind:value={$formCreate.rep_workplace}
+                    error={$formCreate.errors?.rep_workplace}
+                /> -->
+            </fieldset>
+
+            <fieldset
+                class=" border-3 medium-shadow border-black pb-9 px-5 mt-9 bg-gray-50 grid grid-cols-2 gap-x-10 h-fit md:px-9 md:pt-2"
+            >
+                <legend class="text-center px-5 font-bold rounded-sm bg"
+                    >SEGUNDO REPRESENTANTE</legend
+                >
+                <Input
+                    type="text"
+                    label={"Nombres"}
+                    bind:value={$formCreate.second_rep_name}
+                    error={$formCreate.errors?.second_rep_name}
+                />
+                <Input
+                    type="text"
+                    label={"Apellidos"}
+                    bind:value={$formCreate.second_rep_last_name}
+                    error={$formCreate.errors?.second_rep_last_name}
+                />
+                <Input
+                    type="number"
+                    label={"Cédula"}
+                    bind:value={$formCreate.second_rep_ci}
+                    error={$formCreate.errors?.second_rep_ci}
+                    on:input={() => console.log("2")}
+                />
+
+                <Input
+                    type="text"
+                    label={"Parentesco"}
+                    bind:value={$formCreate.rep_relationship}
+                    error={$formCreate.errors?.rep_relationship}
+                />
+                <!-- <Input
+                    type="date"
+                    label={"Fecha de nacimiento"}
+                    bind:value={$formCreate.second_rep_date_birth}
+                    error={$formCreate.errors?.second_rep_date_birth}
+                /> -->
+                <Input
+                    type="email"
+                    label="Correo"
+                    bind:value={$formCreate.second_rep_email}
+                    error={$formCreate.errors?.second_rep_email}
+                />
+
+                <Input
+                    type="tel"
+                    label={"Teléfono"}
+                    bind:value={$formCreate.second_rep_phone_number}
+                    error={$formCreate.errors?.second_rep_phone_number}
+                />
+
+                <!-- <Input
+                    type="text"
+                    label={"Profesión"}
+                    bind:value={$formCreate.second_rep_profession}
+                    error={$formCreate.errors?.second_rep_profession}
+                />
+
+                <Input
+                    type="textarea"
+                    label={"Lugar de trabajo"}
+                    bind:value={$formCreate.second_rep_workplace}
+                    error={$formCreate.errors?.second_rep_workplace}
+                /> -->
+            </fieldset>
+        </div>
+        <!-- <fieldset
+            class="px-5 bg-gray-50 mt-4 grid grid-cols-2 gap-x-10  w-full border md:p-9 pt-2  "
         >
             <legend
                 class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
@@ -315,142 +456,26 @@
                 error={$formCreate.errors?.address}
                 classes="col-span-2"
             />
-        </fieldset>
-
-        <fieldset
-            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
-        >
-            <legend
-                class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
-                >REPRESENTANTE LEGAL</legend
-            >
-            <Input
-                type="number"
-                required={true}
-                label={"Cédula"}
-                bind:value={$formCreate.rep_ci}
-                error={$formCreate.errors?.rep_ci}
-                on:input={(e) => search_rep1(e.target.value)}
-            />
-            <Input
-                type="text"
-                required={true}
-                label={"Nombres"}
-                bind:value={$formCreate.rep_name}
-                error={$formCreate.errors?.rep_name}
-            />
-            <Input
-                type="text"
-                required={true}
-                label={"Apellidos"}
-                bind:value={$formCreate.rep_last_name}
-                error={$formCreate.errors?.rep_last_name}
-            />
-
-            <Input
-                type="date"
-                label={"Fecha de nacimiento"}
-                bind:value={$formCreate.rep_date_birth}
-                error={$formCreate.errors?.rep_date_birth}
-            />
-            <Input
-                type="email"
-                required={true}
-                label="correo"
-                bind:value={$formCreate.rep_email}
-                error={$formCreate.errors?.rep_email}
-            />
-            <Input
-                type="tel"
-                required={true}
-                label={"Teléfono"}
-                bind:value={$formCreate.rep_phone_number}
-                error={$formCreate.errors?.rep_phone_number}
-            />
-
-            <Input
-                type="text"
-                label={"Profesión"}
-                bind:value={$formCreate.rep_profession}
-                error={$formCreate.errors?.rep_profession}
-            />
-
-            <Input
-                type="textarea"
-                label={"Lugar de trabajo"}
-                bind:value={$formCreate.rep_workplace}
-                error={$formCreate.errors?.rep_workplace}
-            />
-        </fieldset>
-
-        <fieldset
-            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
-        >
-            <legend
-                class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
-                >SEGUNDO REPRESENTANTE</legend
-            >
-            <Input
-                type="number"
-                label={"Cédula"}
-                bind:value={$formCreate.second_rep_ci}
-                error={$formCreate.errors?.second_rep_ci}
-                on:input={() => console.log("2")}
-            />
-            <Input
-                type="text"
-                label={"Nombres"}
-                bind:value={$formCreate.second_rep_name}
-                error={$formCreate.errors?.second_rep_name}
-            />
-            <Input
-                type="text"
-                label={"Apellidos"}
-                bind:value={$formCreate.second_rep_last_name}
-                error={$formCreate.errors?.second_rep_last_name}
-            />
-            <Input
-                type="date"
-                label={"Fecha de nacimiento"}
-                bind:value={$formCreate.second_rep_date_birth}
-                error={$formCreate.errors?.second_rep_date_birth}
-            />
-            <Input
-                type="email"
-                label="correo"
-                bind:value={$formCreate.second_rep_email}
-                error={$formCreate.errors?.second_rep_email}
-            />
-
-            <Input
-                type="tel"
-                label={"Teléfono"}
-                bind:value={$formCreate.second_rep_phone_number}
-                error={$formCreate.errors?.second_rep_phone_number}
-            />
-
-            <Input
-                type="text"
-                label={"Profesión"}
-                bind:value={$formCreate.second_rep_profession}
-                error={$formCreate.errors?.second_rep_profession}
-            />
-
-            <Input
-                type="textarea"
-                label={"Lugar de trabajo"}
-                bind:value={$formCreate.second_rep_workplace}
-                error={$formCreate.errors?.second_rep_workplace}
-            />
-        </fieldset>
+        </fieldset> -->
     </form>
-    <input
+    <button
         form="a-form"
         slot="btn_footer"
         type="submit"
-        value={$formCreate.processing ? "Cargando..." : "Guardar"}
-        class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
-    />
+        class="btn btn-green w-1/2 mr-7 flex items-center justify-center gap-3"
+        disabled={$formCreate.processing}
+    >
+        {#if $formCreate.processing}
+            Cargando...
+        {:else}
+            <iconify-icon
+                icon="material-symbols:save-sharp"
+                width="24"
+                height="24"
+            />
+            <span> Guardar </span>
+        {/if}
+    </button>
 </Modal>
 
 <Modal bind:showModal={showModalFormEdit}>
@@ -458,7 +483,7 @@
 
     <form id="a-form" on:submit={handleEdit} action="" class="w-[600px]">
         <fieldset
-            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+            class="px-5 bg-gray-50 mt-4 grid grid-cols-2 gap-x-10 w-full border md:p-9 pt-2"
         >
             <legend
                 class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
@@ -487,7 +512,7 @@
             />
             <Input
                 type="email"
-                label="correo"
+                label="Correo"
                 bind:value={$formEdit.student_email}
                 error={$formEdit.errors?.student_email}
             />
@@ -545,7 +570,7 @@
         </fieldset>
 
         <fieldset
-            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+            class="px-5 bg-gray-50 mt-4 grid grid-cols-2 gap-x-10 w-full border md:p-9 pt-2"
         >
             <legend
                 class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
@@ -573,7 +598,7 @@
         </fieldset>
 
         <fieldset
-            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+            class="px-5 bg-gray-50 mt-4 grid grid-cols-2 gap-x-10 w-full border md:p-9 pt-2"
         >
             <legend
                 class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
@@ -600,16 +625,16 @@
                 bind:value={$formEdit.rep_ci}
                 error={$formEdit.errors?.rep_ci}
             />
-            <Input
+            <!-- <Input
                 type="date"
                 label={"Fecha de nacimiento"}
                 bind:value={$formEdit.rep_date_birth}
                 error={$formEdit.errors?.rep_date_birth}
-            />
+            /> -->
             <Input
                 type="email"
                 required={true}
-                label="correo"
+                label="Correo"
                 bind:value={$formEdit.rep_email}
                 error={$formEdit.errors?.rep_email}
             />
@@ -637,7 +662,7 @@
         </fieldset>
 
         <fieldset
-            class="px-5 bg-black bg-opacity-10 mt-4 grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+            class="px-5 bg-gray-50 mt-4 grid grid-cols-2 gap-x-10 w-full border md:p-9 pt-2"
         >
             <legend
                 class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
@@ -655,15 +680,15 @@
                 bind:value={$formEdit.second_rep_last_name}
                 error={$formEdit.errors?.second_rep_last_name}
             />
-            <Input
+            <!-- <Input
                 type="date"
                 label={"Fecha de nacimiento"}
                 bind:value={$formEdit.second_rep_date_birth}
                 error={$formEdit.errors?.second_rep_date_birth}
-            />
+            /> -->
             <Input
                 type="email"
-                label="correo"
+                label="Correo"
                 bind:value={$formEdit.second_rep_email}
                 error={$formEdit.errors?.second_rep_email}
             />
@@ -700,27 +725,28 @@
         slot="btn_footer"
         type="submit"
         value={$formEdit.processing ? "Cargando..." : "Editar"}
-        class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color2 text-black font-bold py-3 rounded-md cursor-pointer"
+        class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color2 text-black font-bold py-3 cursor-pointer"
     />
 </Modal>
 
 <div class="flex justify-between items-center">
     <div class="w-44">
-        <label for="filterYear " class="text-lg"> Año escolar </label>
-        <select
+        <Input
             id="filterYear"
-            class="w-full p-2 rounded-xl"
+            type="select"
             on:change={(e) => changeYear(e.target.value)}
-        >
+            bind:value={data.filters.course_id}
+            >
             {#each data.courses as course}
                 <option class="bg-gray-50" value={course.id}
                     >{course.name}</option
                 >
             {/each}
-        </select>
+        </Input>
+    
     </div>
     <button
-        class="btn_create inline-block"
+        class="btn inline-block"
         on:click={(e) => {
             e.preventDefault();
             $formCreate.section_id = +data.filters.section_id;
@@ -743,7 +769,7 @@
         {#if lastSectionId < 6}
             <button
                 on:click={() => createSection()}
-                class="rounded border border-color3 text-color3 h-full cursor-pointer hover:bg-color3 hover:text-gray-100 px-4"
+                class="btn-ghost px-4 py-2"
             >
                 Crear sección
             </button>
@@ -812,3 +838,11 @@
         {/each}
     </tbody>
 </Table>
+
+<style>
+    fieldset {
+        background-color: #fffdf5;
+        background-image: url("https://www.transparenttextures.com/patterns/rice-paper-2.png");
+        /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
+    }
+</style>
