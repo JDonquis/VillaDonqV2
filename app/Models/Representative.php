@@ -15,6 +15,7 @@ class Representative extends Model
         'profession',
         'workplace',
         'relationship',
+        'second_representative_relationship',
         'second_representative_name',
         'second_representative_last_name',
         'second_representative_ci',

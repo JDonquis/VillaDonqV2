@@ -33,6 +33,19 @@ class StudentController extends Controller
         $course_sections = new CourseSectionCollection(CourseSection::with('section', 'course')->get());
         $studentsPerCourse = $this->studentService->getStudentsPerCourse($request);
 
+        return response()->json([
+            'courses' => $courses,
+            'sections' => $sections,
+            'course_sections' => $course_sections,
+            'students' => $studentsPerCourse,
+            'filters' =>
+            [
+                'course_id' =>  $request->input('course_id') ?? 1,
+                'section_id' => $request->input('section_id') ?? 1,
+                'search' => $request->input('search') ?? null,
+            ]
+        ]);
+
         return inertia(
             'Dashboard/Matricula',
             [
