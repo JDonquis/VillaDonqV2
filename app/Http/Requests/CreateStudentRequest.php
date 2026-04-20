@@ -20,7 +20,7 @@ class CreateStudentRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
      */
     public function rules(): array
-    {   
+    {
 
         return [
 
@@ -28,7 +28,7 @@ class CreateStudentRequest extends FormRequest
             'student_last_name' => ['required'],
             'student_date_birth' => ['required'],
             'student_email' => ['sometimes'],
-            'student_ci' => ['required','unique:students,ci'],
+            'student_ci' => ['required', 'unique:students,ci'],
             'student_phone_number' => ['sometimes'],
             'student_sex' => ['sometimes'],
             'student_previous_school' => ['sometimes'],
@@ -45,6 +45,8 @@ class CreateStudentRequest extends FormRequest
             'rep_email' => ['sometimes'],
             'rep_profession' => ['sometimes'],
             'rep_workplace' => ['sometimes'],
+            'rep_relationship' => ['sometimes'],
+            'second_rep_relationship' => ['sometimes'],
             'second_rep_name' => ['sometimes'],
             'second_rep_last_name' => ['sometimes'],
             'second_rep_ci' => ['sometimes'],

@@ -9,11 +9,13 @@ class Representative extends Model
 {
     use HasFactory;
 
-    protected $fillable = 
+    protected $fillable =
     [
         'user_id',
         'profession',
         'workplace',
+        'relationship',
+        'second_representative_relationship',
         'second_representative_name',
         'second_representative_last_name',
         'second_representative_ci',
