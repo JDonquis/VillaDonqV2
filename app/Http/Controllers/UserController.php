@@ -44,7 +44,7 @@ class UserController extends Controller
 
         $this->userService->sendPasswordSetupEmail($user);
 
-        return inertia([
+        return inertia('Dashboard/Personal', [
             'status' => true,
             'message' => 'Usuario creado exitosamente. Se ha enviado un correo para establecer la contraseña.',
             'data' => $user,
