@@ -26,6 +26,8 @@
                 id={label}
                 rows="1"
                 class="form__field nb-input"
+                on:change
+                on:input
             ></textarea>
         {:else if type === "select"}
             <select
@@ -33,6 +35,8 @@
                 bind:value
                 {required}
                 class="form__field nb-input"
+                on:change
+                on:input
             >
                 <slot></slot>
             </select>
@@ -45,6 +49,7 @@
                 {required}
                 {max}
                 {min}
+                on:change
                 on:input
             />
         {/if}

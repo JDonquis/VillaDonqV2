@@ -11,11 +11,8 @@
     import { claim_svg_element } from "svelte/internal";
     export let data = [];
 
-    let selectedCourseId = new URLSearchParams($page.url.split('?')[1] || '').get('course_id') || data.filters?.course_id || '';
+    $: selectedCourseId = (data.filters?.course_id || '1').toString();
 
-    $: if (data.filters?.course_id && !selectedCourseId) {
-        selectedCourseId = data.filters.course_id;
-    }
 
     const emptyDataForm = {
         student_id: "",
@@ -51,6 +48,8 @@
 
     $: sectionsOfThisYear =
         data.course_sections?.data?.[`course_${data.filters.course_id}`];
+
+    $: console.log("sectionsOfThisYear", sectionsOfThisYear, data.filters.course_id);
     $: lastSectionId = sectionsOfThisYear?.[sectionsOfThisYear?.length - 1].id;
 
     let formCreate = useForm({
@@ -180,14 +179,16 @@
         );
     }
     function changeYear(course_id) {
-        const urlParams = new URLSearchParams($page.url.split('?')[1] || '');
-        const params = { course_id, section_id: 1 };
-        urlParams.forEach((value, key) => {
-            if (key !== 'course_id' && key !== 'section_id') {
-                params[key] = value;
-            }
+        console.log("Cambiando curso a:", course_id);
+        const params = {
+            ...data.filters,
+            course_id: course_id,
+            section_id: 1 // Reset section to 1 when year changes
+        };
+        router.get(window.location.pathname, params, {
+            preserveState: false, // Ensure we get fresh data
+            replace: true
         });
-        router.get($page.url.split('?')[0], params);
     }
 
     const search_rep1 = debounce(async (ci) => {
@@ -747,11 +748,14 @@
         <Input
             id="filterYear"
             type="select"
-            on:change={(e) => changeYear(e.target.value)}
-            bind:value={selectedCourseId}
+            value={selectedCourseId}
+            on:change={(e) => {
+                console.log("Cambiando año a:", e.target.value);
+                changeYear(e.target.value);
+            }}
             >
             {#each data.courses as course}
-                <option class="bg-gray-50" value={course.id}
+                <option class="bg-gray-50" value={course.id.toString()}
                     >{course.name}</option
                 >
             {/each}
