@@ -5,22 +5,35 @@
     export let required = "";
     export let placeholder = "";
     export let type = "text";
-    export let classes = ''
-    export let theme = "ligtht"
-    export let min = ""
-    export let max = ""
+    export let classes = "";
+    export let theme = "ligtht";
+    export let min = "";
+    export let max = "";
 
     export let error = false;
 </script>
 
-<div class={`text-left w-full mt-5 ${theme == "dark" ? "bg-color1 text-gray-100" : ''}`}>
-    <label for={label} class={`form__label w-full text-gray-300 ${theme == "dark" ? "bg-color1 text-gray-100" : ''}`} {placeholder}>{label} {required? "*" : "" }</label>
+<div class={`text-left w-full mt-5 `}>
+    <label
+        for={label}
+        class={`form__label w-full text-sm font-semibold`}
+        {placeholder}>{label} {required ? "*" : ""}</label
+    >
     <div class="relative w-full parent_div">
         {#if type === "textarea"}
-            <textarea bind:value id={label} rows="1"></textarea>
+            <textarea
+                bind:value
+                id={label}
+                rows="1"
+                class="form__field nb-input"
+            ></textarea>
         {:else if type === "select"}
-                
-            <select id={label} bind:value  required={required}>
+            <select
+                id={label}
+                bind:value
+                {required}
+                class="form__field nb-input"
+            >
                 <slot></slot>
             </select>
         {:else}
@@ -28,15 +41,15 @@
                 bind:value
                 {...{ type }}
                 id={label}
-                class="form__field"
-                required={required}
-                max={max}
-                min={min}
+                class="form__field nb-input"
+                {required}
+                {max}
+                {min}
                 on:input
             />
         {/if}
         {#if error}
-            <div class="text-white bg-opacity-30 bg-red pt-1 px-2">
+            <div class="text-black font-semibold  bg-red pt-1 px-2">
                 <span>{error}</span>
             </div>
         {/if}
@@ -53,17 +66,14 @@
         width: 100%;
         padding: 10px;
         padding-block: 8px;
-        border: 0;
+        border: 1px solid rgba(0, 0, 0, 0.103);
         border-radius: 5px;
         background: hwb(217 91% 0% / 0.144);
-        border-bottom: 1px solid gray;
     }
     select {
         padding: 11px;
     }
-    option {
-        background: #000;
-    }
+
     input:focus,
     textarea:focus,
     select:focus {
@@ -87,8 +97,8 @@
         content: "";
         display: block;
         position: absolute;
-        transition: 0.3s cubic-bezier(0.39, 0.575, 0.565, 1);
-        bottom: 1px;
+        transition: 0.15s cubic-bezier(0.39, 0.575, 0.565, 1);
+        bottom: 0px;
         left: 2.5px;
         border-radius: 4px;
         height: 2px;
@@ -99,5 +109,21 @@
     .parent_div:focus-within::before {
         width: 98%;
     }
-   
+    .nb-input {
+        padding: 0.5rem 1rem;
+        border: 3px solid #000;
+        border-radius: 0;
+        background: #ffffffd8;
+        box-shadow: 3px 3px 0 0 #000;
+        transition:
+            box-shadow 0.15s,
+            transform 0.15s;
+    }
+
+    .nb-input:focus {
+        outline: 3px solid #74b9ff;
+        outline-offset: 2px;
+        box-shadow: 5px 5px 0 0 #000;
+        transform: translate(-1px, -1px);
+    }
 </style>

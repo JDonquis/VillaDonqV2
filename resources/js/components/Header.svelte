@@ -32,7 +32,7 @@
 
 </script>
 <header
-		class="  w-full text-color1"
+		class="  w-full "
 	>
 
         <nav class="flex justify-between items-center  w-full max-h-32 py-2 gap-3  text-sm px-3 md:px-5 ">

@@ -11,6 +11,7 @@
     export let selectedRow;
     export let serverSideData = {};
     export let pagination = true;
+    export let allowFilters = true;
 
     let filterClientData = {
         ...serverSideData.filters,
@@ -19,7 +20,7 @@
 
     const handleFilters = () => {
         router.get(`${$page.url}`, filterClientData);
-    }
+    };
 
     const handleSearch = debounce((event) => {
         router.get(`${$page.url}`, filterClientData);
@@ -30,7 +31,7 @@
     <div class="mt-6 md:flex md:items-center md:justify-between">
         <div class="flex gap-2 md:gap-7">
             <div
-                class="inline-flex overflow-hidden bg-gray-200 border border-dark border-opacity-30 divide-x divide-gray-300 rounded-lg rtl:flex-row-reverse"
+                class={`inline-flex overflow-hidden  ${allowFilters ? "border border-black  divide-x divide-black" : ""}  rtl:flex-row-reverse" : ""}`}
             >
                 <!-- <button
                     on:click={(e) => {
@@ -44,15 +45,16 @@
                     Todos
                 </button> -->
                 {#each Object.entries(filtersOptions) as [filterKey, filterOption]}
-                    {#each filterOption as filter ,i}
+                    {#each filterOption as filter, i}
                         <button
                             on:click={(e) => {
                                 filterClientData[filterKey] = filter.id;
                                 handleFilters();
                             }}
-                            class="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-100"
-                            class:bg-gray-50={serverSideData.filters[filterKey] ==
-                                filter.id ||( i == 0 && !filterClientData[filterKey])}
+                            class="px-5 font-semibold py-2 text-xs bg-background text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-100"
+                            class:bg-green={serverSideData.filters[filterKey] ==
+                                filter.id ||
+                                (i == 0 && !filterClientData[filterKey])}
                         >
                             {filter.name}
                         </button>
@@ -62,7 +64,8 @@
             <slot name="filterBox"></slot>
         </div>
 
-        <div class="relative flex items-center mt-4 md:mt-0">
+        <div class="flex  gap-10">
+        <div class="relative flex items-center mt-4 md:mt-0 duration-100">
             <span class="absolute">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -87,23 +90,23 @@
                 on:input={() => {
                     handleSearch();
                 }}
-                class="block w-full py-1.5 pr-5 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                style="padding-left: 2.5em"
+                class="block nb-input md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
             />
         </div>
         {#if selectedRow.status}
-            <div class="flex gap-5 relative items-end">
+            <div class="flex fadeIn gap-5 relative items-end">
                 <button
                     on:click={() => dispatch("fillFormToEdit")}
-                    class="bg-color3 bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-2xl rounded border border-color3 px-4 py-1"
+                    class="bg-yellow hover:bg-opacity-90 cursor-pointer text-2xl hover:-translate-x-0.5 hover:-translate-y-0.5 hover:medium-shadow border-3 border-black small-shadow px-4 py-1"
                     title="Editar"
                 >
-                    <iconify-icon class="relative -bottom-1" icon="line-md:edit"
-                    ></iconify-icon>
+                   <iconify-icon icon="ic:baseline-edit" class="relative top-1" width="24" height="24"></iconify-icon>
                 </button>
 
                 <button
                     on:click={() => dispatch("clickDeleteIcon")}
-                    class="bg-red bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-2xl rounded border border-red px-4 py-1"
+                    class="small-shadow border-3 hover:bg-opacity-90 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:medium-shadow border-black bg-red font-bold px-4 py-1 text-2xl"
                     title="Eliminar"
                 >
                     <iconify-icon
@@ -113,6 +116,7 @@
                 </button>
             </div>
         {/if}
+        </div>
     </div>
 
     <div class="flex flex-col mt-4">
@@ -121,7 +125,7 @@
         >
             <div class="inline-block w-full py-2 align-middle md:px-6 lg:px-8">
                 <div
-                    class="overflow-x-auto max-h-[500px] overflow-y-auto scroll-table border border-gray-200 md:rounded-lg"
+                    class="overflow-x-auto  overflow-y-auto scroll-table border bg-white border-gray-200"
                 >
                     <table
                         class="table overflow-scroll overflow-y-auto w-full divide-y divide-gray-200"
@@ -153,7 +157,7 @@
                     use:inertia
                     href={serverSideData.prev_page_url}
                     class="flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 disabled:cursor-not-allowed
-                    white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100"
+                    white border sm:w-auto gap-x-2 hover:bg-gray-100"
                     disabled={serverSideData.prev_page_url == null}
                 >
                     <svg
@@ -177,7 +181,7 @@
                 <a
                     use:inertia
                     href={serverSideData.next_page_url}
-                    class="flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100"
+                    class="flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border sm:w-auto gap-x-2 hover:bg-gray-100"
                     disabled={serverSideData.next_page_url == null}
                 >
                     <span> Next </span>

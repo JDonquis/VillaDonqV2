@@ -14,14 +14,15 @@
     --color1: #081f3d;
     --color2: #1f4287;
     --color3: #278ea5;
-    --color4: #21e6c1;
-    --white: #FFFFFF;
-    --red: #BF0404;
-    --green: #02731E;
+    --color4: #74b9ff;
+    --purple: #b8a9fa;
+    --white: #ffffff;
+    --red: #FF6B6B;
+    --green: #88d498;
     --grayBlue: #b2bdc4;
     --gray: colors.gray;
     --ligthGreen: #54ffaf;
-    --background: #ececec;
+    --background: #fffdf5;
 }
 
 /* // dashboard  */
@@ -47,13 +48,13 @@
     overflow-x: hidden;
 }
 
-.main_dashboard {}
+.main_dashboard {
+}
 
 @media (min-width: 768px) {
-
     .dashboard_container {
         grid-template-columns: 240px 1fr;
-        grid-template-rows: auto 1fr ;
+        grid-template-rows: auto 1fr;
         /* color: #ff6464; */
     }
     .left_nav {
@@ -96,8 +97,6 @@
         height: 48px;
     }
 
-    
-
     .main_and_footer_container {
         grid-template-rows: 1fr auto;
         /* padding-top: 30px; */
@@ -115,16 +114,16 @@ h1 {
     font-weight: bold;
     /* letter-spacing: 1.1px; */
 }
-
+.table {
+    border: 3px solid black;
+}
 .table thead {
-    background-color: rgb(247, 247, 247);
+    background-color: rgb(255, 255, 255);
     color: rgb(44, 44, 44);
 }
 
 .table tbody {
-    background-color: rgb(251, 251, 251);
-    border-color: white;
-
+    border-color: black;
 }
 
 .table th {
@@ -147,60 +146,79 @@ h1 {
 .table td {
     padding: 14px;
     padding-inline: 1rem;
-    font-size: 0.975rem
-        /* 14px */
-    ;               
-    line-height: 1.25rem
-        /* 20px */
-    ;
+    font-size: 0.975rem /* 14px */;
+    line-height: 1.25rem /* 20px */;
     white-space: nowrap;
     color: rgb(39, 39, 39);
 }
 
-.btn_create {
-    padding: 10px;
-    padding-inline: 25px;
-    border-radius: 4px;
-    background: var(--color4);
-    ;
-    font-weight: bold;
-    color: var(--color1);
-    box-shadow: 0 2px 10px 0px rgba(0, 0, 0, 0.253);
-    position: relative;
-    z-index: 1;
+.btn {
+    border: 3px solid #000;
+    border-radius: 0;
+    background: var(--purple);
+    color: #000;
+    box-shadow: 5px 5px 0 0 #000;
+    font-weight: 700;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+.btn-green {
+    background: var(--green);
+    color: #000;
+}
+.btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 7px 7px 0 0 #000;
 }
 
-.btn_create:after {
-    position: absolute;
-    content: "";
-    width: 0;
-    height: 100%;
-    top: 0;
-    right: 0;
-    z-index: -1;
-    background-color: var(--color3);
-    border-radius: 5px;
-    box-shadow: inset 2px 0px 0px 0px rgba(255, 255, 255, 0.418),
-        7px 7px 20px 0px rgba(0, 0, 0, .1),
-        4px 4px 5px 0px rgba(0, 0, 0, .1);
-    transition: all 0.3s ease;
+.btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: none;
 }
 
-.btn_create:hover {
+/* Never forget focus */
+.btn:focus-visible {
+    outline: 3px solid #74b9ff;
+    outline-offset: 3px;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: #000;
+    border: 3px solid #000;
+    border-radius: 0;
+    box-shadow: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+.btn-ghost:hover {
+    background: #74b9ff;
     color: #fff;
+    box-shadow: 5px 5px 0 0 #000;
 }
 
-.btn_create:hover:after {
-    left: 0;
-    width: 100%;
+.nb-input {
+    padding: 0.5rem 1rem;
+
+    border: 3px solid #000;
+    border-radius: 0;
+    background: #ffffff;
+    box-shadow: 3px 3px 0 0 #000;
+    transition:
+        box-shadow 0.15s,
+        transform 0.15s;
 }
 
-.btn_create:active {
-    top: 2px;
+.nb-input:focus {
+    outline: 3px solid #74b9ff;
+    outline-offset: 2px;
+    box-shadow: 5px 5px 0 0 #000;
+    transform: translate(-1px, -1px);
 }
 
 option {
-    background: #050713;
     padding: 10px;
 }
 
@@ -216,11 +234,43 @@ progress::-webkit-progress-bar {
     background: linear-gradient(80deg, rgb(100, 238, 220) 9%, #2758da 93%);
 
     border-radius: 10px;
-
 }
 
 /* Style the progress bar value */
 progress::-webkit-progress-value {
     border-radius: 10px 0 0 10px;
     background-color: rgb(88, 88, 88);
+}
+.border-3 {
+    border: 3px solid black !important;
+}
+.border-4 {
+    border: 4px solid black !important;
+}
+.small-shadow {
+    box-shadow: 3px 3px 0 0 #000;
+}
+.hover\:small-shadow:hover {
+  box-shadow: 3px 3px 0 0 #000;
+}
+.medium-shadow {
+    box-shadow: 5px 5px 0 0 #000;
+}
+.hover\:medium-shadow:hover {
+  box-shadow: 5px 5px 0 0 #000;
+}
+.large-shadow {
+    box-shadow: 8px 8px 0 0 #000;
+}
+
+.fadeIn {
+    animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
