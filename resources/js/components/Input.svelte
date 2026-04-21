@@ -8,7 +8,9 @@
     export let classes = "";
     export let theme = "ligtht";
     export let min = "";
+
     export let max = "";
+    export let name = "";
 
     export let error = false;
 </script>
@@ -45,6 +47,7 @@
                 bind:value
                 {...{ type }}
                 id={label}
+                name={name}
                 class="form__field nb-input"
                 {required}
                 {max}

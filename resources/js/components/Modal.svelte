@@ -1,40 +1,30 @@
 <script>
 	export let showModal; // boolean
 	export let classes = "";
-	let dialog; // HTMLDialogElement
-
-
-
-	$: if (dialog && showModal) dialog.showModal();
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
-{#if showModal}
-
-<dialog
-	bind:this={dialog}
-	on:close={() => (showModal = false)}
-	on:click|self={() => dialog.close()}
-	class={classes} 
+<div
+	class="fixed inset-0 z-[99999] flex items-center justify-center transition-opacity duration-100 {showModal ? 'bg-black bg-opacity-30 backdrop-blur-sm opacity-100' : 'opacity-0 pointer-events-none'}"
+	on:click={showModal ? () => (showModal = false) : null}
 >
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div on:click|stopPropagation>
+	<div
+		class="bg-white border-4 border-black p-4 max-w-[98vw] max-h-[98vh] overflow-auto relative transition-transform duration-200 {showModal ? 'scale-100' : 'scale-95'} {classes}"
+		on:click|stopPropagation
+	>
 		<slot name="header" />
-		<button class="absolute  right-4 top-4"  on:click={() => dialog.close()}><iconify-icon icon="line-md:close" width="24" height="24"></iconify-icon></button>
-		<hr  class="mt-3"/>
+		<button class="absolute right-4 top-4" on:click={() => (showModal = false)}>
+			<iconify-icon icon="line-md:close" width="24" height="24"></iconify-icon>
+		</button>
+		<hr class="mt-3" />
 		<slot />
-		<hr class="my-4"/>
-		<!-- svelte-ignore a11y-autofocus -->
+		<hr class="my-4" />
 		<div class="flex justify-end gap-12">
-			
-
-			<slot name="btn_footer">
-	
-			</slot>
+			<slot name="btn_footer"></slot>
 		</div>
 	</div>
-</dialog>
-{/if}
+</div>
 
 <style>
 	dialog {

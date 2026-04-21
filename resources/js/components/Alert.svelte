@@ -8,10 +8,10 @@
 </script>
 
 <div
-    class={`fixed top-4 duration-150 border-3 border-black right-10 z-[9999] font-bold ${
+    class={`fixed top-4 left-1/2 transform -translate-x-1/2 duration-150 border-3 border-black font-bold ${
         clasesByTypeAlert[$alertInfo.type]
-    } ${$alertInfo.isOpen ? "opacity-100 px-4 py-2 right-96" : "opacity-0 pointer-events-none"}`}
-    style="z-index: 99999;"
+    } ${$alertInfo.isOpen ? "opacity-100 px-4 py-2 translate-y-0" : "opacity-0 pointer-events-none translate-y-[-100%]"}`}
+    style="z-index: 100000;"
 >
     <b>{$alertInfo.message}</b>
 </div>
