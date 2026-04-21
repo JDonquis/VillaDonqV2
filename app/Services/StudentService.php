@@ -163,7 +163,7 @@ class StudentService
             'name' => $data['rep_name'],
             'last_name' => $data['rep_last_name'],
             'ci' => $data['rep_ci'],
-            'phone_number' => $data['rep_phone_number'],
+            'phone_number' => $data['rep_phone_number'] ?? null,
             'email' => $data['rep_email'] ?? null,
             'password' => Hash::make($data['rep_ci']),
             'address' => $data['address'] ?? null,
