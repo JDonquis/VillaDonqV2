@@ -6,28 +6,21 @@ use App\Enums\UserType;
 use App\Events\StudentCreated;
 use App\Events\StudentUpdated;
 use App\Http\Resources\StudentCollection;
-use App\Http\Resources\StudentResource;
-use App\Http\Resources\UserResource;
-use App\Models\Activity;
-use App\Models\CourseSection;
 use App\Models\Representative;
 use App\Models\Student;
 use App\Models\User;
-use DB;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class StudentService
 {
     private Student $studentModel;
 
-
     public function __construct()
     {
         $this->studentModel = new Student;
     }
-
-
 
     public function getStudentsPerCourse($request)
     {
@@ -39,12 +32,11 @@ class StudentService
             ->where('course_id', $courseId)
             ->where('section_id', $sectionId)
             ->when($request->input('search'), function ($query, $search) {
-                $query->where('search', 'like', '%' . $search . '%');
+                $query->where('search', 'like', '%'.$search.'%');
             })
 
             ->with('representative.user', 'course', 'section')
             ->get();
-
 
         $studentsCollection = new StudentCollection($students);
 
@@ -55,25 +47,21 @@ class StudentService
     {
         $data = $request->all();
 
-
         $user = User::where('ci', $data['rep_ci'])->first();
 
-        if (!isset($user->id))
+        if (! isset($user->id)) {
             $user = $this->createUser($data);
-
-
+        }
 
         $representative = Representative::where('user_id', $user->id)->first();
 
-        if (!isset($representative->id))
+        if (! isset($representative->id)) {
             $representative = $this->createRepresentative($data, $user->id);
-
+        }
 
         $student = $this->createStudent($data, $representative->id);
 
-
         $student->load('representative.user', 'course', 'section');
-
 
         // $this->createDocuments($request,$student->id);
 
@@ -84,13 +72,19 @@ class StudentService
 
     public function update($request, $studentId)
     {
-        $data = $request->all();
+        $data = $request->validated();
+
+        Log::info('Updating data: ', $data);
 
         $representative = Representative::where('id', $data['rep_id'])->first();
 
-        if (!isset($representative->id))
-            return redirect('/dashboard/matricula')->withErrors(['data' => 'Representante ID no encontrado']);
+        // Log::info('Updating representative with ID: ' . $representative->id);
 
+        if (! $representative) {
+            throw ValidationException::withMessages([
+                'rep_id' => 'Representante no encontrado en nuestra base de datos.',
+            ]);
+        }
 
         $representative->update([
 
@@ -107,9 +101,9 @@ class StudentService
 
         $user = User::where('id', $representative->user_id)->first();
 
-        if (!isset($user->id))
-            return redirect('/dashboard/matricula')->withErrors(['data' => 'Usuario ID no encontrado']);
-
+        if (! isset($user->id)) {
+            throw new \Exception('No se encontró el usuario asociado al representante');
+        }
 
         $user->update([
             'name' => $data['rep_name'],
@@ -123,13 +117,11 @@ class StudentService
             'city' => $data['city'] ?? null,
         ]);
 
-
-
         $student = Student::where('id', $studentId)->first();
 
-
-        if (!isset($student->id))
-            return redirect('/dashboard/matricula')->withErrors(['data' => 'Estudiante ID no encontrado']);
+        if (! isset($student->id)) {
+            throw new \Exception('Estudiante no encontrado');
+        }
 
         $previousCourseId = $student->course_id;
 
@@ -219,9 +211,6 @@ class StudentService
 
         $newStudent->update(['search' => $search]);
 
-
-
-
         return $newStudent;
     }
 
@@ -229,13 +218,15 @@ class StudentService
     {
         $user = User::where('ci', $ci)->where('type_user_id', 2)->first();
 
-        if (!isset($user->id))
+        if (! isset($user->id)) {
             return null;
+        }
 
         $representative = Representative::where('user_id', $user->id)->first();
 
-        if (!isset($representative->id))
+        if (! isset($representative->id)) {
             return null;
+        }
 
         $data =
             [
@@ -258,13 +249,15 @@ class StudentService
     {
         $user = User::where('ci', $ci)->where('type_user_id')->first();
 
-        if (!isset($user->id))
+        if (! isset($user->id)) {
             return response()->json(['data' => null]);
+        }
 
         $representative = Representative::where('user_id', $user->id)->first();
 
-        if (!isset($representative->id))
+        if (! isset($representative->id)) {
             return response()->json(['data' => null]);
+        }
 
         $data =
             [
@@ -285,9 +278,9 @@ class StudentService
     public function searchRepresentative($search)
     {
         $user = User::where('type_user_id', 2)
-            ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%'])
-            ->orWhereRaw('LOWER(last_name) LIKE ?', ['%' . strtolower($search) . '%'])
-            ->orWhereRaw('LOWER(ci) LIKE ?', ['%' . strtolower($search) . '%'])
+            ->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($search).'%'])
+            ->orWhereRaw('LOWER(last_name) LIKE ?', ['%'.strtolower($search).'%'])
+            ->orWhereRaw('LOWER(ci) LIKE ?', ['%'.strtolower($search).'%'])
             ->with('representative')
             ->get();
 
@@ -297,6 +290,11 @@ class StudentService
     public function delete($studentId)
     {
         $student = Student::find($studentId);
+
+        if (! $student) {
+            throw new \Exception('Estudiante no encontrado');
+        }
+
         $student->update(['status' => 0]);
 
         return 0;
@@ -306,18 +304,18 @@ class StudentService
     {
 
         $search =
-            $student->representative->user->name . ' '
-            . $student->representative->user->last_name . ' '
-            . $student->course->name . ' '
-            . $student->section->name . ' '
-            . $student->name . ' '
-            . $student->last_name . ' '
-            . $student->date_birth . ' '
-            . $student->email . ' '
-            . $student->ci . ' '
-            . $student->phone_number . ' '
-            . $student->sex . ' '
-            . $student->previous_school . ' ';
+            $student->representative->user->name.' '
+            .$student->representative->user->last_name.' '
+            .$student->course->name.' '
+            .$student->section->name.' '
+            .$student->name.' '
+            .$student->last_name.' '
+            .$student->date_birth.' '
+            .$student->email.' '
+            .$student->ci.' '
+            .$student->phone_number.' '
+            .$student->sex.' '
+            .$student->previous_school.' ';
 
         return $search;
     }

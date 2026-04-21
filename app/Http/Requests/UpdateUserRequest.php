@@ -6,12 +6,30 @@ use App\Enums\UserType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-
 class UpdateUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return true;
+    }
+
+    public function prepareForValidation(): void
+    {
+        $nullableFields = [
+            'email',
+            'password',
+            'phone_number',
+            'address',
+            'photo',
+            'email_verified_status',
+        ];
+
+        $data = $this->all();
+        foreach ($nullableFields as $field) {
+            if (! array_key_exists($field, $data)) {
+                $this->merge([$field => null]);
+            }
+        }
     }
 
     public function rules(): array
@@ -20,7 +38,7 @@ class UpdateUserRequest extends FormRequest
 
         return [
             'type_user_id' => ['required', 'integer', 'exists:type_users,id', Rule::in([UserType::Administrator->value])], // Permitir solo el tipo de usuario "Administrador"
-            'ci' => 'required|string|max:30|unique:users,ci,' . $userId,
+            'ci' => 'required|string|max:30|unique:users,ci,'.$userId,
             'name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
             'email' => 'nullable|string|max:100|email',

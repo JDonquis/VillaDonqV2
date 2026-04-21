@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateStudentRequest extends FormRequest
@@ -17,41 +18,74 @@ class UpdateStudentRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
+     * @return array<string, Rule|array|string>
      */
+    public function prepareForValidation(): void
+    {
+        $nullableFields = [
+            'student_email',
+            'student_phone_number',
+            'student_sex',
+            'student_previous_school',
+            'state',
+            'city',
+            'address',
+            'rep_id',
+            'rep_phone_number',
+            'rep_email',
+            'rep_profession',
+            'rep_workplace',
+            'second_rep_name',
+            'second_rep_last_name',
+            'second_rep_ci',
+            'second_rep_phone_number',
+            'second_rep_email',
+            'second_rep_profession',
+            'second_rep_workplace',
+        ];
+
+        $data = $this->all();
+        foreach ($nullableFields as $field) {
+            if (! array_key_exists($field, $data)) {
+                $this->merge([$field => null]);
+            }
+        }
+    }
+
     public function rules(): array
     {
         $id = request()->route('id');
+
         return [
 
             'student_name' => ['required'],
             'student_last_name' => ['required'],
             'student_date_birth' => ['required'],
-            'student_email' => ['sometimes'],
-            'student_ci' => ['required', 'unique:students,ci,' . $id],
-            'student_phone_number' => ['sometimes'],
-            'student_sex' => ['sometimes'],
-            'student_previous_school' => ['sometimes'],
+            'student_email' => ['nullable'],
+            'student_ci' => ['required', 'unique:students,ci,'.$id],
+            'student_phone_number' => ['nullable'],
+            'student_sex' => ['nullable'],
+            'student_previous_school' => ['nullable'],
             'course_id' => ['required'],
             'section_id' => ['required'],
-            'state' => ['sometimes'],
-            'city' => ['sometimes'],
-            'address' => ['sometimes'],
-            'rep_id' => ['sometimes'],
+            'state' => ['nullable'],
+            'city' => ['nullable'],
+            'address' => ['nullable'],
+            'rep_id' => ['nullable'],
             'rep_name' => ['required'],
             'rep_last_name' => ['required'],
             'rep_ci' => ['required'],
-            'rep_phone_number' => ['sometimes', 'nullable'],
-            'rep_email' => ['sometimes'],
-            'rep_profession' => ['sometimes'],
-            'rep_workplace' => ['sometimes'],
-            'second_rep_name' => ['sometimes'],
-            'second_rep_last_name' => ['sometimes'],
-            'second_rep_ci' => ['sometimes'],
-            'second_rep_phone_number' => ['sometimes'],
-            'second_rep_email' => ['sometimes'],
-            'second_rep_profession' => ['sometimes'],
-            'second_rep_workplace' => ['sometimes'],
+            'rep_phone_number' => ['nullable'],
+            'rep_email' => ['nullable'],
+            'rep_profession' => ['nullable'],
+            'rep_workplace' => ['nullable'],
+            'second_rep_name' => ['nullable'],
+            'second_rep_last_name' => ['nullable'],
+            'second_rep_ci' => ['nullable'],
+            'second_rep_phone_number' => ['nullable'],
+            'second_rep_email' => ['nullable'],
+            'second_rep_profession' => ['nullable'],
+            'second_rep_workplace' => ['nullable'],
         ];
     }
 }

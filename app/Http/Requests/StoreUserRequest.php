@@ -2,15 +2,31 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\UserType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Enums\UserType;
 
 class StoreUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return true;
+    }
+
+    public function prepareForValidation(): void
+    {
+        $nullableFields = [
+            'phone_number',
+            'address',
+            'photo',
+        ];
+
+        $data = $this->all();
+        foreach ($nullableFields as $field) {
+            if (! array_key_exists($field, $data)) {
+                $this->merge([$field => null]);
+            }
+        }
     }
 
     public function rules(): array
