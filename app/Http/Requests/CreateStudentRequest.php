@@ -41,7 +41,7 @@ class CreateStudentRequest extends FormRequest
             'rep_name' => ['required'],
             'rep_last_name' => ['required'],
             'rep_ci' => ['required'],
-            'rep_phone_number' => ['required'],
+            'rep_phone_number' => ['sometimes', 'nullable'],
             'rep_email' => ['sometimes'],
             'rep_profession' => ['sometimes'],
             'rep_workplace' => ['sometimes'],
