@@ -57,15 +57,9 @@ class MainConfigService
         return $this->mainConfigModel->first();
     }
 
-    public function updatePaymentConfig($request)
+    public function updatePaymentConfig($data)
     {
-        $this->mainConfigModel->update(
-            [
-                'regular_inscription_price' => $request->regular_inscription_price,
-                'new_inscription_price' => $request->new_inscription_price,
-                'monthly_payment' => $request->monthly_payment
-            ]
-        );
+        $this->mainConfigModel->update($data);
     }
 
     public function createAccount($request)

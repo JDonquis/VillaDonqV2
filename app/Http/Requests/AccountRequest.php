@@ -30,6 +30,7 @@ class AccountRequest extends FormRequest
             'bank',
             'account_number',
             'username',
+            'comision',
         ];
 
         $data = $this->all();
@@ -52,6 +53,7 @@ class AccountRequest extends FormRequest
             'account_number' => ['nullable'],
             'username' => ['nullable'],
             'email' => ['nullable'],
+            'comision' => ['nullable', 'numeric'],
 
         ];
     }

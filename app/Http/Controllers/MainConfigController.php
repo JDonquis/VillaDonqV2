@@ -23,14 +23,23 @@ class MainConfigController extends Controller
         $methods = $this->mainConfigService->getMethods();
         $accounts  = $this->mainConfigService->getAccounts();
         $configData = $this->mainConfigService->getConfigData();
-        $prices = ['regular_inscription_price' => $configData->regular_inscription_price, 'new_inscription_price' => $configData->new_inscription_price, 'monthly_payment' => $configData->monthly_payment];
-        return inertia('Dashboard/Configuracion',
-        [
-            'data' =>
-            [   
-                'prices' => $prices,
-                'accounts' => $accounts,
-                'methods' => $methods,
+        $prices = [
+            'regular_inscription_price' => $configData->regular_inscription_price,
+            'new_inscription_price' => $configData->new_inscription_price,
+            'monthly_payment' => $configData->monthly_payment,
+            'ame_price' => $configData->ame_price,
+            'investment_plan_price' => $configData->investment_plan_price,
+        ];
+        return inertia(
+            'Dashboard/Configuracion',
+            [
+                'data' =>
+                [
+                    'prices' => $prices,
+                    'accounts' => $accounts,
+                    'methods' => $methods,
+                ]
+
             ]
         
         ]
@@ -77,8 +86,13 @@ class MainConfigController extends Controller
     }
 
     public function updatePaymentConfig(PaymentConfigRequest $request)
+<<<<<<< HEAD
     {   
         $this->mainConfigService->updatePaymentConfig($request);
+=======
+    {
+        $this->mainConfigService->updatePaymentConfig($request->validated());
+>>>>>>> 813df6201e127852dec561849f0477be4bb6e9b3
 
         return redirect('/dashboard/configuracion');
 

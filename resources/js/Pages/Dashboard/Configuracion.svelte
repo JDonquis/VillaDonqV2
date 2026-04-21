@@ -28,6 +28,9 @@
 
     function updatePrices(e) {
         e.preventDefault();
+
+        $prices.regular_inscription_price = $prices.new_inscription_price;
+
         $prices.put(`/dashboard/configuracion/pagos`, {
             onBefore: () => confirm("¿Está seguro de guardar estos cambios?"),
             onSuccess: (mensaje) => {
@@ -302,7 +305,13 @@
     >
         <h2 class="font-bold text-xl mb-4">Configuración de tarifas</h2>
 
-        <div class="flex gap-4 pl-4">
+        <div class="max-w-[300px] gap-10 pl-4">
+            <Input
+                label="Inscripción ($)"
+                type="number"
+                required={true}
+                bind:value={$prices.new_inscription_price}
+            />
             <Input
                 label="Mensualidad ($)"
                 type="number"
@@ -310,26 +319,24 @@
                 bind:value={$prices.monthly_payment}
             />
             <Input
-                label="Inscripción nuevo ingreso ($)"
+                label="Seguro de atención primaria (AME) ($)"
                 type="number"
                 required={true}
-                bind:value={$prices.new_inscription_price}      
-
-        />
+                bind:value={$prices.ame_price}
+            />
+            <Input
+                label="Plan de inversión ($)"
+                type="number"
+                required={true}
+                bind:value={$prices.investment_plan_price}
+            />
 
             <!-- <Input
-                label="Inscripción nuevo ingreso ($)"
-                type="number"
-                required={true}
-                bind:value={$prices.new_inscription_price}
-            /> -->
-
-            <Input
                 label="Inscripción de regulares ($)"
                 type="number"
                 required={true}
                 bind:value={$prices.regular_inscription_price}
-            />
+            /> -->
         </div>
     </form>
     {#if $prices.isDirty}
