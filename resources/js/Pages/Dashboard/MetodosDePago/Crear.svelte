@@ -41,9 +41,9 @@
     action=""
     id="a-form" 
     on:submit={handleSubmit}
-    class="bg-color1 p max-w-[450px] mx-auto rounded-md text-gray-50"
+       class="border-4 medium-shadow border-black p max-w-[450px] mx-auto "
 >
-    <header class={`bg-gray-100 text-dark py-4 pl-3`}>
+    <header class={`bg-black/5 text-dark py-4 pl-3`}>
         <h2 class={`border-l-4 border-${ColorsPayMethods()[data.method.name]} inline pl-3`}>
             Nuevo método: <b>{data.method.name}</b>
         </h2>

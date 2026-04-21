@@ -1,13 +1,18 @@
 <script>
 	// import { authHandlers } from "../../stores/authStore";
-    import { inertia, page } from '@inertiajs/svelte'
+    import { inertia, page, router } from '@inertiajs/svelte'
 
     let pageName = ""
     $: userNav = false
+    $: showBackBtn = $page.url !== '/dashboard'
 
     function toggleNavUser() {
         userNav = !userNav
         console.log(userNav)
+    }
+
+    function goBack() {
+        window.history.back();
     }
 
     function clickOutside(element, callbackFunction) {
@@ -37,6 +42,11 @@
 
         <nav class="flex justify-between items-center  w-full max-h-32 py-2 gap-3  text-sm px-3 md:px-5 ">
             <span class="flex gap-1 items-center">
+                {#if showBackBtn}
+                    <button on:click={goBack} class="mr-2 p-1 hover:bg-gray-200 rounded" title="Volver">
+                        <iconify-icon icon="mingcute:left-line" class="text-xl" />
+                    </button>
+                {/if}
 
             <a href="/dashboard" use:inertia class="text-sm hidden md:inline font-bold ">{$page.component.replace("Dashboard/", "").toUpperCase()}</a>
             </span>

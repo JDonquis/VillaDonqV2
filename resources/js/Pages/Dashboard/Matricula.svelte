@@ -139,6 +139,18 @@
         $form.delete(`/dashboard/matricula/${id}`, {
             onBefore: () =>
                 confirm(`¿Está seguro de eliminar a este estudiante?`),
+            onSuccess: () => {
+                displayAlert({
+                    type: "success",
+                    message: "Estudiante eliminado correctamente",
+                });
+                selectedRow = { status: false, id: 0 };
+            },
+            onError: (errors) => {
+                if (errors.data) {
+                    displayAlert({ type: "error", message: errors.data });
+                }
+            },
         });
     }
 
@@ -170,6 +182,14 @@
         $form.rep_profession = student.rep_profession;
         $form.rep_workplace = student.rep_workplace;
         $form.rep_id = student.rep_id;
+        $form.second_rep_name = student.second_rep_name;
+        $form.second_rep_last_name = student.second_rep_last_name;
+        $form.second_rep_ci = student.second_rep_ci;
+        $form.second_rep_phone_number = student.second_rep_phone_number;
+        $form.second_rep_email = student.second_rep_email;
+        $form.second_rep_profession = student.second_rep_profession;
+        $form.second_rep_workplace = student.second_rep_workplace;
+
         showModal = true;
     }
 
@@ -220,6 +240,17 @@
             const response = await axios.get(
                 `/dashboard/matricula/search-representative/${ci}`,
             );
+            const rep = response.data;
+            $form.rep_name = rep.rep_name;
+            $form.rep_last_name = rep.rep_last_name;
+            $form.rep_phone_number = rep.rep_phone_number;
+            $form.rep_email = rep.rep_email;
+            $form.rep_profession = rep.rep_profession;
+            $form.rep_workplace = rep.rep_workplace;
+            $form.rep_id = rep.rep_id;
+
+
+            console.log(rep)
         } catch (error) {}
     }, 300);
 
@@ -559,7 +590,7 @@
     {selectedRow}
     on:fillFormToEdit={fillFormToEdit}
     on:clickDeleteIcon={() => {
-        handleDelete(selectedRow.id);
+        handleDelete(selectedRow.data.student_id);
     }}
     serverSideData={{ filters: data.filters }}
     filtersOptions={{ section_id: sectionsOfThisYear }}
