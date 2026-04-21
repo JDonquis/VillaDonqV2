@@ -102,18 +102,14 @@ class MainConfigService
                 return ['account_number','person_name','ci','phone_number','bank'];
             break;
 
-            case 4:
-                return ['username','email'];
-            break;
-
-            case 5:
-                return ['email'];
-            break;
-            
-            default:
-                return null;
-                break;
-        }
+        return match ($method) {
+            PaymentMethodEnum::PagoMovil => ['ci', 'phone_number', 'bank'],
+            PaymentMethodEnum::Transferencia => ['account_number', 'person_name', 'ci', 'phone_number', 'bank'],
+            PaymentMethodEnum::Zelle => ['username', 'email'],
+            PaymentMethodEnum::Binance => ['email'],
+            PaymentMethodEnum::PuntoDeVenta => ['bank', 'comision'],
+            default => null,
+        };
     }
 
     
