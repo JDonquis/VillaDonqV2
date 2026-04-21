@@ -230,12 +230,12 @@ class StudentService
         $user = User::where('ci', $ci)->where('type_user_id', 2)->first();
 
         if (!isset($user->id))
-            return redirect('/dashboard/matricula')->withErrors(['data' => null]);
+            return null;
 
         $representative = Representative::where('user_id', $user->id)->first();
 
         if (!isset($representative->id))
-            return redirect('/dashboard/matricula')->withErrors(['data' => null]);
+            return null;
 
         $data =
             [
