@@ -34,6 +34,7 @@ class StudentController extends Controller
         $studentsPerCourse = $this->studentService->getStudentsPerCourse($request);
 
 
+
         return inertia(
             'Dashboard/Matricula',
             [
