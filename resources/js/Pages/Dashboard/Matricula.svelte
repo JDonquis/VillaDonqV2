@@ -147,7 +147,7 @@
         console.log(selectedRow);
         const student = selectedRow.data;
         submitStatus = "Editar";
-        editingStudentId = student.id;
+        editingStudentId = student.student_id;
         $form.student_name = student.student_name;
         $form.student_last_name = student.student_last_name;
         $form.student_date_birth = student.student_date_birth;
@@ -379,7 +379,7 @@
                 />
                 <Input
                     type="tel"
-                    required={true}
+                    required={false}
                     label={"Teléfono"}
                     bind:value={$form.rep_phone_number}
                     error={$form.errors?.rep_phone_number}
