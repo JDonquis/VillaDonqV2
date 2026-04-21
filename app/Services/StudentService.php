@@ -142,6 +142,9 @@ class StudentService
 
         $student->load('representative.user', 'course', 'section');
 
+        $search = $this->generateSearch($student);
+        $student->update(['search' => $search]);
+
         event(new StudentUpdated($previousCourseId, $student));
 
         return 0;
@@ -302,21 +305,14 @@ class StudentService
 
     private function generateSearch($student)
     {
+        $repName = $student->representative?->user?->name ?? '';
+        $repLastName = $student->representative?->user?->last_name ?? '';
+        $courseName = $student->course?->name ?? '';
+        $sectionName = $student->section?->name ?? '';
 
-        $search =
-            $student->representative->user->name.' '
-            .$student->representative->user->last_name.' '
-            .$student->course->name.' '
-            .$student->section->name.' '
-            .$student->name.' '
-            .$student->last_name.' '
-            .$student->date_birth.' '
-            .$student->email.' '
-            .$student->ci.' '
-            .$student->phone_number.' '
-            .$student->sex.' '
-            .$student->previous_school.' ';
-
-        return $search;
+        return trim($repName.' '.$repLastName.' '.$courseName.' '.$sectionName.' '
+            .$student->name.' '.$student->last_name.' '.$student->date_birth.' '
+            .$student->email.' '.$student->ci.' '.$student->phone_number.' '
+            .$student->sex.' '.$student->previous_school);
     }
 }
