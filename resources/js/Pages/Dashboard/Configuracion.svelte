@@ -309,6 +309,13 @@
                 required={true}
                 bind:value={$prices.monthly_payment}
             />
+            <Input
+                label="Inscripción nuevo ingreso ($)"
+                type="number"
+                required={true}
+                bind:value={$prices.new_inscription_price}      
+
+        />
 
             <!-- <Input
                 label="Inscripción nuevo ingreso ($)"

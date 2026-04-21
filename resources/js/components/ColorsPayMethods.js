@@ -4,6 +4,7 @@ export default function ColorsPayMethods() {
         "Pago Movil": "color4",
         Transferencia: "color1",
         Zelle: "zelle",
-        Binance: "binance",
+        "Punto de Venta": "orange",
+        Binance: "yellow",
     };
 }

@@ -1,51 +1,54 @@
 <script>
     import Input from "../../../components/Input.svelte";
     import { useForm, router } from "@inertiajs/svelte";
-    import ColorsPayMethods from "../../../components/ColorsPayMethods"
+    import ColorsPayMethods from "../../../components/ColorsPayMethods";
     import Alert from "../../../components/Alert.svelte";
     import { displayAlert } from "../../../stores/alertStore";
 
     export let data;
-   console.log(data.account)
+    console.log(data.account);
 
     let formData = useForm({
         ...data.account.data,
-        
     });
     function handleSubmit(event) {
-        console.log('enviando')
+        console.log("enviando");
         event.preventDefault();
         $formData.clearErrors();
-        $formData.put(`/dashboard/configuracion/editar-cuenta/${$formData.id}`, {
-            preserveScroll: false,
-            onError: (errors) => {
-                if (errors.data) {
-                    displayAlert({ type: "error", message: errors.data });
-                }
+        $formData.put(
+            `/dashboard/configuracion/editar-cuenta/${$formData.id}`,
+            {
+                preserveScroll: false,
+                onError: (errors) => {
+                    if (errors.data) {
+                        displayAlert({ type: "error", message: errors.data });
+                    }
+                },
+                onSuccess: (mensaje) => {
+                    $formData.reset();
+                    displayAlert({
+                        type: "success",
+                        message: `${data.method.name} actualizado correctamente`,
+                    });
+                    showModal = false;
+                },
             },
-            onSuccess: (mensaje) => {
-                $formData.reset();
-                displayAlert({
-                    type: "success",
-                    message: `${data.method.name} actualizado correctamente`,
-                });
-                showModal = false;
-            },
-        });
+        );
     }
 </script>
 
 <form
     action=""
-    id="a-form" 
+    id="a-form"
     on:submit={handleSubmit}
-    class="border-4 medium-shadow border-black p max-w-[450px] mx-auto "
+    class="border-4 medium-shadow border-black p max-w-[450px] mx-auto"
 >
     <header class={`bg-black/5 text-dark py-4 pl-3`}>
-        <h2 class={`border-l-8 border-${ColorsPayMethods()[data.method.name]} inline pl-3`}>
+        <h2
+            class={`border-l-8 border-${ColorsPayMethods()[data.method.name]} inline pl-3`}
+        >
             Editar método: <b>{data.method.name}</b>
         </h2>
-
     </header>
     <div class="p-10 pt-5">
         {#if data.account.data.hasOwnProperty("bank")}
@@ -112,23 +115,31 @@
                 error={$formData.errors?.email}
             />
         {/if}
-            <button
-        form="a-form"
-        type="submit"
-        class="btn btn-green w-full mt-6 mr-7 flex items-center justify-center gap-3"
-        disabled={$formData.processing}
-    >
-        {#if $formData.processing}
-            Cargando...
-        {:else}
-            <iconify-icon
-                icon="material-symbols:save-sharp"
-                width="24"
-                height="24"
+        {#if data.account.data.hasOwnProperty("comission")}
+            <Input
+                type="text"
+                required={true}
+                label={"Correo"}
+                bind:value={$formData.comission}
+                error={$formData.errors?.comission}
             />
-            <span> Guardar </span>
         {/if}
-    </button>
-        
+        <button
+            form="a-form"
+            type="submit"
+            class="btn btn-green w-full mt-6 mr-7 flex items-center justify-center gap-3"
+            disabled={$formData.processing}
+        >
+            {#if $formData.processing}
+                Cargando...
+            {:else}
+                <iconify-icon
+                    icon="material-symbols:save-sharp"
+                    width="24"
+                    height="24"
+                />
+                <span> Guardar </span>
+            {/if}
+        </button>
     </div>
 </form>

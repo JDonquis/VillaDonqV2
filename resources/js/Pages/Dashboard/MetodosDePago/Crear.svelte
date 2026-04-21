@@ -10,6 +10,7 @@
     data?.fields?.forEach((field) => {
         objFileds[field] = "";
     });
+    console.log(objFileds)
 
     let formCreate = useForm({
         ...objFileds,
@@ -112,6 +113,15 @@
                 label={"Correo"}
                 bind:value={$formCreate.email}
                 error={$formCreate.errors?.email}
+            />
+        {/if}
+         {#if objFileds.hasOwnProperty("comission")}
+            <Input
+                type="text"
+                required={true}
+                label={"Correo"}
+                bind:value={$formCreate.comission}
+                error={$formCreate.errors?.comission}
             />
         {/if}
         <input

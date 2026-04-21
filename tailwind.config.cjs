@@ -20,6 +20,7 @@ const colorClasses = {
           binance: "#F3BA2F",
           yellow: "#FFD23F",
           purple: "#b8a9fa",
+          orange: "#FFA552",
 };
 module.exports = {
     content: [
@@ -52,6 +53,7 @@ module.exports = {
           binance: "#F3BA2F",
           yellow: "#FFD23F",
           purple: "#b8a9fa",
+          orange: "#FFA552",
         },
         extend: {}
       },
