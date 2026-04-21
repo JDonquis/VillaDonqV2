@@ -10,7 +10,7 @@ class MainConfig extends Model
     use HasFactory;
 
     protected $table = 'main_configs';
-    
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -23,7 +23,9 @@ class MainConfig extends Model
         'motto',
         'regular_inscription_price',
         'new_inscription_price',
-        'monthly_payment'
+        'monthly_payment',
+        'ame_price',
+        'investment_plan_price',
 
     ];
 }
