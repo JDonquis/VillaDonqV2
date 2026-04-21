@@ -99,7 +99,7 @@ class MainConfigService
             PaymentMethodEnum::Transferencia => ['account_number', 'person_name', 'ci', 'phone_number', 'bank'],
             PaymentMethodEnum::Zelle => ['username', 'email'],
             PaymentMethodEnum::Binance => ['email'],
-            PaymentMethodEnum::PuntoDeVenta => ['bank', 'commission'],
+            PaymentMethodEnum::PuntoDeVenta => ['bank', 'comision'],
             default => null,
         };
     }
