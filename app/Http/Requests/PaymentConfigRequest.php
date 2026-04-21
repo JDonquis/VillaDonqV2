@@ -24,7 +24,9 @@ class PaymentConfigRequest extends FormRequest
         return [
             'regular_inscription_price' => ['required'],
             'new_inscription_price' => ['required'],
-            'monthly_payment' => ['required']
+            'monthly_payment' => ['required'],
+            'ame_price' => ['required'],
+            'investment_plan_price' => ['required'],
         ];
     }
 }

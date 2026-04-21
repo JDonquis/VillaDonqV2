@@ -85,7 +85,7 @@ class MainConfigController extends Controller
 
     public function updatePaymentConfig(PaymentConfigRequest $request)
     {
-        $this->mainConfigService->updatePaymentConfig($request);
+        $this->mainConfigService->updatePaymentConfig($request->validated());
 
         return redirect('/dashboard/configuracion');
     }
