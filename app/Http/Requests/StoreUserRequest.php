@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\UserType;
+use App\Enums\UserTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -32,7 +32,7 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type_user_id' => ['required', 'integer', 'exists:type_users,id', Rule::in([UserType::Administrator->value])], // Permitir solo el tipo de usuario "Administrador"
+            'type_user_id' => ['required', 'integer', 'exists:type_users,id', Rule::in([UserTypeEnum::Administrator->value])], // Permitir solo el tipo de usuario "Administrador"
             'ci' => ['required', 'string', 'max:30', 'unique:users,ci'],
             'name' => ['required', 'string', 'max:50'],
             'last_name' => ['required', 'string', 'max:50'],

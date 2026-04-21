@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum UserType: int
+enum UserTypeEnum: int
 {
     case Administrator = 1;
     case Representative = 2;

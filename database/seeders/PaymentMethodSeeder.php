@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use DB;
+
 class PaymentMethodSeeder extends Seeder
 {
     /**
@@ -19,6 +20,8 @@ class PaymentMethodSeeder extends Seeder
             ['name' => 'Transferencia'],
             ['name' => 'Zelle'],
             ['name' => 'Binance'],
+            ['name' => 'Punto de Venta'],
+
 
         ];
 

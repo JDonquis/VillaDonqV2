@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Enums\UserType;
+use App\Enums\UserTypeEnum;
 use App\Events\StudentCreated;
 use App\Events\StudentUpdated;
 use App\Http\Resources\StudentCollection;
@@ -32,7 +32,7 @@ class StudentService
             ->where('course_id', $courseId)
             ->where('section_id', $sectionId)
             ->when($request->input('search'), function ($query, $search) {
-                $query->where('search', 'like', '%'.$search.'%');
+                $query->where('search', 'like', '%' . $search . '%');
             })
 
             ->with('representative.user', 'course', 'section')
@@ -154,7 +154,7 @@ class StudentService
     {
 
         $newUser = User::create([
-            'type_user_id' => UserType::Representative->value,
+            'type_user_id' => UserTypeEnum::Representative->value,
             'name' => $data['rep_name'],
             'last_name' => $data['rep_last_name'],
             'ci' => $data['rep_ci'],
@@ -281,9 +281,9 @@ class StudentService
     public function searchRepresentative($search)
     {
         $user = User::where('type_user_id', 2)
-            ->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($search).'%'])
-            ->orWhereRaw('LOWER(last_name) LIKE ?', ['%'.strtolower($search).'%'])
-            ->orWhereRaw('LOWER(ci) LIKE ?', ['%'.strtolower($search).'%'])
+            ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%'])
+            ->orWhereRaw('LOWER(last_name) LIKE ?', ['%' . strtolower($search) . '%'])
+            ->orWhereRaw('LOWER(ci) LIKE ?', ['%' . strtolower($search) . '%'])
             ->with('representative')
             ->get();
 
@@ -310,9 +310,9 @@ class StudentService
         $courseName = $student->course?->name ?? '';
         $sectionName = $student->section?->name ?? '';
 
-        return trim($repName.' '.$repLastName.' '.$courseName.' '.$sectionName.' '
-            .$student->name.' '.$student->last_name.' '.$student->date_birth.' '
-            .$student->email.' '.$student->ci.' '.$student->phone_number.' '
-            .$student->sex.' '.$student->previous_school);
+        return trim($repName . ' ' . $repLastName . ' ' . $courseName . ' ' . $sectionName . ' '
+            . $student->name . ' ' . $student->last_name . ' ' . $student->date_birth . ' '
+            . $student->email . ' ' . $student->ci . ' ' . $student->phone_number . ' '
+            . $student->sex . ' ' . $student->previous_school);
     }
 }

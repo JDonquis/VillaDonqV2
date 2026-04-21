@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Enums\UserType;
+use App\Enums\UserTypeEnum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -12,7 +12,7 @@ class UserSeeder extends Seeder
     public function run()
     {
         User::create([
-            'type_user_id' => UserType::Administrator->value,
+            'type_user_id' => UserTypeEnum::Administrator->value,
             'ci' => '12345678',
             'name' => 'YAKNERY ',
             'last_name' => 'HANSEN',
@@ -24,7 +24,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'type_user_id' => UserType::Administrator->value,
+            'type_user_id' => UserTypeEnum::Administrator->value,
             'ci' => '87654321',
             'name' => 'LISMARY',
             'last_name' => 'MIRANDA',

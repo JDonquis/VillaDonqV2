@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Enums\UserType;
+use App\Enums\UserTypeEnum;
 use App\Http\Resources\UserResource;
 use App\Mail\PasswordSetupMail;
 use App\Models\PasswordSetupToken;
@@ -22,13 +22,13 @@ class UserService
     {
         $query = $this->userModel->query();
 
-        $query->where('type_user_id', UserType::Administrator->value);
+        $query->where('type_user_id', UserTypeEnum::Administrator->value);
 
         $query->when(isset($filters['search']), function ($q) use ($filters) {
-            $q->where('name', 'like', '%'.$filters['search'].'%')
-                ->orWhere('last_name', 'like', '%'.$filters['search'].'%')
-                ->orWhere('ci', 'like', '%'.$filters['search'].'%')
-                ->orWhere('email', 'like', '%'.$filters['search'].'%');
+            $q->where('name', 'like', '%' . $filters['search'] . '%')
+                ->orWhere('last_name', 'like', '%' . $filters['search'] . '%')
+                ->orWhere('ci', 'like', '%' . $filters['search'] . '%')
+                ->orWhere('email', 'like', '%' . $filters['search'] . '%');
         });
 
         $users = $query->orderBy('id', 'desc')->get();
@@ -171,7 +171,7 @@ class UserService
     {
         $setupToken = PasswordSetupToken::generateForUser($user, 12, 'setup');
 
-        $setupUrl = config('app.frontend_url', 'http://localhost:3000').'/establecer-contrasena?token='.$setupToken->token;
+        $setupUrl = config('app.frontend_url', 'http://localhost:3000') . '/establecer-contrasena?token=' . $setupToken->token;
 
         Mail::to($user->email)->send(new PasswordSetupMail($user, $setupUrl));
 
@@ -182,7 +182,7 @@ class UserService
     {
         $resetToken = PasswordSetupToken::generateForUser($user, 12, 'reset');
 
-        $resetUrl = config('app.frontend_url', 'http://localhost:3000').'/establecer-contrasena?token='.$resetToken->token;
+        $resetUrl = config('app.frontend_url', 'http://localhost:3000') . '/establecer-contrasena?token=' . $resetToken->token;
 
         Mail::to($user->email)->send(new PasswordSetupMail($user, $resetUrl, 'reset'));
 
