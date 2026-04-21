@@ -101,6 +101,7 @@ class MainConfigService
             PaymentMethodEnum::Binance => ['email'],
             PaymentMethodEnum::PuntoDeVenta => ['bank', 'comision'],
             default => null,
+            //a
         };
     }
 }
