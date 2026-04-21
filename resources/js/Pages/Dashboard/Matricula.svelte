@@ -78,6 +78,7 @@
         second_rep_email: "",
         second_rep_profession: "",
         second_rep_workplace: "",
+        rep_id: null,
     });
 
     let submitStatus = "Crear";
@@ -168,6 +169,7 @@
         $form.rep_email = student.rep_email;
         $form.rep_profession = student.rep_profession;
         $form.rep_workplace = student.rep_workplace;
+        $form.rep_id = student.rep_id;
         showModal = true;
     }
 
