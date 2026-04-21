@@ -115,13 +115,13 @@
                 error={$formCreate.errors?.email}
             />
         {/if}
-         {#if objFileds.hasOwnProperty("comission")}
+         {#if objFileds.hasOwnProperty("comision")}
             <Input
                 type="text"
                 required={true}
-                label={"Correo"}
-                bind:value={$formCreate.comission}
-                error={$formCreate.errors?.comission}
+                label={"Comisión (%)"}
+                bind:value={$formCreate.comision}
+                error={$formCreate.errors?.comision}
             />
         {/if}
         <input

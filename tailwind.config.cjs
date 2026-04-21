@@ -30,7 +30,8 @@ module.exports = {
     ],
     safelist: [
       ...Object.keys(colorClasses).map((color) => `border-${color}`),
-      ...Object.keys(colorClasses).map((color) => `hover:bg-${color}`)
+      ...Object.keys(colorClasses).map((color) => `hover:bg-${color}`),
+      ...Object.keys(colorClasses).map((color) => `bg-${color}`)
     ],
     theme: {
         colors: {

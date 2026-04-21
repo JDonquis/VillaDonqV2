@@ -119,9 +119,9 @@
             <Input
                 type="text"
                 required={true}
-                label={"Correo"}
-                bind:value={$formData.comission}
-                error={$formData.errors?.comission}
+                label={"Comisión (%)"}
+                bind:value={$formData.comision}
+                error={$formData.errors?.comision}
             />
         {/if}
         <button
