@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Course;
-use App\Models\Section;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
 {
@@ -39,25 +38,38 @@ class Student extends Model
     {
         return $this->belongsTo(Course::class);
     }
-    
+
     public function section()
     {
         return $this->belongsTo(Section::class);
     }
 
-    public static function saveDocs($document, $current = false, $documentName)
+    public static function saveDocs($document, $current, $documentName)
     {
 
+        if ($current) {
+            Storage::disk('public')->delete('request/'.$documentName.'/'.$current);
+        }
 
-            if($current)
-            {
-                Storage::disk('public')->delete("request/".$documentName."/".$current);
-            }
+        $doc_name = Str::random(25).'.'.$document->extension();
 
-                $doc_name = Str::random(25).".".$document->extension();
-            
-                $document->storeAs('request/'.$documentName, $doc_name, 'public');
-            
-                return $doc_name;            
+        $document->storeAs('request/'.$documentName, $doc_name, 'public');
+
+        return $doc_name;
+    }
+
+    protected function search(): Attribute
+    {
+        return Attribute::get(function () {
+            $repName = $this->representative?->user?->name ?? '';
+            $repLastName = $this->representative?->user?->last_name ?? '';
+            $courseName = $this->course?->name ?? '';
+            $sectionName = $this->section?->name ?? '';
+
+            return trim($repName.' '.$repLastName.' '.$courseName.' '.$sectionName.' '
+                .$this->name.' '.$this->last_name.' '.$this->date_birth.' '
+                .$this->email.' '.$this->ci.' '.$this->phone_number.' '
+                .$this->sex.' '.$this->previous_school);
+        });
     }
 }
