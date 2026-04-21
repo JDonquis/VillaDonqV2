@@ -20,11 +20,11 @@
     // $: $form, handleFilters()
 
     const handleFilters = () => {
-        router.get(`${$page.url}`, filterClientData);
+        router.get(`${$page.url}`, filterClientData, { preserveState: true, replace: true });
     };
 
-    const handleSearch = debounce((event) => {
-        router.get(`${$page.url}`, filterClientData);
+    const handleSearch = debounce(() => {
+        router.get(`${$page.url}`, filterClientData, { preserveState: true, replace: true });
     }, 300);
 </script>
 
