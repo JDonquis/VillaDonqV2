@@ -115,7 +115,7 @@
                 error={$formData.errors?.email}
             />
         {/if}
-        {#if data.account.data.hasOwnProperty("comission")}
+        {#if data.account.data.hasOwnProperty("comision")}
             <Input
                 type="text"
                 required={true}

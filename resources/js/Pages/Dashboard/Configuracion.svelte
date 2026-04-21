@@ -400,7 +400,7 @@
                     <div
                         class={`h-full bg-${ColorsPayMethods()[payMethod.payment_method_name]} w-5 absolute left-0 top-0`}
                     ></div>
-                    <header class="flex justify-between">
+                    <header class="flex justify-between gap-2">
                         <h3 class={` font-semibold `}>
                             {payMethod.payment_method_name}
                         </h3>
@@ -476,6 +476,12 @@
                                     Nombre de usuario:
                                 </h4>
                                 <p>{payMethod.username}</p>
+                            </div>
+                        {/if}
+                        {#if payMethod?.comision}
+                            <div>
+                                <h4 class="text-gray-500">Comisión:</h4>
+                                <p>{payMethod.comision} %</p>
                             </div>
                         {/if}
                     </div>
