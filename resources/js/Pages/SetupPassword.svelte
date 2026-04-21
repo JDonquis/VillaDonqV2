@@ -33,9 +33,9 @@
 
 <Alert />
 <section class="bg-background min-h-screen flex items-center justify-center">
-    <div class="bg-color1 p-8 rounded-lg shadow-lg w-full max-w-md">
+    <div class="bg-white text-dark p-8 rounded-lg shadow-lg w-full max-w-md">
         <h1 class="text-2xl font-bold text-white text-center mb-6">Establecer Contraseña</h1>
-        <p class="text-gray-300 text-center mb-6">Ingresa tu nueva contraseña para acceder al sistema.</p>
+        <p class=" text-center mb-6">Ingresa tu nueva contraseña para acceder al sistema.</p>
         
         <form on:submit={handleSubmit} class="space-y-4">
             <input type="hidden" bind:value={$form.token} />

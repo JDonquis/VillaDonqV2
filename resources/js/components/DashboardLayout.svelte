@@ -16,7 +16,7 @@
 
 <svelte:head></svelte:head>
     <section
-        class="bg-white h-full dashboard_container p-2 "
+        class="bg-white h-full dashboard_container  "
         class:menuStatus-false={$navStatus.isContracted}
     >
         <Header />
