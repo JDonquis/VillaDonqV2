@@ -36,6 +36,9 @@
             on:click={(e) => {
                 e.preventDefault();
                 showModal = true;
+                setTimeout(() => {
+                    document.querySelector("input[name='ci']").focus();
+                }, 200);
             }}>Login</button
         >
     </header>
