@@ -27,6 +27,8 @@ class PaymentConfigRequest extends FormRequest
             'monthly_payment' => ['required'],
             'ame_price' => ['required'],
             'investment_plan_price' => ['required'],
+            'day_of_monthly_payment' => ['required', 'integer'],
+            'grace_period' => ['required', 'integer'],
         ];
     }
 }

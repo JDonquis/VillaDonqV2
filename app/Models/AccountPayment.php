@@ -10,7 +10,7 @@ class AccountPayment extends Model
 {
     use HasFactory;
 
-    protected $fillable = 
+    protected $fillable =
     [
         'payment_method_id',
         'person_name',
@@ -21,13 +21,13 @@ class AccountPayment extends Model
         'account_number',
         'username',
         'email',
-        'status'
+        'status',
+        'cash_currency'
     ];
 
-    
+
     public function method()
     {
         return $this->belongsTo(PaymentMethod::class, 'payment_method_id', 'id');
     }
-    
 }

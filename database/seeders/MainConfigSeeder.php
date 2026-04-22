@@ -16,21 +16,24 @@ class MainConfigSeeder extends Seeder
     {
         $fields = [
 
-            ['name' => 'VillaDonq',
-             'email' => 'villadonq@gmail.com',
-             'rif' => 'v123456789',
-             'phone_number' => '04125800610',
-             'address' => 'Entre Av.Manaure y Av.Ruiz Pineda',
-             'release' => '2002-09-07',
-             'motto' => 'La escuela del futuro ya llegó a prestarte a mejor educación',
-             'regular_inscription_price' => 40,
-             'new_inscription_price' => 45,
-             'monthly_payment' => 35,
+            [
+                'name' => 'VillaDonq',
+                'email' => 'villadonq@gmail.com',
+                'rif' => 'v123456789',
+                'phone_number' => '04125800610',
+                'address' => 'Entre Av.Manaure y Av.Ruiz Pineda',
+                'release' => '2002-09-07',
+                'motto' => 'La escuela del futuro ya llegó a prestarte a mejor educación',
+                'regular_inscription_price' => 35,
+                'new_inscription_price' => 50,
+                'monthly_payment' => 50,
+                'day_of_monthly_payment' => 30,
+                'grace_period' => 5,
             ]
-     
 
-         ];   
 
-         DB::table('main_configs')->insert($fields);
+        ];
+
+        DB::table('main_configs')->insert($fields);
     }
 }

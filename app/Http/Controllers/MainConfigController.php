@@ -31,6 +31,8 @@ class MainConfigController extends Controller
             'monthly_payment' => $configData->monthly_payment,
             'ame_price' => $configData->ame_price,
             'investment_plan_price' => $configData->investment_plan_price,
+            'day_of_monthly_payment' => $configData->day_of_monthly_payment,
+            'grace_period' => $configData->grace_period,
         ];
         return inertia(
             'Dashboard/Configuracion',

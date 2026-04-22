@@ -47,7 +47,7 @@ class MainConfigService
 
     public function getMethods()
     {
-        $methods = PaymentMethod::whereNot('id', 1)->get();
+        $methods = PaymentMethod::get();
 
         return $methods;
     }
@@ -89,6 +89,7 @@ class MainConfigService
         $method = PaymentMethodEnum::from($methodID);
 
         return match ($method) {
+            PaymentMethodEnum::Efectivo => ['cash_currency'],
             PaymentMethodEnum::PagoMovil => ['ci', 'phone_number', 'bank'],
             PaymentMethodEnum::Transferencia => ['account_number', 'person_name', 'ci', 'phone_number', 'bank'],
             PaymentMethodEnum::Zelle => ['username', 'email'],
