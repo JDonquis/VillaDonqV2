@@ -26,6 +26,7 @@ class MainConfig extends Model
         'monthly_payment',
         'ame_price',
         'investment_plan_price',
-
+        'day_of_monthly_payment',
+        'grace_period',
     ];
 }
