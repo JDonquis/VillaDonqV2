@@ -1,20 +1,22 @@
 import { writable } from "svelte/store";
 
-export const navStatus = writable({
-    isContracted: false,
-    navWidth: 240,
-    
-});
+const storedNav = typeof localStorage !== 'undefined' ? localStorage.getItem('navStatus') : null;
+const initialNav = storedNav ? JSON.parse(storedNav) : { isContracted: false, navWidth: 240 };
+
+export const navStatus = writable(initialNav);
 
 export function toggleMenu(objParams) {
     navStatus.update((current) => {
-        let newStatus = !current.isContracted 
-        if (newStatus == true) {
-             return { ...current, isContracted: newStatus, navWidth: 60 };
-        } else {
-            return { ...current, isContracted: newStatus, navWidth: 240 };
+        let newStatus = !current.isContracted;
+        const newNav = newStatus == true
+            ? { isContracted: newStatus, navWidth: 60 }
+            : { isContracted: newStatus, navWidth: 240 };
 
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('navStatus', JSON.stringify(newNav));
         }
-        console.log({current})
+
+        console.log({ current: newNav });
+        return newNav;
     });
 }

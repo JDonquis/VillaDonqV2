@@ -24,30 +24,48 @@
 
     const prices = useForm({
         ...data.prices,
+        monthly_due_day: data.prices.monthly_due_day || 5,
+        monthly_due_type: data.prices.monthly_due_type || 'current',
     });
 
-    function updatePrices(e) {
+function updatePrices(e) {
         e.preventDefault();
 
         $prices.regular_inscription_price = $prices.new_inscription_price;
 
-        $prices.put(`/dashboard/configuracion/pagos`, {
-            onBefore: () => confirm("¿Está seguro de guardar estos cambios?"),
-            onSuccess: (mensaje) => {
+        if (!confirm("¿Está seguro de guardar estos cambios?")) return;
+
+        const formData = {
+            regular_inscription_price: $prices.regular_inscription_price,
+            new_inscription_price: $prices.new_inscription_price,
+            monthly_payment: $prices.monthly_payment,
+            monthly_due_day: $prices.monthly_due_day,
+            monthly_due_type: $prices.monthly_due_type,
+            ame_price: $prices.ame_price,
+            investment_plan_price: $prices.investment_plan_price,
+        };
+
+        $prices.processing = true;
+
+        router.put('/dashboard/configuracion/pagos', formData, {
+            preserveScroll: true,
+            onSuccess: () => {
                 $prices.reset();
+                $prices.processing = false;
                 displayAlert({
                     type: "success",
                     message: "Precios actualizados",
                 });
             },
             onError: (errors) => {
+                $prices.processing = false;
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
                 }
             },
         });
     }
-
+                       
     function deleteAccount(id) {
         router.delete(`/dashboard/configuracion/eliminar-cuenta/${id}`, {
             onBefore: () =>
@@ -297,64 +315,86 @@
     {/if}
 
     <hr class=" border-gray-300" />
+        <div class="flex gap-10">
 
-    <form
-        class="Configuracion_tarifas my-10 py-3"
-        id="pricesForm"
-        on:submit={updatePrices}
-    >
-        <h2 class="font-bold text-xl mb-4">Configuración de tarifas</h2>
+            <form
+                class="Configuracion_tarifas my-10 mb-4 py-3 min-w-[310px] max-w-[330px]"
+                id="pricesForm"
+                on:submit={updatePrices}
+            >
+                <h2 class="font-bold text-xl mb-4">Tarifas</h2>
+        
+                <div class="w-full gap-10 pl-1">
+                    <Input
+                        label="Inscripción ($)"
+                        type="number"
+                        required={true}
+                        bind:value={$prices.new_inscription_price}
+                    />
+                    <Input
+                        label="Mensualidad ($)"
+                        type="number"
+                        required={true}
+                        bind:value={$prices.monthly_payment}
+                    />
+                    <div class="flex gap-2">
+                        <Input
+                            label="Mensualidad vence el "
+                            type="number"
+                            required={true}
+                            bind:value={$prices.monthly_due_day}
+                            min={1}
+                            max={31}
+                        />
+                        <Input
+                        classes={"mt-10 pt-1"}
+                            label=""
+                            type="select"
+                            bind:value={$prices.monthly_due_type}
+                        >
+                            <option value="current">Del mes actual</option>
+                            <option value="next">Del mes siguiente</option>
+                        </Input >
 
-        <div class="max-w-[300px] gap-10 pl-4">
-            <Input
-                label="Inscripción ($)"
-                type="number"
-                required={true}
-                bind:value={$prices.new_inscription_price}
-            />
-            <Input
-                label="Mensualidad ($)"
-                type="number"
-                required={true}
-                bind:value={$prices.monthly_payment}
-            />
-            <Input
-                label="Seguro de atención primaria (AME) ($)"
-                type="number"
-                required={true}
-                bind:value={$prices.ame_price}
-            />
-            <Input
-                label="Plan de inversión ($)"
-                type="number"
-                required={true}
-                bind:value={$prices.investment_plan_price}
-            />
+                    </div>
+               
+                    <Input
+                        label="Seguro de atención primaria (AME) ($)"
+                        type="number"
+                        required={true}
+                        bind:value={$prices.ame_price}
+                    />
+                    <Input
+                        label="Plan de inversión ($)"
+                        type="number"
+                        required={true}
+                        bind:value={$prices.investment_plan_price}
+                    />
+        
+                    <!-- <Input
+                        label="Inscripción de regulares ($)"
+                        type="number"
+                        required={true}
+                        bind:value={$prices.regular_inscription_price}
+                    /> -->
+                    {#if $prices.isDirty}
+                        <button
+                            class="btn btn-green flex items-center gap-3 mb-2 mt-7 w-full"
+                            type="submit"
+                            form={"pricesForm"}
+                        >
+                            <iconify-icon icon="material-symbols:save" class="text-3xl"
+                            ></iconify-icon>
+                            <span> GUARDAR TARIFAS </span>
+                        </button>
+                    {/if}
+                </div>
+            </form>
 
-            <!-- <Input
-                label="Inscripción de regulares ($)"
-                type="number"
-                required={true}
-                bind:value={$prices.regular_inscription_price}
-            /> -->
-        </div>
-    </form>
-    {#if $prices.isDirty}
-        <button
-            class="shadow-xl slideIn flex items-center justify-center mb-3 ml-auto py-4 w-64 bg-color1 gap-3 text-color4"
-            type="submit"
-            form={"pricesForm"}
-        >
-            <span> GUARDAR TARIFAS </span>
-            <iconify-icon icon="material-symbols:save" class="text-3xl"
-            ></iconify-icon>
-        </button>
-    {/if}
-    <hr class=" border-gray-300" />
-    <section class="my-10">
+              <section class="my-10">
         <header class="flex justify-between mb-6">
             <h2 class="font-bold text-xl mb-4">
-                Configuración de metodos de pago
+                Métodos de pago
             </h2>
             <div class="relative z-30">
                 <button
@@ -496,6 +536,10 @@
             {/each}
         </div>
     </section>
+        </div>
+
+    <hr class=" border-gray-300" />
+ 
 </section>
 
 <style>

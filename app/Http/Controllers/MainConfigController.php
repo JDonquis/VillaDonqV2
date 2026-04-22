@@ -12,6 +12,8 @@ use App\Http\Resources\AccountPaymentResource;
 
 class MainConfigController extends Controller
 {
+    private MainConfigService $mainConfigService;
+
     public function __construct()
     {
         $this->mainConfigService = new MainConfigService;
@@ -41,25 +43,22 @@ class MainConfigController extends Controller
                 ]
 
             ]
-        
-        ]
-        
+
         );
-        
     }
 
     public function showCreateAccount($methodID)
     {
         $fields = $this->mainConfigService->getFieldsFromMethod($methodID);
-        $method = PaymentMethod::where('id',$methodID)->first();
+        $method = PaymentMethod::where('id', $methodID)->first();
         return inertia('Dashboard/MetodosDePago/Crear', ['data' => ['fields' => $fields, 'method' => $method]]);
     }
 
     public function showEditAccount($id)
     {
-        $account = AccountPayment::where('id',$id)->with('method')->first();
+        $account = AccountPayment::where('id', $id)->with('method')->first();
         $accountResource = new AccountPaymentResource($account);
-        $method = PaymentMethod::where('id',$account->method->id)->first();
+        $method = PaymentMethod::where('id', $account->method->id)->first();
 
         return inertia('Dashboard/MetodosDePago/Editar', ['data' => ['account' => $accountResource, 'method' => $method]]);
     }
@@ -67,16 +66,15 @@ class MainConfigController extends Controller
 
     public function createAccount(AccountRequest $request)
     {
-       
+
         $account = $this->mainConfigService->createAccount($request);
-        return redirect('/dashboard/configuracion#account-'.$account->id);
+        return redirect('/dashboard/configuracion#account-' . $account->id);
     }
 
     public function editAccount(AccountRequest $request, $id)
     {
         $this->mainConfigService->updateAccount($id, $request);
-        return redirect('/dashboard/configuracion#account-'.$id);
-
+        return redirect('/dashboard/configuracion#account-' . $id);
     }
 
     public function deleteAccount($id)
@@ -86,16 +84,10 @@ class MainConfigController extends Controller
     }
 
     public function updatePaymentConfig(PaymentConfigRequest $request)
-<<<<<<< HEAD
-    {   
-        $this->mainConfigService->updatePaymentConfig($request);
-=======
     {
         $this->mainConfigService->updatePaymentConfig($request->validated());
->>>>>>> 813df6201e127852dec561849f0477be4bb6e9b3
 
         return redirect('/dashboard/configuracion');
-
     }
 
     /**

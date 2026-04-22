@@ -102,16 +102,15 @@
         showModal = true;
         editingUser = selectedRow.data;
         submitStatus = "Editar";
-        Object.assign($form, {
-            type_user_id: selectedRow.data.type_user_id || 1,
-            ci: selectedRow.data.ci,
-            name: selectedRow.data.name,
-            last_name: selectedRow.data.last_name,
-            email: selectedRow.data.email,
-            phone_number: selectedRow.data.phone_number,
-            address: selectedRow.data.address,
-          
-        });
+   
+        const personal = selectedRow.data
+        $form.type_user_id = personal.type_user_id || 1;
+        $form.ci = personal.ci;
+        $form.name = personal.name;
+        $form.last_name = personal.last_name;
+        $form.email = personal.email;
+        $form.phone_number = personal.phone_number;
+        $form.address = personal.address;
     }
 
     function handleDelete() {

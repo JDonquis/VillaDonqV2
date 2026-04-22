@@ -15,7 +15,7 @@
     export let error = false;
 </script>
 
-<div class={`text-left w-full mt-5 `}>
+<div class={`text-left w-full mt-5 ${classes} `}>
     <label
         for={label}
         class={`form__label w-full text-sm font-semibold`}
@@ -126,6 +126,9 @@
         transition:
             box-shadow 0.15s,
             transform 0.15s;
+    }
+    select.nb-input {
+        padding: 10.5px;
     }
 
     .nb-input:focus {
