@@ -12,7 +12,7 @@ class PaymentService
 {
     public function getAll()
     {
-        return Payment::query()->with('students', 'accountPayment', 'user')->paginate(25)->withQueryString();
+        return Payment::query()->with('students', 'accountPayment.method', 'user')->paginate(25)->withQueryString();
     }
 
     public function create(array $data): Payment
@@ -42,12 +42,15 @@ class PaymentService
             $payment->students()->attach($studentData['id'], [
                 'amount_in_dolars' => $studentData['amount_in_dolars'],
             ]);
+
+            $students
         }
 
         $payment->load('students', 'accountPayment');
 
         // TODO: Aquí se debe llamar al servicio de balance para actualizar el estado de cuenta del estudiante
-        // Ejemplo: $balanceService->updateStudentBalance($payment);
+        Ejemplo:
+        // $balanceService->updateStudentBalance($payment, );
 
         // TODO: Histórico de pagos - hay un problema con MySQL/MariaDB guardando JSON
         // $this->createHistory($payment, 'created', null, $payment->toArray());
