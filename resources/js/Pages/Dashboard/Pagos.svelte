@@ -6,7 +6,13 @@
     import { getMonitor } from "consulta-dolar-venezuela";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm } from "@inertiajs/svelte";
+    import axios from "axios";
+    import debounce from "lodash/debounce";
     export let data = [];
+    export let searched_students = [];
+    let isSearchTableOpen = false;
+    let searchInputRef;
+    let searchTableRef;
     const currentDate = new Date();
     let dolarPrice;
 
@@ -18,7 +24,6 @@
         .catch((error) => {
             console.error("Error:", error);
         });
-    $: console.log(dolarPrice);
 
     // Format the date as a string in the "YYYY-MM-DD" format
     const currentDateString = currentDate.toISOString().split("T")[0];
@@ -34,7 +39,7 @@
         bs: "",
     };
 
-    let formCreate = useForm({
+    let form = useForm({
         date: currentDateString,
         name: "Fabian",
         currency: "Bolivar",
@@ -60,15 +65,15 @@
 
     function handleSubmit(event) {
         event.preventDefault();
-        $formCreate.clearErrors();
-        $formCreate.post("/dashboard/matricula", {
+        $form.clearErrors();
+        $form.post("/dashboard/matricula", {
             onError: (errors) => {
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
                 }
             },
             onSuccess: (mensaje) => {
-                $formCreate.reset();
+                $form.reset();
                 displayAlert({
                     type: "success",
                     message: "Ok todo salió bien",
@@ -98,8 +103,46 @@
         });
     }
 
+    const search_student = debounce(async (search_text) => {
+        isSearchTableOpen = search_text.length > 0;
+        try {
+            const response = await axios.get(
+                "/dashboard/pagos/search-student",
+                {
+                    params: { search: search_text },
+                },
+            );
+            searched_students = response.data.students;
+            console.log(response.data);
+            // Aquí puedes actualizar el estado con los resultados de la búsqueda
+        } catch (error) {
+            console.error("Error al buscar estudiantes:", error);
+        }
+    }, 300);
+
+    // Ocultar tabla al hacer click fuera
+    function handleClickOutside(event) {
+        if (
+            isSearchTableOpen &&
+            !searchTableRef?.contains(event.target) &&
+            !searchInputRef?.contains(event.target)
+        ) {
+            isSearchTableOpen = false;
+            searched_students = [];
+        }
+    }
+
+    // Agregar y remover el event listener
+    import { onMount, onDestroy } from "svelte";
+    onMount(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+    });
+    onDestroy(() => {
+        document.removeEventListener("mousedown", handleClickOutside);
+    });
+
     function handleDelete(id) {
-        $formCreate.delete(`/dashboard/matriculo/${id}`, {
+        $form.delete(`/dashboard/matriculo/${id}`, {
             onBefore: () =>
                 confirm(
                     `¿Está seguro de eliminar a este estudiante ${selectedRow.title}?`,
@@ -112,17 +155,15 @@
         showModalFormEdit = true;
     }
 
-    $: console.log($formCreate);
-    $: console.log(
-        data.course_sections?.data?.[`course_${$formCreate.course_id}`],
-    );
+    $: console.log($form);
+    $: console.log(data.course_sections?.data?.[`course_${$form.course_id}`]);
 
-    $: $formCreate.amout, exchange();
+    $: $form.amout, exchange();
 
     function exchange() {
-        // $formCreate.bs = $formCreate.amount * +dolarPrice;
-        // $formCreate.amount = $formCreate.bs / dolarPrice;
-        console.log('tambien')
+        // $form.bs = $form.amount * +dolarPrice;
+        // $form.amount = $form.bs / dolarPrice;
+        console.log("tambien");
     }
 </script>
 
@@ -132,59 +173,98 @@
 
 <Alert />
 
-<Modal bind:showModal>
+<Modal bind:showModal classes="w-[780px]">
     <h2 slot="header" class="text-sm text-center">REGISTRO DE PAGO</h2>
 
     <form
         id="a-form"
         on:submit={handleSubmit}
         action=""
-        class="w-fit grid md:grid-cols-2 md:gap-x-5"
+        class="w-full grid md:grid-cols-2 md:gap-x-5 px-5"
     >
-        <div class="col-span-2 mx-auto text-center w-full">
+        <div class="col-span-2 relative mx-auto text-center w-full">
             <!-- <Input
                 type="text"
                 required={true}
                 label={"Nombre"}
-                bind:value={$formCreate.name}
-                error={$formCreate.errors?.name}
+                bind:value={$form.name}
+                error={$form.errors?.name}
             /> -->
             <input
                 type="search"
-                required={true}
                 placeholder="Buscar Estudiante"
-                class={"z-50 mx-auto p-2 mt-6 md:w-60 bg-color1 text-white border rounded-md"}
-            /><iconify-icon
-                class="relative top-2 ml-3 text-2xl"
-                icon="material-symbols:search"
-            ></iconify-icon>
+                class={"z-50 mx-auto p-2 mt-6 md:w-60 nb-input  border rounded-md"}
+                bind:this={searchInputRef}
+                on:input={(e) => {
+                    search_student(e.target.value);
+                }}
+            />
 
             <table
-                class="[&_*]:px-4 [&_*]:py-2 [&_*]:text-left text-sm rounded-md overflow-hidden mt-5"
+                id="students-search-table"
+                bind:this={searchTableRef}
+                class={`${isSearchTableOpen ? "block" : "hidden"} w-full absolute font-semibold bg-paper top-12 max-h-[370px] min-h-[300px] overflow-y-scroll z-50 border-4 [&_*]:px-4 [&_*]:py-2 [&_*]:text-left bg-background border-black text-sm  mt-5`}
             >
-                <thead class="bg-color2">
+                <thead class="">
                     <tr>
                         <th>Estudiante</th>
-                        <th>Fecha</th>
-                        <th>Metodo d </th>
-                        <th>Sección</th>
+                        <th>C.I</th>
+                        <th>Grado/Año</th>
                         <th>Rep Legal</th>
-                        <th>Quitar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#each searched_students as student}
+                        <tr
+                            class={` hover:bg-black/10  [&_*]:px-4 [&_*]:py-2 cursor-pointer bg-white bg-opacity-10 border-gray-500`}
+                            on:click={() => {
+                                $form.student_id = student.id;
+                                $form.student_name = student.name;
+                                $form.student_ci = student.cedula;
+                                $form.student_grade = student.grade;
+                                $form.student_legal_rep = student.legal_rep;
+                                // Aquí puedes asignar otros campos del formulario según el estudiante seleccionado
+                                isSearchTableOpen = false;
+                                searched_students = [];
+                            }}
+                        >
+                            <td>{student.name}</td>
+                            <td>{student.cedula}</td>
+                            <td>{student.grade}</td>
+                            <td>{student.legal_rep}</td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
+
+            <table
+                id="selected_student"
+                class={`${$form.student_id ? "block" : "hidden"} w-full font-semibold relative [&_*]:px-4 [&_*]:py-2 [&_*]:text-left bg-purple/30 border-purple text-sm overflow-hidden mt-5`}
+            >
+                <button
+                    type="button"
+                    class="absolute -top-1 -right-5 p-3 font-bold hover:bg-purple hover:border-2 border-black"
+                >
+                    <iconify-icon icon="line-md:close" width="10" height="10"
+                    ></iconify-icon>
+                </button>
+
+                <thead class="">
+                    <tr>
+                        <th>Estudiante</th>
+                        <th>C.I</th>
+                        <th>Grado/Año</th>
+                        <th>Rep Legal</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr
-                        class="[&_*]:px-4 [&_*]:py-2 cursor-pointer bg-white bg-opacity-10 border-b border-gray-500"
+                        class="font-semibold [&_*]:px-4 [&_*]:py-2 cursor-pointer bg-white bg-opacity-10 border-gray-500"
                     >
-                        <td>Fabian Eduardo Vidal Molina</td>
-                        <td>3434534</td>
-                        <td>2do año</td>
-                        <td>A</td>
-                        <td>Maria de los Angeles</td>
-                        <td
-                            ><iconify-icon icon="mynaui:delete"
-                            ></iconify-icon></td
-                        >
+                        <td>{$form.student_name}</td>
+                        <td>{$form.student_ci}</td>
+                        <td>{$form.student_grade}</td>
+                        <td>{$form.student_legal_rep}</td>
                     </tr>
                 </tbody>
             </table>
@@ -193,15 +273,15 @@
             type="date"
             required={true}
             label={"Fecha del pago"}
-            bind:value={$formCreate.date}
-            error={$formCreate.errors?.date}
+            bind:value={$form.date}
+            error={$form.errors?.date}
             max={currentDateString}
         />
         <Input
             type="select"
             label={"Metodo de pago"}
-            bind:value={$formCreate.payment_method}
-            error={$formCreate.errors?.payment_method}
+            bind:value={$form.payment_method}
+            error={$form.errors?.payment_method}
             required={true}
         >
             <option value="Masculino">Pago movil BNC</option>
@@ -216,36 +296,45 @@
             type="number"
             label={"Monto en Dolares ($)"}
             required={true}
-            bind:value={$formCreate.amount}
-            error={$formCreate.errors?.amount}
+            bind:value={$form.amount}
+            error={$form.errors?.amount}
             on:input={(e) => {
-                $formCreate.bs = (e.target.value * dolarPrice).toFixed(2)
+                $form.bs = (e.target.value * dolarPrice).toFixed(2);
             }}
         />
         <Input
             type="number"
             label={"Monto en Bolivares (Bs)"}
-            bind:value={$formCreate.bs}
-            error={$formCreate.errors?.bs}
+            bind:value={$form.bs}
+            error={$form.errors?.bs}
             on:input={(e) => {
-                $formCreate.amount = (e.target.value / dolarPrice).toFixed(2)
+                $form.amount = (e.target.value / dolarPrice).toFixed(2);
             }}
         />
         <Input
             type="number"
             label={"Referencia"}
             required={true}
-            bind:value={$formCreate.vaucher}
-            error={$formCreate.errors?.vaucher}
+            bind:value={$form.vaucher}
+            error={$form.errors?.vaucher}
         />
+        <button
+            type="submit"
+            class="btn btn-green col-span-2 mt-7 flex items-center justify-center gap-3"
+            disabled={$form.processing}
+        >
+            {#if $form.processing}
+                Cargando...
+            {:else}
+                <iconify-icon
+                    icon="material-symbols:save-sharp"
+                    width="24"
+                    height="24"
+                />
+                <span> Guardar </span>
+            {/if}
+        </button>
     </form>
-    <input
-        form="a-form"
-        slot="btn_footer"
-        type="submit"
-        value={$formCreate.processing ? "Cargando..." : "Guardar"}
-        class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
-    />
 </Modal>
 
 <!-- <Modal bind:showModal={showModalFormEdit}>
@@ -316,14 +405,15 @@
     />
 </Modal> -->
 
-<div class="flex justify-between items-center">
+<div class=" items-center">
     <button
-        class="btn_create inline-block"
+        class="btn inline-block"
         on:click={(e) => {
             e.preventDefault();
             showModal = true;
         }}>Registrar pago</button
     >
+    <p class="mt-3">1$ = {dolarPrice} Bs</p>
 </div>
 
 <Table
@@ -338,14 +428,14 @@
         <tr>
             <th>Nro</th>
             <th>Fecha</th>
-            <th>Sección</th>
-            <!-- <th>Representante</th> -->
-            <th>Nombre repre</th>
+            <th>Estudiante</th>
+            <th>Representante legal</th>
+            <th>Monto USD$</th>
+            <th>Monto Bs</th>
             <th>Metodo de pago</th>
-            <th>Ref</th>
-            <th>Monto ($)</th>
-            <th>Monto (bs)</th>
-            <th>Estado</th>
+            <th>Referencia</th>
+            <!-- <th>Representante</th> -->
+   
         </tr>
     </thead>
 

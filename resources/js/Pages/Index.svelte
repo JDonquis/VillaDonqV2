@@ -46,7 +46,7 @@
         <legend slot="header" class="text-center opacity-70"
             >INICIAR SESIÓN</legend
         >
-        <form on:submit={handleSubmit} class="min-w-[250px]">
+        <form on:submit={handleSubmit} class="min-w-[270px] px-5    ">
             <div>
                 <Input
                     type="text"
@@ -77,7 +77,7 @@
                 type="submit"
                 disabled={$form.processing}
                 value={$form.processing ? "Cargando..." : "ENTRAR"}
-                class="hover:bg-color3 hover:text-white duration-200 mt-5 w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
+                class="btn w-full mt-6"
             />
             
             <div class="mt-4 text-center">
