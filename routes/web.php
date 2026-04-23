@@ -52,8 +52,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/pagos/search-student', [StudentController::class, 'searchStudent']);
     Route::get('/dashboard/pagos', [PaymentController::class, 'index']);
     Route::get('/dashboard/pagos/search-representative', [StudentController::class, 'searchRepresentative']);
-
-    Route::get('/dashboard/registrar-pago', [PaymentController::class, 'showCreatePayment']);
+    Route::post('/dashboard/pagos', [PaymentController::class, 'store']);
 
     Route::get('/dashboard/configuracion', [MainConfigController::class, 'index']);
     Route::get('/dashboard/configuracion/editar-cuenta/{id}', [MainConfigController::class, 'showEditAccount']);

@@ -56,13 +56,11 @@ class StudentController extends Controller
         DB::beginTransaction();
 
         try {
-            Log::info('Iniciando creación de estudiante con CI: ' . $request->student_ci);
 
             $this->studentService->create($request);
 
             DB::commit();
 
-            Log::info('Estudiante creado correctamente con CI: ' . $request->student_ci);
 
             return redirect('/dashboard/matricula?course_id=' . $request->course_id . '&section_id=' . $request->section_id);
         } catch (Exception $e) {
