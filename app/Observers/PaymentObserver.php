@@ -33,6 +33,8 @@ class PaymentObserver
     {
         $userId = Auth::id() ?? 1;
 
+        $payment->load('students');
+
         $allOldData = null;
         $allNewData = null;
 

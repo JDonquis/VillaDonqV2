@@ -17,8 +17,6 @@ class PaymentHistory extends Model
     ];
 
     protected $casts = [
-        'old_data' => 'array',
-        'new_data' => 'array',
         'created_at' => 'datetime',
     ];
 
