@@ -27,6 +27,7 @@ class AccountPaymentResource extends JsonResource
             'username' => $this->when($this->username !== null, $this->username),
             'email' => $this->when($this->email !== null, $this->email),
             'comision' => $this->when($this->comision !== null, $this->comision),
+            'cash_currency' => $this->when($this->cash_currency !== null, $this->cash_currency),
 
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
