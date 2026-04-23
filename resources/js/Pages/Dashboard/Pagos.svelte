@@ -413,7 +413,7 @@
             showModal = true;
         }}>Registrar pago</button
     >
-    <p class="mt-3">1$ = {dolarPrice} Bs</p>
+    <p class="mt-3">1$ = {#if dolarPrice}{dolarPrice}{:else}<iconify-icon icon="line-md:loading-loop" width="24" height="24"></iconify-icon>{/if} Bs</p>
 </div>
 
 <Table

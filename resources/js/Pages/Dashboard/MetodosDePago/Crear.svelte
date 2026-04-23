@@ -1,7 +1,7 @@
 <script>
     import Input from "../../../components/Input.svelte";
     import { useForm, router } from "@inertiajs/svelte";
-    import ColorsPayMethods from "../../../components/ColorsPayMethods"
+    import ColorsPayMethods from "../../../components/ColorsPayMethods";
     import Alert from "../../../components/Alert.svelte";
     import { displayAlert } from "../../../stores/alertStore";
 
@@ -10,14 +10,14 @@
     data?.fields?.forEach((field) => {
         objFileds[field] = "";
     });
-    console.log(objFileds)
+    console.log(objFileds);
 
     let formCreate = useForm({
         ...objFileds,
-         payment_method_id: data.method.id
+        payment_method_id: data.method.id,
     });
     function handleSubmit(event) {
-        console.log('enviando')
+        console.log("enviando");
         event.preventDefault();
         $formCreate.clearErrors();
         $formCreate.post("/dashboard/configuracion/crear-cuenta", {
@@ -40,17 +40,27 @@
 
 <form
     action=""
-    id="a-form" 
+    id="a-form"
     on:submit={handleSubmit}
-       class="border-4 medium-shadow border-black p max-w-[450px] mx-auto "
+    class="border-4 medium-shadow border-black p max-w-[450px] mx-auto"
 >
     <header class={`bg-black/5 text-dark py-4 pl-3`}>
-        <h2 class={`border-l-4 border-${ColorsPayMethods()[data.method.name]} inline pl-3`}>
+        <h2
+            class={`border-l-4 border-${ColorsPayMethods()[data.method.name]} inline pl-3`}
+        >
             Nuevo método: <b>{data.method.name}</b>
         </h2>
-
     </header>
     <div class="p-10 pt-5">
+        {#if objFileds.hasOwnProperty("cash_currency")}
+            <Input
+                type="text"
+                required={true}
+                label={"Tipo de moneda"}
+                bind:value={$formCreate.cash_currency}
+                error={$formCreate.errors?.cash_currency}
+            />
+        {/if}
         {#if objFileds.hasOwnProperty("bank")}
             <Input
                 type="text"
@@ -115,7 +125,7 @@
                 error={$formCreate.errors?.email}
             />
         {/if}
-         {#if objFileds.hasOwnProperty("comision")}
+        {#if objFileds.hasOwnProperty("comision")}
             <Input
                 type="text"
                 required={true}
@@ -124,11 +134,22 @@
                 error={$formCreate.errors?.comision}
             />
         {/if}
-        <input
+        <button
             form="a-form"
             type="submit"
-            value={$formCreate.processing ? "Cargando..." : "Guardar"}
-            class="hover:bg-color3 hover:text-white duration-200 w-full mt-5 bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
-        />
+            class="btn btn-green w-full mt-6 mr-7 flex items-center justify-center gap-3"
+            disabled={$formCreate.processing}
+        >
+            {#if $formCreate.processing}
+                Cargando...
+            {:else}
+                <iconify-icon
+                    icon="material-symbols:save-sharp"
+                    width="24"
+                    height="24"
+                />
+                <span> Guardar </span>
+            {/if}
+        </button>
     </div>
 </form>

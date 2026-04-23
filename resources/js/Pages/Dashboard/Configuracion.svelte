@@ -11,7 +11,7 @@
     console.log({ data });
 
     const institution = useForm({
-        name: "Maestro José Marti",
+        name: "Jesús el Nazareno",
         active_students: "400",
         promotions: "33",
         years: "34",
@@ -24,8 +24,7 @@
 
     const prices = useForm({
         ...data.prices,
-        day_of_monthly_payment: data.prices.day_of_monthly_payment || 5,
-        grace_period: data.prices.grace_period || 0,
+        
     });
 
     function updatePrices(e) {
@@ -46,15 +45,15 @@
         };
 
         $prices.processing = true;
+        $prices.defaults()
 
         router.put("/dashboard/configuracion/pagos", formData, {
             preserveScroll: true,
             onSuccess: () => {
-                $prices.reset();
                 $prices.processing = false;
                 displayAlert({
                     type: "success",
-                    message: "Precios actualizados",
+                    message: "Tarifas actualizadas",
                 });
             },
             onError: (errors) => {

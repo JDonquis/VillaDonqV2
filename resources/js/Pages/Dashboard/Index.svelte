@@ -9,7 +9,7 @@
     import { displayAlert } from "../../stores/alertStore";
     let showModal = false;
     const data = useForm({
-        name: "Maestro José Marti",
+        name: "Jesús el Nazareno",
         active_students: "400",
         promotions: "33",
         years: "34",

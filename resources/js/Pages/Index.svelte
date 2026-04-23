@@ -95,7 +95,7 @@
             <h1 class="md:text-5xl text-color1">
                 Colegio
                 <br />
-                Maestro José Marti
+                Jesús el Nazareno
             </h1>
             <h2 class="text-xl">
                 Formando mentes brillantes para un mañana prometedor
