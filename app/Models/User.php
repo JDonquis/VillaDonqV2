@@ -45,6 +45,16 @@ class User extends Authenticatable
         return $this->hasMany(Representative::class, 'user_id', 'id');
     }
 
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function paymentHistories()
+    {
+        return $this->hasMany(PaymentHistory::class);
+    }
+
     public function findForCi($ci)
     {
         return self::where('ci', $ci)->with('modules')->first();

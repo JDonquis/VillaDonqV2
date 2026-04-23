@@ -44,6 +44,13 @@ class Student extends Model
         return $this->belongsTo(Section::class);
     }
 
+    public function payments()
+    {
+        return $this->belongsToMany(Payment::class, 'payment_students')
+            ->withPivot('amount')
+            ->withTimestamps();
+    }
+
     public static function saveDocs($document, $current, $documentName)
     {
 
