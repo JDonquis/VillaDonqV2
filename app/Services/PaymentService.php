@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentService
 {
+    public function getAll()
+    {
+        return Payment::query()->with('students', 'accountPayment', 'user')->paginate(25)->withQueryString();
+    }
+
     public function create(array $data): Payment
     {
         $accountPayment = AccountPayment::findOrFail($data['account_payment_id']);
@@ -30,11 +35,11 @@ class PaymentService
         $studentsData = collect($data['students']);
 
         foreach ($studentsData as $studentData) {
-            $student = Student::where('id', $studentData['student_id'])
+            $student = Student::where('id', $studentData['id'])
                 ->where('status', '!=', 0)
                 ->firstOrFail();
 
-            $payment->students()->attach($studentData['student_id'], [
+            $payment->students()->attach($studentData['id'], [
                 'amount' => $studentData['amount'],
             ]);
         }
@@ -54,8 +59,8 @@ class PaymentService
     {
         $userId = Auth::id() ?? 1;
 
-        $oldJson = $oldData ? "'".json_encode($oldData)."'" : "'{}'";
-        $newJson = $newData ? "'".json_encode($newData)."'" : "'{}'";
+        $oldJson = $oldData ? "'" . json_encode($oldData) . "'" : "'{}'";
+        $newJson = $newData ? "'" . json_encode($newData) . "'" : "'{}'";
 
         $sql = "INSERT INTO payment_histories (payment_id, user_id, action, old_data, new_data, created_at) VALUES ({$payment->id}, {$userId}, '{$action}', {$oldJson}, {$newJson}, NOW())";
 

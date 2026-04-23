@@ -30,7 +30,7 @@ class StorePaymentRequest extends FormRequest
             'reference' => 'nullable|string|max:50',
             'observations' => 'nullable|string',
             'students' => 'required|array|min:1',
-            'students.*.student_id' => 'required|exists:students,id',
+            'students.*.id' => 'required|exists:students,id',
             'students.*.amount' => 'required|numeric|min:0',
         ];
     }

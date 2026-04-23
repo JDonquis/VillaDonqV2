@@ -18,6 +18,8 @@ class PaymentHistory extends Model
 
     protected $casts = [
         'created_at' => 'datetime',
+        'old_data' => 'array',
+        'new_data' => 'array',
     ];
 
     public $timestamps = false;

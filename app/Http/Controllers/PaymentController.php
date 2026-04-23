@@ -25,7 +25,8 @@ class PaymentController extends Controller
     public function index()
     {
         $accounts  = $this->mainConfigService->getAccounts();
-        return inertia('Dashboard/Pagos', ['data' => ['accounts' => $accounts]]);
+        $payments = $this->paymentService->getAll();
+        return inertia('Dashboard/Pagos', ['data' => ['accounts' => $accounts, 'payments' => $payments]]);
     }
 
 
