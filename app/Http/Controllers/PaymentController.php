@@ -8,7 +8,8 @@ use App\Services\MainConfigService;
 
 class PaymentController extends Controller
 {
-    
+    private MainConfigService $mainConfigService;
+
     public function __construct()
     {
         $this->mainConfigService = new MainConfigService;
@@ -16,7 +17,9 @@ class PaymentController extends Controller
 
     public function index()
     {
-        return inertia('Dashboard/Pagos');
+        $methods = $this->mainConfigService->getMethods();
+        $accounts  = $this->mainConfigService->getAccounts();
+        return inertia('Dashboard/Pagos', ['data' => ['methods' => $methods, 'accounts' => $accounts]]);
     }
 
     /**
@@ -28,18 +31,18 @@ class PaymentController extends Controller
     }
 
     public function showCreatePayment(Request $request)
-    {   
-        $methodPayment = 2;        
-        if(isset($request->method_payment))
+    {
+        $methodPayment = 2;
+        if (isset($request->method_payment))
             $methodPayment = $request->method_payment;
         $methods = $this->mainConfigService->getMethods();
         $accounts  = $this->mainConfigService->getAccountsWhereId($methodPayment);
-        
 
-        return inertia('Dashboard/RegistrarPago',['data' => ['methods' => $methods, 'accounts' => $accounts] ]);
+
+        return inertia('Dashboard/RegistrarPago', ['data' => ['methods' => $methods, 'accounts' => $accounts]]);
     }
 
-  
+
 
     /**
      * Store a newly created resource in storage.
@@ -80,5 +83,4 @@ class PaymentController extends Controller
     {
         //
     }
-
 }
