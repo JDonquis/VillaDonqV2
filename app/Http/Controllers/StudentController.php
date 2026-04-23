@@ -56,22 +56,22 @@ class StudentController extends Controller
         DB::beginTransaction();
 
         try {
-            Log::info('Iniciando creación de estudiante con CI: '.$request->student_ci);
+            Log::info('Iniciando creación de estudiante con CI: ' . $request->student_ci);
 
             $this->studentService->create($request);
 
             DB::commit();
 
-            Log::info('Estudiante creado correctamente con CI: '.$request->student_ci);
+            Log::info('Estudiante creado correctamente con CI: ' . $request->student_ci);
 
-            return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id);
+            return redirect('/dashboard/matricula?course_id=' . $request->course_id . '&section_id=' . $request->section_id);
         } catch (Exception $e) {
 
             DB::rollback();
 
-            Log::error('Error al crear estudiante: '.$e->getMessage());
+            Log::error('Error al crear estudiante: ' . $e->getMessage());
 
-            return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id)->withErrors(['message' => 'Ha ocurrido un error al crear el estudiante. Por favor, intente más tarde.']);
+            return redirect('/dashboard/matricula?course_id=' . $request->course_id . '&section_id=' . $request->section_id)->withErrors(['message' => 'Ha ocurrido un error al crear el estudiante. Por favor, intente más tarde.']);
         }
     }
 
@@ -82,38 +82,46 @@ class StudentController extends Controller
 
         try {
 
-            Log::info('Iniciando actualización de estudiante ID: '.$id);
+            Log::info('Iniciando actualización de estudiante ID: ' . $id);
 
             $this->studentService->update($request, $id);
 
             DB::commit();
 
-            return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id);
+            return redirect('/dashboard/matricula?course_id=' . $request->course_id . '&section_id=' . $request->section_id);
         } catch (Exception $e) {
 
             DB::rollback();
 
-            Log::error('Error al actualizar estudiante ID '.$id.': '.$e->getMessage());
+            Log::error('Error al actualizar estudiante ID ' . $id . ': ' . $e->getMessage());
 
-            return redirect('/dashboard/matricula?course_id='.$request->course_id.'&section_id='.$request->section_id)->withErrors(['message' => 'Ha ocurrido un error al actualizar el estudiante. Por favor, intente más tarde.']);
+            return redirect('/dashboard/matricula?course_id=' . $request->course_id . '&section_id=' . $request->section_id)->withErrors(['message' => 'Ha ocurrido un error al actualizar el estudiante. Por favor, intente más tarde.']);
         }
     }
 
     public function destroy(Request $request, $studentId)
     {
         try {
-            Log::info('Iniciando eliminación de estudiante ID: '.$studentId);
+            Log::info('Iniciando eliminación de estudiante ID: ' . $studentId);
 
             $this->studentService->delete($studentId);
 
-            Log::info('Estudiante ID '.$studentId.' eliminado correctamente');
+            Log::info('Estudiante ID ' . $studentId . ' eliminado correctamente');
 
             return redirect('/dashboard/matricula');
         } catch (Exception $e) {
-            Log::error('Error al eliminar estudiante ID '.$studentId.': '.$e->getMessage());
+            Log::error('Error al eliminar estudiante ID ' . $studentId . ': ' . $e->getMessage());
 
             return redirect('/dashboard/matricula')->withErrors(['message' => 'Ha ocurrido un error al eliminar el estudiante. Por favor, intente más tarde.']);
         }
+    }
+
+    public function searchStudent(Request $request)
+    {
+        $search = $request->input('search');
+        $info = $this->studentService->searchStudent($search);
+
+        return response()->json($info);
     }
 
     public function searchRepresentativeByCI($ci)

@@ -217,6 +217,23 @@ class StudentService
         return $newStudent;
     }
 
+    public function searchStudent($search)
+    {
+
+        $student = Student::where('ci', 'LIKE', '%' . $search . '%')
+            ->orWhere('name', 'LIKE', '%' . $search . '%')
+            ->orWhere('last_name', 'LIKE', '%' . $search . '%')
+            ->orWhereHas('representative.user', function ($query) use ($search) {
+                $query->where('name', 'LIKE', '%' . $search . '%')
+                    ->orWhere('last_name', 'LIKE', '%' . $search . '%')
+                    ->orWhere('ci', 'LIKE', '%' . $search . '%');
+            })
+            ->with('representative.user', 'course', 'section')
+            ->first();
+
+        return $student;
+    }
+
     public function searchRepresentativeByCI($ci)
     {
         $user = User::where('ci', $ci)->where('type_user_id', 2)->first();

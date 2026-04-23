@@ -49,8 +49,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/secciones', [SectionController::class, 'store']);
     Route::delete('/dashboard/secciones/{course_id}/{section_id}', [SectionController::class, 'destroy']);
 
+    Route::get('/dashboard/pagos/search-student', [StudentController::class, 'searchStudent']);
     Route::get('/dashboard/pagos', [PaymentController::class, 'index']);
-    Route::get('/dashboard/pagos/search-representative/{search}', [StudentController::class, 'searchRepresentative']);
+    Route::get('/dashboard/pagos/search-representative', [StudentController::class, 'searchRepresentative']);
+
     Route::get('/dashboard/registrar-pago', [PaymentController::class, 'showCreatePayment']);
 
     Route::get('/dashboard/configuracion', [MainConfigController::class, 'index']);
