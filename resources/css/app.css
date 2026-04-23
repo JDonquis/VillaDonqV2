@@ -279,3 +279,39 @@ progress::-webkit-progress-value {
     background-image: url("https://www.transparenttextures.com/patterns/rice-paper-2.png");
     /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
 }
+
+.text-yellow {
+    color: #ffa552;
+}
+.text-purple {
+    color: var(--purple);
+}
+.text-orange {
+    color: var(--orange);
+}
+.text-zelle {
+    color: #1f4287;
+}
+.bg-yellow {
+    background-color: #ffa552;
+}
+.bg-purple {
+    background-color: var(--purple);
+}
+
+
+.bg-efectivo {
+    background-color: var(--green);
+}
+.bg-transferencia {
+    background-color: var(--color1);
+}
+.bg-zelle {
+    background-color: #6a1ccd;
+}
+.bg-green {
+    background-color: var(--green);
+}
+.text-green {
+    color: var(--green);
+}

@@ -8,6 +8,8 @@
     import Input from "../../components/Input.svelte";
     import { displayAlert } from "../../stores/alertStore";
     export let data;
+
+    
     console.log({ data });
 
     const institution = useForm({
@@ -357,12 +359,24 @@
                     required={true}
                     bind:value={$prices.ame_price}
                 />
-                <Input
-                    label="Plan de inversión ($)"
-                    type="number"
-                    required={true}
-                    bind:value={$prices.investment_plan_price}
-                />
+                <div class="relative flex items-center  ">
+                    <Input
+                        label="Plan de inversión ($)"
+                        type="number"
+                        required={true}
+                        bind:value={$prices.investment_plan_price}
+                    />
+                    <div class="absolute right-0 top-6 group">
+                        <button type="button" tabindex="-1" class="ml-2 cursor-pointer relative">
+                            <iconify-icon icon="mdi:help-circle-outline" class="text-lg text-gray-500 hover:text-color1" />
+                            <span class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 p-2 rounded bg-black text-white text-xs opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 whitespace-pre-line">
+                                Este cobro se realiza en los meses de:
+                                noviembre, marzo y junio.
+                            </span>
+                        </button>
+
+                    </div>
+                </div>
 
                 <!-- <Input
                         label="Inscripción de regulares ($)"

@@ -8,7 +8,9 @@
     import { useForm } from "@inertiajs/svelte";
     import axios from "axios";
     import debounce from "lodash/debounce";
+    import ColorsPayMethods from "../../components/ColorsPayMethods";
     export let data = [];
+    $: console.log({ data });
     export let searched_students = [];
     let isSearchTableOpen = false;
     let searchInputRef;
@@ -30,23 +32,19 @@
     console.log(data);
     const emptyDataForm = {
         date: "",
-        name: "",
-        currency: "",
-        payment_method: "",
-        amount: "",
-        change: "",
-        vaucher: "",
-        bs: "",
+
+        account_payment_id: "",
+        amount_dolar: "",
+        amount_bs: "",
     };
 
     let form = useForm({
         date: currentDateString,
-        name: "Fabian",
-        currency: "Bolivar",
-        payment_method: "",
-        amount: "1295",
-        bs: "",
-        vaucher: "1234568",
+        students: [],
+        account_payment_id: "",
+        amount_dolar: "1",
+        amount_bs: "",
+        reference: "1234568",
     });
 
     let formEdit = useForm({
@@ -107,13 +105,13 @@
         isSearchTableOpen = search_text.length > 0;
         try {
             const response = await axios.get(
-                "/dashboard/pagos/search-student",
+                "/dashboard/pagos/search-student?",
                 {
                     params: { search: search_text },
                 },
             );
-            searched_students = response.data.students;
-            console.log(response.data);
+            console.log(response);
+            searched_students = response.data;
             // Aquí puedes actualizar el estado con los resultados de la búsqueda
         } catch (error) {
             console.error("Error al buscar estudiantes:", error);
@@ -158,11 +156,11 @@
     $: console.log($form);
     $: console.log(data.course_sections?.data?.[`course_${$form.course_id}`]);
 
-    $: $form.amout, exchange();
+    $: $form.amount_dolar, exchange();
 
     function exchange() {
-        // $form.bs = $form.amount * +dolarPrice;
-        // $form.amount = $form.bs / dolarPrice;
+        // $form.amount_bs = $form.amount_dolar * +dolarPrice;
+        // $form.amount_dolar = $form.amount_bs / dolarPrice;
         console.log("tambien");
     }
 </script>
@@ -218,20 +216,44 @@
                         <tr
                             class={` hover:bg-black/10  [&_*]:px-4 [&_*]:py-2 cursor-pointer bg-white bg-opacity-10 border-gray-500`}
                             on:click={() => {
-                                $form.student_id = student.id;
-                                $form.student_name = student.name;
-                                $form.student_ci = student.cedula;
-                                $form.student_grade = student.grade;
-                                $form.student_legal_rep = student.legal_rep;
-                                // Aquí puedes asignar otros campos del formulario según el estudiante seleccionado
+                                // Verificar si el estudiante ya está en el arreglo
+                                if (
+                                    !$form.students.some(
+                                        (s) => s.id === student.id,
+                                    )
+                                ) {
+                                    $form.students = [
+                                        ...$form.students,
+                                        {
+                                            id: student.id,
+                                            name: student.name,
+                                            last_name: student.last_name,
+                                            ci: student.ci,
+                                            course_name: student.course.name,
+                                            section_name: student.section.name,
+                                            legal_rep_name:
+                                                student.representative.user
+                                                    .name +
+                                                " " +
+                                                student.representative.user
+                                                    .last_name,
+                                        },
+                                    ];
+                                }
                                 isSearchTableOpen = false;
                                 searched_students = [];
                             }}
                         >
-                            <td>{student.name}</td>
-                            <td>{student.cedula}</td>
-                            <td>{student.grade}</td>
-                            <td>{student.legal_rep}</td>
+                            <td>{student.name} {student.last_name}</td>
+                            <td>{student.ci}</td>
+                            <td
+                                >{student.course.name} - {student.section
+                                    .name}</td
+                            >
+                            <td
+                                >{student.representative.user.name}
+                                {student.representative.user.last_name}</td
+                            >
                         </tr>
                     {/each}
                 </tbody>
@@ -239,33 +261,58 @@
 
             <table
                 id="selected_student"
-                class={`${$form.student_id ? "block" : "hidden"} w-full font-semibold relative [&_*]:px-4 [&_*]:py-2 [&_*]:text-left bg-purple/30 border-purple text-sm overflow-hidden mt-5`}
+                class={`${$form.students.length > 0 ? "block" : "hidden"} w-full font-semibold relative [&_*]:px-4 [&_*]:py-2 [&_*]:text-left bg-purple/30 border-purple text-sm overflow-hidden mt-5`}
             >
-                <button
-                    type="button"
-                    class="absolute -top-1 -right-5 p-3 font-bold hover:bg-purple hover:border-2 border-black"
-                >
-                    <iconify-icon icon="line-md:close" width="10" height="10"
-                    ></iconify-icon>
-                </button>
-
                 <thead class="">
                     <tr>
+                        <th>Monto ($)</th>
                         <th>Estudiante</th>
                         <th>C.I</th>
                         <th>Grado/Año</th>
                         <th>Rep Legal</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr
-                        class="font-semibold [&_*]:px-4 [&_*]:py-2 cursor-pointer bg-white bg-opacity-10 border-gray-500"
-                    >
-                        <td>{$form.student_name}</td>
-                        <td>{$form.student_ci}</td>
-                        <td>{$form.student_grade}</td>
-                        <td>{$form.student_legal_rep}</td>
-                    </tr>
+                    {#each $form.students as student, i}
+                        <tr
+                            class={`  [&_*]:px-4 [&_*]:py-2 cursor-pointer bg-white bg-opacity-10 border-gray-500`}
+                        >
+                            <td>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    class="w-24 p-1 border rounded"
+                                    value={student.amount_usd || ""}
+                                    on:input={(e) => {
+                                        $form.students[i].amount_usd =
+                                            e.target.value;
+                                    }}
+                                />
+                            </td>
+                            <td>{student.name} {student.last_name}</td>
+                            <td>{student.ci}</td>
+                            <td
+                                >{student.course_name} - {student.section_name}</td
+                            >
+                            <td>{student.legal_rep_name}</td>
+                            <td class="max-w-[60px]">
+                                <button
+                                    type="button"
+                                    class="h-full hover:bg-purple "
+                                    on:click={() => {
+                                        $form.students.splice(i, 1);
+                                    }}
+                                >
+                                    <iconify-icon
+                                        icon="line-md:close"
+                                      
+                                    ></iconify-icon>
+                                </button>
+                            </td>
+                        </tr>
+                    {/each}
                 </tbody>
             </table>
         </div>
@@ -279,44 +326,49 @@
         />
         <Input
             type="select"
-            label={"Metodo de pago"}
-            bind:value={$form.payment_method}
-            error={$form.errors?.payment_method}
+            label={"Método de pago"}
+            bind:value={$form.account_payment_id}
+            error={$form.errors?.account_payment_id}
             required={true}
         >
-            <option value="Masculino">Pago movil BNC</option>
-            <option value="Femenino">Pago movil BBVA</option>
-            <option value="Femenino">Tranferencia BNC</option>
-            <option value="Femenino">Transferencia BBVA</option>
-            <option value="Femenino">Zelle</option>
-            <option value="Bolivares">Efectivo Bolivares</option>
-            <option value="Dolares">Efectivo Dolares</option>
+            {#each data.accounts.data as account}
+                <option
+                    value={account.id}
+                    class={`border-l-4 border-${ColorsPayMethods()[account.payment_method_name]} text-${ColorsPayMethods()[account.payment_method_name]}`}
+                >
+                    <div class={`h-full text-black`}>▋</div>
+                    {account.payment_method_name}
+                    {#if account.bank}- {account.bank}{/if}
+                    {#if account.cash_currency}- {account.cash_currency}{/if}
+                    {#if account.username}- {account.username}{/if}
+                </option>
+            {/each}
         </Input>
         <Input
             type="number"
             label={"Monto en Dolares ($)"}
             required={true}
-            bind:value={$form.amount}
-            error={$form.errors?.amount}
+            bind:value={$form.amount_dolar}
+            error={$form.errors?.amount_dolar}
             on:input={(e) => {
-                $form.bs = (e.target.value * dolarPrice).toFixed(2);
+                $form.amount_bs = (e.target.value * dolarPrice).toFixed(2);
             }}
         />
         <Input
             type="number"
             label={"Monto en Bolivares (Bs)"}
-            bind:value={$form.bs}
-            error={$form.errors?.bs}
+            bind:value={$form.amount_bs}
+            error={$form.errors?.amount_bs}
             on:input={(e) => {
-                $form.amount = (e.target.value / dolarPrice).toFixed(2);
+                $form.amount_dolar = (e.target.value / dolarPrice).toFixed(2);
             }}
         />
         <Input
             type="number"
             label={"Referencia"}
             required={true}
-            bind:value={$form.vaucher}
-            error={$form.errors?.vaucher}
+            bind:value={$form.reference}
+            error={$form.errors?.reference}
         />
         <button
             type="submit"
@@ -336,8 +388,6 @@
         </button>
     </form>
 </Modal>
-
-
 
 <div class=" items-center">
     <button
@@ -372,7 +422,7 @@
             <th>Representante legal</th>
             <th>Monto USD$</th>
             <th>Monto Bs</th>
-            <th>Metodo de pago</th>
+            <th>Método de pago</th>
             <th>Referencia</th>
             <!-- <th>Representante</th> -->
         </tr>
