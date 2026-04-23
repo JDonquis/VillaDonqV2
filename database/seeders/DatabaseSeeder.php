@@ -3,11 +3,7 @@
 namespace Database\Seeders;
 
 use DB;
-
 use Illuminate\Database\Seeder;
-use Database\Seeders\QuotaSeeder;
-use Database\Seeders\PaymentMethodSeeder;
-use Database\Seeders\AccountPaymentSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,6 +18,8 @@ class DatabaseSeeder extends Seeder
 
         $this->truncateTable([
 
+            'students',
+            'representatives',
             'payment_methods',
             'account_payments',
             'courses',
@@ -34,7 +32,6 @@ class DatabaseSeeder extends Seeder
             'main_configs',
             'school_lapses',
             'quotas',
-
 
         ]);
 
@@ -52,15 +49,16 @@ class DatabaseSeeder extends Seeder
             MainConfigSeeder::class,
             SchoolLapseSeeder::class,
             QuotaSeeder::class,
-            
+            StudentSeeder::class,
+
         ]);
     }
 
-    protected function truncateTable(array $tables){
+    protected function truncateTable(array $tables)
+    {
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
-        foreach ($tables as $table)
-        {
+        foreach ($tables as $table) {
             DB::table($table)->truncate();
         }
         DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
