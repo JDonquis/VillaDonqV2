@@ -8,6 +8,7 @@
     export let classes = "";
     export let theme = "ligtht";
     export let min = "";
+    export let readonly = false;
 
     export let max = "";
     export let name = "";
@@ -29,6 +30,7 @@
                 rows="1"
                 class="form__field nb-input"
                 on:change
+                {readonly}
                 on:input
             ></textarea>
         {:else if type === "select"}
@@ -39,6 +41,7 @@
                 class="form__field nb-input"
                 on:change
                 on:input
+                {readonly}
             >
                 <slot></slot>
             </select>
@@ -47,17 +50,18 @@
                 bind:value
                 {...{ type }}
                 id={label}
-                name={name}
+                {name}
                 class="form__field nb-input"
                 {required}
                 {max}
                 {min}
+                {readonly}
                 on:change
                 on:input
             />
         {/if}
         {#if error}
-            <div class="text-black font-semibold  bg-red pt-1 px-2">
+            <div class="text-black font-semibold bg-red pt-1 px-2">
                 <span>{error}</span>
             </div>
         {/if}

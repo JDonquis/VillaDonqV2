@@ -34,17 +34,17 @@
         date: "",
 
         account_payment_id: "",
-        amount_in_dolars: "",
-        amount_in_bs: "",
+        total_in_dolars: "",
+        total_in_bs: "",
     };
 
     let form = useForm({
         date: currentDateString,
         students: [],
         account_payment_id: "",
-        amount_in_dolars: "1",
-        amount_in_bs: "",
-        reference: "1234568",
+        total_in_dolars: "1",
+        total_in_bs: "",
+        reference: "",
     });
 
     let formEdit = useForm({
@@ -156,11 +156,11 @@
     $: console.log($form);
     $: console.log(data.course_sections?.data?.[`course_${$form.course_id}`]);
 
-    $: $form.amount_in_dolars, exchange();
+    $: $form.total_in_dolars, exchange();
 
     function exchange() {
-        // $form.amount_in_bs = $form.amount_in_dolars * +dolarPrice;
-        // $form.amount_in_dolars = $form.amount_in_bs / dolarPrice;
+        // $form.total_in_bs = $form.total_in_dolars * +dolarPrice;
+        // $form.total_in_dolars = $form.total_in_bs / dolarPrice;
         console.log("tambien");
     }
 </script>
@@ -171,7 +171,7 @@
 
 <Alert />
 
-<Modal bind:showModal classes="w-[780px]">
+<Modal bind:showModal classes="w-[980px]">
     <h2 slot="header" class="text-sm text-center">REGISTRO DE PAGO</h2>
 
     <form
@@ -261,11 +261,12 @@
 
             <table
                 id="selected_student"
-                class={`${$form.students.length > 0 ? "block" : "hidden"} w-full font-semibold relative [&_*]:px-4 [&_*]:py-2 [&_*]:text-left bg-purple/30 border-purple text-sm overflow-hidden mt-5`}
+                class={`${$form.students.length > 0 ? "block" : "hidden"}  w-full font-semibold relative [&_*]:px-4 [&_*]:py-2 [&_*]:text-left bg-background  text-sm overflow-hidden mt-5`}
             >
                 <thead class="">
                     <tr>
-                        <th>Monto ($)</th>
+                        <th>Dólares ($)</th>
+                        <th>Bolívares (Bs)</th>
                         <th>Estudiante</th>
                         <th>C.I</th>
                         <th>Grado/Año</th>
@@ -276,21 +277,47 @@
                 <tbody>
                     {#each $form.students as student, i}
                         <tr
-                            class={`  [&_*]:px-4 [&_*]:py-2 cursor-pointer bg-white bg-opacity-10 border-gray-500`}
+                            class={` w-full [&_*]:px-4 [&_*]:py-2 cursor-pointer  border-gray-500`}
                         >
                             <td>
                                 <input
                                     type="number"
                                     min="0"
                                     step="0.01"
-                                    class="w-24 border-3 p-1 border-black "
-                                    value={student.amount || ""}
+                                    class="w-24 border-3 p-1 border- small-shadow focus:outline-0 "
+                                    value={student.amount_in_dolars || ""}
                                     on:input={(e) => {
                                         $form.students[i] =
                                             {
                                                 ...$form.students[i],
-                                                amount: e.target.value,
+                                                amount_in_dolars: e.target.value,
+                                                amount_in_bs: (
+                                                    e.target.value * dolarPrice
+                                                ).toFixed(2),
                                             };
+                                            $form.total_in_dolars = $form.students.reduce((total, s) => total + (parseFloat(s.amount_in_dolars) || 0), 0).toFixed(2);
+                                            $form.total_in_bs = ($form.total_in_dolars * dolarPrice).toFixed(2);
+                                    }}
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    class="w-28 border-3 p-1 border-black small-shadow focus:outline-0 "
+                                    value={student.amount_in_bs || ""}
+                                    on:input={(e) => {
+                                        $form.students[i] =
+                                            {
+                                                ...$form.students[i],
+                                                amount_in_bs: e.target.value,
+                                                amount_in_dolars: (
+                                                    e.target.value / dolarPrice
+                                                ).toFixed(2),
+                                            };
+                                            $form.total_in_bs = $form.students.reduce((total, s) => total + (parseFloat(s.amount_in_bs) || 0), 0).toFixed(2);
+                                            $form.total_in_dolars = ($form.total_in_bs / dolarPrice).toFixed(2);
                                     }}
                                 />
                             </td>
@@ -303,7 +330,7 @@
                             <td class="max-w-[60px]">
                                 <button
                                     type="button"
-                                    class="h-full hover:bg-purple "
+                                    class="h-full hover:bg-paper "
                                     on:click={() => {
                                         console.log("eliminar", student.id);
                                         // Eliminar el estudiante del arreglo
@@ -341,7 +368,7 @@
             {#each data.accounts.data as account}
                 <option
                     value={account.id}
-                    class={`border-l-4 mix-blend-difference text-white font-bold bg-${ColorsPayMethods()[account.payment_method_name]} }`}
+                    class={`border-l-4 mix-blend-difference  }`}
                 >
                     {account.payment_method_name}
                     {#if account.bank}- {account.bank}{/if}
@@ -352,22 +379,20 @@
         </Input>
         <Input
             type="number"
-            label={"Monto en Dolares ($)"}
+            label={"Total en Dólares ($)"}
             required={true}
-            bind:value={$form.amount_in_dolars}
-            error={$form.errors?.amount_in_dolars}
-            on:input={(e) => {
-                $form.amount_in_bs = (e.target.value * dolarPrice).toFixed(2);
-            }}
+            readonly={true}
+            bind:value={$form.total_in_dolars}
+            error={$form.errors?.total_in_dolars}
+          
         />
         <Input
             type="number"
-            label={"Monto en Bolivares (Bs)"}
-            bind:value={$form.amount_in_bs}
-            error={$form.errors?.amount_in_bs}
-            on:input={(e) => {
-                $form.amount_in_dolars = (e.target.value / dolarPrice).toFixed(2);
-            }}
+            label={"Total en Bolívares (Bs)"}
+            readonly={true}
+            bind:value={$form.total_in_bs}
+            error={$form.errors?.total_in_bs}
+           
         />
         <Input
             type="number"
@@ -422,7 +447,7 @@
 >
     <thead slot="thead" class="sticky top-0 z-50">
         <tr>
-            <th>Nro</th>
+            <th>id</th>
             <th>Fecha</th>
             <th>Estudiante</th>
             <th>Representante legal</th>
@@ -434,8 +459,8 @@
         </tr>
     </thead>
 
-    <!-- <tbody slot="tbody">
-        {#each data.students.data as row, i}
+     <tbody slot="tbody">
+         <!-- {#each data?.students?.data as row, i} 
             <tr
                 on:click={(e) => {
                     // let newSelectedRowStatus = !selectedRow.status;
@@ -461,15 +486,14 @@
                 }}
                 class={`cursor-pointer hover:bg-gray-500 hover:bg-opacity-5 ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : ""}`}
             >
-                <td>{i + 1}</td>
-                <td>{row.student_name}</td>
-                <td>{row.student_last_name}</td>
-                <td>{row.student_ci}</td>
+                <td>{row.id}</td>
+                <td>{row.date}</td>
+                <td>{row.student_name} {row.student_last_name} {row.student_ci} </td>
                 <td>{row.student_sex}</td>
                 <td>{row.student_date_birth}</td>
                 <td>{row.rep_name} {row.rep_last_name}</td>
                 <td>{row.rep_phone_number}</td>
             </tr>
-        {/each}
-    </tbody> -->
+        {/each}  -->
+    </tbody> 
 </Table>
