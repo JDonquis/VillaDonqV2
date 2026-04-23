@@ -43,7 +43,7 @@ class PaymentService
                 'amount_in_dolars' => $studentData['amount_in_dolars'],
             ]);
 
-            $students
+            // $students
         }
 
         $payment->load('students', 'accountPayment');
