@@ -334,9 +334,8 @@
             {#each data.accounts.data as account}
                 <option
                     value={account.id}
-                    class={`border-l-4 border-${ColorsPayMethods()[account.payment_method_name]} text-${ColorsPayMethods()[account.payment_method_name]}`}
+                    class={`border-l-4 mix-blend-difference text-white font-bold bg-${ColorsPayMethods()[account.payment_method_name]} }`}
                 >
-                    <div class={`h-full text-black`}>▋</div>
                     {account.payment_method_name}
                     {#if account.bank}- {account.bank}{/if}
                     {#if account.cash_currency}- {account.cash_currency}{/if}

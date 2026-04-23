@@ -6,6 +6,7 @@
     import { createEventDispatcher } from "svelte";
 
     const dispatch = createEventDispatcher();
+    export let classes = "";
 
     export let filtersOptions = [];
     export let selectedRow;
@@ -17,7 +18,15 @@
         search: new URLSearchParams($page.url.split('?')[1] || '').get('search') || '',
         ...serverSideData.filters,
     };
-    // $: $form, handleFilters()
+
+    let buttonPosition = { top: '-100px', left: 'auto' };
+
+    $: if (selectedRow?.status && selectedRow?.data?._clickPosition) {
+        buttonPosition = {
+            top: (selectedRow.data._clickPosition.y - 60) + 'px',
+            left: (selectedRow.data._clickPosition.x + 20) + 'px'
+        };
+    }
 
     const handleFilters = () => {
         router.get(`${$page.url}`, filterClientData, { preserveState: true, replace: true });
@@ -28,7 +37,7 @@
     }, 300);
 </script>
 
-<section class="w-full">
+<section class={`w-full ${classes}`}>
     <div class="mt-6 md:flex md:items-center md:justify-between">
         <div class="flex gap-2 md:gap-7">
             <div
@@ -53,7 +62,7 @@
                                 handleFilters();
                             }}
                             class="px-5 font-semibold py-2 text-xs bg-background text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-100"
-                            class:bg-green={serverSideData.filters[filterKey] ==
+                            class:bg-yellow={serverSideData.filters[filterKey] ==
                                 filter.id ||
                                 (i == 0 && !filterClientData[filterKey])}
                         >
@@ -96,10 +105,13 @@
             />
         </div>
         {#if selectedRow.status}
-            <div class="flex fadeIn gap-5 relative items-end">
+            <div 
+                class="fixed z-50 flex fadeIn gap-2"
+                style="top: {buttonPosition.top}; left: {buttonPosition.left};"
+            >
                 <button
                     on:click={() => dispatch("fillFormToEdit")}
-                    class="bg-yellow hover:bg-opacity-90 cursor-pointer text-2xl hover:-translate-x-0.5 hover:-translate-y-0.5 hover:medium-shadow border-3 border-black small-shadow px-4 py-1"
+                    class="bg-yellow cursor-pointer text-2xl hover:-translate-x-0.5 hover:-translate-y-0.5 hover:medium-shadow border-3 border-black small-shadow px-4 py-1"
                     title="Editar"
                 >
                    <iconify-icon icon="ic:baseline-edit" class="relative top-1" width="24" height="24"></iconify-icon>
@@ -107,7 +119,7 @@
 
                 <button
                     on:click={() => dispatch("clickDeleteIcon")}
-                    class="small-shadow border-3 hover:bg-opacity-90 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:medium-shadow border-black bg-red font-bold px-4 py-1 text-2xl"
+                    class="small-shadow border-3 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:medium-shadow border-black bg-red font-bold px-4 py-1 text-2xl"
                     title="Eliminar"
                 >
                     <iconify-icon

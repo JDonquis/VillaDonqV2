@@ -182,11 +182,13 @@
             <tbody slot="tbody">
                 {#each data as user}
                     <tr
-                        on:click={() => {
+                        on:click={(e) => {
+                            const clickPos = { x: e.clientX, y: e.clientY };
+                            
                             if (selectedRow.status && selectedRow.data.id === user.id) {
                                 selectedRow = { status: false, id: 0 };
                             } else {
-                                selectedRow = { status: true, data: { ...user } };
+                                selectedRow = { status: true, data: { ...user, _clickPosition: clickPos } };
                             }
                         }}
                         class="cursor-pointer hover:bg-gray-100"

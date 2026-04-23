@@ -144,7 +144,7 @@
                     type: "success",
                     message: "Estudiante eliminado correctamente",
                 });
-                selectedRow = { status: false, id: 0 };
+                selectedRow = { status: false, data: null };
             },
             onError: (errors) => {
                 if (errors.data) {
@@ -575,7 +575,7 @@
                 $form.reset();
                 submitStatus = "Crear";
                 editingStudentId = null;
-                selectedRow = { status: false, id: 0 };
+                selectedRow = { status: false, data: null };
             } else {
                 $form.section_id = +data.filters.section_id;
                 $form.course_id = +data.filters.course_id;
@@ -595,6 +595,7 @@
     serverSideData={{ filters: data.filters }}
     filtersOptions={{ section_id: sectionsOfThisYear }}
     pagination={false}
+    
 >
     <div slot="filterBox">
         {#if lastSectionId < 6}
@@ -617,7 +618,7 @@
             </button>
         {/if}
     </div>
-    <thead slot="thead" class="sticky top-0 z-50">
+    <thead slot="thead" class="sticky top-0 z-40">
         <tr>
             <th>N°</th>
             <th>Nombres</th>
@@ -633,14 +634,16 @@
     <tbody slot="tbody">
         {#each data.students.data as row, i}
             <tr
-                on:click={() => {
-                    if (selectedRow.status && selectedRow.data.id === row.id) {
-                        selectedRow = { status: false, id: 0 };
+                on:click={(e) => {
+                    const clickPos = { x: e.clientX, y: e.clientY };
+                    
+                    if (selectedRow.status && selectedRow.data.student_id === row.student_id) {
+                        selectedRow = { status: false, data: null };
                     } else {
-                        selectedRow = { status: true, data: { ...row } };
+                        selectedRow = { status: true, data: { ...row, _clickPosition: clickPos } };
                     }
                 }}
-                class={`cursor-pointer  ${selectedRow.id == row.student_id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
+                class={`cursor-pointer  ${selectedRow?.data?.student_id == row.student_id ? "bg-yellow hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
             >
                 <td>{i + 1}</td>
                 <td>{row.student_name}</td>
