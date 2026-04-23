@@ -29,6 +29,8 @@ class MainConfigSeeder extends Seeder
                 'monthly_payment' => 50,
                 'day_of_monthly_payment' => 30,
                 'grace_period' => 5,
+                'ame_price' => 0,
+                'investment_plan_price' => 0,
             ]
 
 
