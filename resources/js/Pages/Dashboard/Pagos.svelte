@@ -34,7 +34,7 @@
         date: "",
 
         account_payment_id: "",
-        amount_in_dolar: "",
+        amount_in_dolars: "",
         amount_in_bs: "",
     };
 
@@ -42,7 +42,7 @@
         date: currentDateString,
         students: [],
         account_payment_id: "",
-        amount_in_dolar: "1",
+        amount_in_dolars: "1",
         amount_in_bs: "",
         reference: "1234568",
     });
@@ -156,11 +156,11 @@
     $: console.log($form);
     $: console.log(data.course_sections?.data?.[`course_${$form.course_id}`]);
 
-    $: $form.amount_in_dolar, exchange();
+    $: $form.amount_in_dolars, exchange();
 
     function exchange() {
-        // $form.amount_in_bs = $form.amount_in_dolar * +dolarPrice;
-        // $form.amount_in_dolar = $form.amount_in_bs / dolarPrice;
+        // $form.amount_in_bs = $form.amount_in_dolars * +dolarPrice;
+        // $form.amount_in_dolars = $form.amount_in_bs / dolarPrice;
         console.log("tambien");
     }
 </script>
@@ -354,8 +354,8 @@
             type="number"
             label={"Monto en Dolares ($)"}
             required={true}
-            bind:value={$form.amount_in_dolar}
-            error={$form.errors?.amount_in_dolar}
+            bind:value={$form.amount_in_dolars}
+            error={$form.errors?.amount_in_dolars}
             on:input={(e) => {
                 $form.amount_in_bs = (e.target.value * dolarPrice).toFixed(2);
             }}
@@ -366,7 +366,7 @@
             bind:value={$form.amount_in_bs}
             error={$form.errors?.amount_in_bs}
             on:input={(e) => {
-                $form.amount_in_dolar = (e.target.value / dolarPrice).toFixed(2);
+                $form.amount_in_dolars = (e.target.value / dolarPrice).toFixed(2);
             }}
         />
         <Input
