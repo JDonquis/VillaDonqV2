@@ -229,7 +229,7 @@ class StudentService
                     ->orWhere('ci', 'LIKE', '%' . $search . '%');
             })
             ->with('representative.user', 'course', 'section')
-            ->first();
+            ->get();
 
         return $student;
     }
