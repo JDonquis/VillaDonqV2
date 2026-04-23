@@ -51,6 +51,15 @@
         </h2>
     </header>
     <div class="p-10 pt-5">
+     {#if data.account.data.hasOwnProperty("cash_currency")}
+            <Input
+                type="text"
+                required={true}
+                label={"Tipo de moneda"}
+                bind:value={$formData.cash_currency}
+                error={$formData.errors?.cash_currency}
+            />
+        {/if}
         {#if data.account.data.hasOwnProperty("bank")}
             <Input
                 type="text"

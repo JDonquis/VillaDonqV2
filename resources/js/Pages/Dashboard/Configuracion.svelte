@@ -24,7 +24,6 @@
 
     const prices = useForm({
         ...data.prices,
-        
     });
 
     function updatePrices(e) {
@@ -45,7 +44,7 @@
         };
 
         $prices.processing = true;
-        $prices.defaults()
+        $prices.defaults();
 
         router.put("/dashboard/configuracion/pagos", formData, {
             preserveScroll: true,
@@ -446,35 +445,42 @@
                             <h3 class={` font-semibold `}>
                                 {payMethod.payment_method_name}
                             </h3>
-                                <div class="butons group-hover:flex hidden gap-1 text-gray-500">
-                                    <a
-                                        href={`/dashboard/configuracion/editar-cuenta/${payMethod.id}`}
-                                        class="hover:bg-yellow cursor-pointer text-xl hover:border-2 border-black hover:text-black hover:small-shadow px-4 py-1"
-                                        title="Editar"
-                                        use:inertia
-                                    >
-                                        <iconify-icon
-                                            class="relative -bottom-1"
-                                            icon="ic:outline-edit"
-                                        ></iconify-icon>
-                                    </a>
+                            <div
+                                class="butons group-hover:flex hidden gap-1 text-gray-500"
+                            >
+                                <a
+                                    href={`/dashboard/configuracion/editar-cuenta/${payMethod.id}`}
+                                    class="hover:bg-yellow cursor-pointer text-xl hover:border-2 border-black hover:text-black hover:small-shadow px-4 py-1"
+                                    title="Editar"
+                                    use:inertia
+                                >
+                                    <iconify-icon
+                                        class="relative -bottom-1"
+                                        icon="ic:outline-edit"
+                                    ></iconify-icon>
+                                </a>
 
-                                    <button
-                                        on:click={() =>
-                                            deleteAccount(payMethod.id)}
-                                        class="hover:bg-red bg-opacity-10 cursor-pointer text-xl hover:border-2 border-black hover:text-black hover:small-shadow px-4 py-1"
-                                        title="Eliminar"
-                                    >
-                                        <iconify-icon
-                                            class="text-xl relative top-1"
-                                            icon="ph:trash"
-                                        ></iconify-icon>
-                                    </button>
-                                </div>
+                                <button
+                                    on:click={() => deleteAccount(payMethod.id)}
+                                    class="hover:bg-red bg-opacity-10 cursor-pointer text-xl hover:border-2 border-black hover:text-black hover:small-shadow px-4 py-1"
+                                    title="Eliminar"
+                                >
+                                    <iconify-icon
+                                        class="text-xl relative top-1"
+                                        icon="ph:trash"
+                                    ></iconify-icon>
+                                </button>
+                            </div>
                         </header>
                         <div
                             class="flex text-black justify-items-start gap-4 md:gap-6 py-2"
                         >
+                            {#if payMethod?.cash_currency}
+                                <div>
+                                    <h4 class="text-gray-500">Tipo de moneda:</h4>
+                                    <p>{payMethod.cash_currency}</p>
+                                </div>
+                            {/if}
                             {#if payMethod?.bank}
                                 <div>
                                     <h4 class="text-gray-500">Banco:</h4>

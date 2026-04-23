@@ -337,73 +337,7 @@
     </form>
 </Modal>
 
-<!-- <Modal bind:showModal={showModalFormEdit}>
-    <h2 slot="header" class="text-sm text-center">EDITAR PAGO</h2>
 
-    <form id="a-form" on:submit={handleSubmit} action="" class="w-[600px]">
-        <Input
-            type="date"
-            required={true}
-            label={"Fecha"}
-            bind:value={$formEdit.date}
-            error={$formEdit.errors?.date}
-        />
-        <Input
-            type="text"
-            required={true}
-            label={"Nombre"}
-            bind:value={$formEdit.name}
-            error={$formEdit.errors?.name}
-        />
-        <Input
-            type="select"
-            required={true}
-            label={"Moneda"}
-            bind:value={$formEdit.currency}
-            error={$formEdit.errors?.currency}
-        >
-            <option value="Bolivares">Bolivares</option>
-            <option value="Dolares">Dolares</option>
-        </Input>
-        <Input
-            type="select"
-            label={"Metodo de pago"}
-            bind:value={$formEdit.payment_method}
-            error={$formEdit.errors?.payment_method}
-        >
-            <option value="Masculino">Pago movil BNC</option>
-            <option value="Femenino">Pago movil BBVA</option>
-            <option value="Femenino">Tranferencia BNC</option>
-            <option value="Femenino">Transferencia BBVA</option>
-            <option value="Femenino">Zelle</option>
-        </Input>
-        <Input
-            type="number"
-            label={"Monto"}
-            bind:value={$formEdit.amount}
-            error={$formEdit.errors?.amount}
-        />
-        <Input
-            type="number"
-            label={"Cambio"}
-            bind:value={$formEdit.change}
-            error={$formEdit.errors?.change}
-        />
-        <Input
-            type="number"
-            label={"Comprobante"}
-            bind:value={$formEdit.vaucher}
-            error={$formEdit.errors?.vaucher}
-        />
-    </form>
-    <input
-        form="a-form"
-        slot="btn_footer"
-        type="submit"
-        value={$formEdit.processing ? "Cargando..." : "Editar"}
-        class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color2 text-black font-bold py-3 rounded-md cursor-pointer"
-    />
-</Modal> -->
 
 <div class=" items-center">
     <button
@@ -413,7 +347,13 @@
             showModal = true;
         }}>Registrar pago</button
     >
-    <p class="mt-3">1$ = {#if dolarPrice}{dolarPrice}{:else}<iconify-icon icon="line-md:loading-loop" width="24" height="24"></iconify-icon>{/if} Bs</p>
+    <p class="mt-3">
+        1$ = {#if dolarPrice}{dolarPrice}{:else}<iconify-icon
+                icon="line-md:loading-loop"
+                width="24"
+                height="24"
+            ></iconify-icon>{/if} Bs
+    </p>
 </div>
 
 <Table
@@ -435,7 +375,6 @@
             <th>Metodo de pago</th>
             <th>Referencia</th>
             <!-- <th>Representante</th> -->
-   
         </tr>
     </thead>
 
