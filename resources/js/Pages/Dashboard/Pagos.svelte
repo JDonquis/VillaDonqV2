@@ -64,7 +64,7 @@
     function handleSubmit(event) {
         event.preventDefault();
         $form.clearErrors();
-        $form.post("/dashboard/matricula", {
+        $form.post("/dashboard/pagos", {
             onError: (errors) => {
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
@@ -302,7 +302,11 @@
                                     type="button"
                                     class="h-full hover:bg-purple "
                                     on:click={() => {
-                                        $form.students.splice(i, 1);
+                                        console.log("eliminar", student.id);
+                                        // Eliminar el estudiante del arreglo
+                                        $form.students = $form.students.filter(
+                                            (s) => s.id !== student.id,
+                                        );
                                     }}
                                 >
                                     <iconify-icon
