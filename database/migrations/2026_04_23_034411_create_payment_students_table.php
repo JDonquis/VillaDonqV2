@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('payment_id');
             $table->unsignedBigInteger('student_id');
-            $table->decimal('amount', 10, 2)->default(0);
+            $table->decimal('amount_in_dolars', 10, 2)->default(0);
             $table->timestamps();
 
             $table->foreign('payment_id')->references('id')->on('payments')->onDelete('cascade');

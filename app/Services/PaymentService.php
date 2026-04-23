@@ -25,8 +25,8 @@ class PaymentService
             'user_id' => $userId,
             'account_payment_id' => $data['account_payment_id'],
             'date' => $data['date'],
-            'amount_in_dolars' => $data['amount_in_dolars'],
-            'amount_in_bs' => $data['amount_in_bs'],
+            'total_in_dolars' => $data['total_in_dolars'],
+            'total_in_bs' => $data['total_in_bs'],
             'reference' => $data['reference'] ?? null,
             'status' => 1,
             'observations' => $data['observations'] ?? null,
@@ -40,7 +40,7 @@ class PaymentService
                 ->firstOrFail();
 
             $payment->students()->attach($studentData['id'], [
-                'amount' => $studentData['amount'],
+                'amount_in_dolars' => $studentData['amount_in_dolars'],
             ]);
         }
 

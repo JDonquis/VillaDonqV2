@@ -13,8 +13,8 @@ class Payment extends Model
         'user_id',
         'account_payment_id',
         'date',
-        'amount_in_dolars',
-        'amount_in_bs',
+        'total_in_dolars',
+        'total_in_bs',
         'reference',
         'status',
         'observations',
@@ -22,8 +22,8 @@ class Payment extends Model
 
     protected $casts = [
         'date' => 'date',
-        'amount_in_dolars' => 'decimal:2',
-        'amount_in_bs' => 'decimal:2',
+        'total_in_dolars' => 'decimal:2',
+        'total_in_bs' => 'decimal:2',
         'status' => 'integer',
     ];
 
@@ -40,7 +40,7 @@ class Payment extends Model
     public function students()
     {
         return $this->belongsToMany(Student::class, 'payment_students')
-            ->withPivot('amount')
+            ->withPivot('amount_in_dolars')
             ->withTimestamps();
     }
 

@@ -54,8 +54,8 @@ class PaymentObserver
             'payment_id' => $payment->id,
             'user_id' => $userId,
             'action' => $action,
-            'old_data' => json_encode($allOldData),
-            'new_data' => json_encode($allNewData),
+            'old_data' => $allOldData,
+            'new_data' => $allNewData,
             'created_at' => now(),
         ]);
     }

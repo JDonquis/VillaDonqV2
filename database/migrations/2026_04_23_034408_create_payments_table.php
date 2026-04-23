@@ -13,8 +13,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('account_payment_id');
             $table->date('date');
-            $table->decimal('amount_in_dolars', 10, 2)->default(0);
-            $table->decimal('amount_in_bs', 12, 2)->default(0);
+            $table->decimal('total_in_dolars', 10, 2)->default(0);
+            $table->decimal('total_in_bs', 12, 2)->default(0);
             $table->string('reference', 50)->nullable();
             $table->tinyInteger('status')->default(1);
             $table->text('observations')->nullable();

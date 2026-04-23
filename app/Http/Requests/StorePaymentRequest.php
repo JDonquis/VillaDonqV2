@@ -25,13 +25,13 @@ class StorePaymentRequest extends FormRequest
         return [
             'date' => 'required|date',
             'account_payment_id' => 'required|exists:account_payments,id',
-            'amount_in_dolars' => 'required|numeric|min:0',
-            'amount_in_bs' => 'required|numeric|min:0',
+            'total_in_dolars' => 'required|numeric|min:0',
+            'total_in_bs' => 'required|numeric|min:0',
             'reference' => 'nullable|string|max:50',
             'observations' => 'nullable|string',
             'students' => 'required|array|min:1',
             'students.*.id' => 'required|exists:students,id',
-            'students.*.amount' => 'required|numeric|min:0',
+            'students.*.amount_in_dolars' => 'required|numeric|min:0',
         ];
     }
 }
