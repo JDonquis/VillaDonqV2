@@ -287,7 +287,10 @@
                                     value={student.amount || ""}
                                     on:input={(e) => {
                                         $form.students[i] =
-                                            e.target.value;
+                                            {
+                                                ...$form.students[i],
+                                                amount: e.target.value,
+                                            };
                                     }}
                                 />
                             </td>
