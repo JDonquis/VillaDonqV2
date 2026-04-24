@@ -9,7 +9,7 @@
     import axios from "axios";
     import debounce from "lodash/debounce";
     import ColorsPayMethods from "../../components/ColorsPayMethods";
-    export let data = [];
+    export let data = { students: { data: [] }, accounts: { data: [] } };
     $: console.log({ data });
     export let searched_students = [];
     let isSearchTableOpen = false;
@@ -284,19 +284,29 @@
                                     type="number"
                                     min="0"
                                     step="0.01"
-                                    class="w-24 border-3 p-1 border- small-shadow focus:outline-0 "
+                                    class="w-24 border-3 p-1 border- small-shadow focus:outline-0"
                                     value={student.amount_in_dolars || ""}
                                     on:input={(e) => {
-                                        $form.students[i] =
-                                            {
-                                                ...$form.students[i],
-                                                amount_in_dolars: e.target.value,
-                                                amount_in_bs: (
-                                                    e.target.value * dolarPrice
-                                                ).toFixed(2),
-                                            };
-                                            $form.total_in_dolars = $form.students.reduce((total, s) => total + (parseFloat(s.amount_in_dolars) || 0), 0).toFixed(2);
-                                            $form.total_in_bs = ($form.total_in_dolars * dolarPrice).toFixed(2);
+                                        $form.students[i] = {
+                                            ...$form.students[i],
+                                            amount_in_dolars: e.target.value,
+                                            amount_in_bs: (
+                                                e.target.value * dolarPrice
+                                            ).toFixed(2),
+                                        };
+                                        $form.total_in_dolars = $form.students
+                                            .reduce(
+                                                (total, s) =>
+                                                    total +
+                                                    (parseFloat(
+                                                        s.amount_in_dolars,
+                                                    ) || 0),
+                                                0,
+                                            )
+                                            .toFixed(2);
+                                        $form.total_in_bs = (
+                                            $form.total_in_dolars * dolarPrice
+                                        ).toFixed(2);
                                     }}
                                 />
                             </td>
@@ -305,19 +315,29 @@
                                     type="number"
                                     min="0"
                                     step="0.01"
-                                    class="w-28 border-3 p-1 border-black small-shadow focus:outline-0 "
+                                    class="w-28 border-3 p-1 border-black small-shadow focus:outline-0"
                                     value={student.amount_in_bs || ""}
                                     on:input={(e) => {
-                                        $form.students[i] =
-                                            {
-                                                ...$form.students[i],
-                                                amount_in_bs: e.target.value,
-                                                amount_in_dolars: (
-                                                    e.target.value / dolarPrice
-                                                ).toFixed(2),
-                                            };
-                                            $form.total_in_bs = $form.students.reduce((total, s) => total + (parseFloat(s.amount_in_bs) || 0), 0).toFixed(2);
-                                            $form.total_in_dolars = ($form.total_in_bs / dolarPrice).toFixed(2);
+                                        $form.students[i] = {
+                                            ...$form.students[i],
+                                            amount_in_bs: e.target.value,
+                                            amount_in_dolars: (
+                                                e.target.value / dolarPrice
+                                            ).toFixed(2),
+                                        };
+                                        $form.total_in_bs = $form.students
+                                            .reduce(
+                                                (total, s) =>
+                                                    total +
+                                                    (parseFloat(
+                                                        s.amount_in_bs,
+                                                    ) || 0),
+                                                0,
+                                            )
+                                            .toFixed(2);
+                                        $form.total_in_dolars = (
+                                            $form.total_in_bs / dolarPrice
+                                        ).toFixed(2);
                                     }}
                                 />
                             </td>
@@ -330,7 +350,7 @@
                             <td class="max-w-[60px]">
                                 <button
                                     type="button"
-                                    class="h-full hover:bg-paper "
+                                    class="h-full hover:bg-paper"
                                     on:click={() => {
                                         console.log("eliminar", student.id);
                                         // Eliminar el estudiante del arreglo
@@ -339,9 +359,7 @@
                                         );
                                     }}
                                 >
-                                    <iconify-icon
-                                        icon="line-md:close"
-                                      
+                                    <iconify-icon icon="line-md:close"
                                     ></iconify-icon>
                                 </button>
                             </td>
@@ -384,7 +402,6 @@
             readonly={true}
             bind:value={$form.total_in_dolars}
             error={$form.errors?.total_in_dolars}
-          
         />
         <Input
             type="number"
@@ -392,7 +409,6 @@
             readonly={true}
             bind:value={$form.total_in_bs}
             error={$form.errors?.total_in_bs}
-           
         />
         <Input
             type="number"
@@ -443,24 +459,23 @@
     on:clickDeleteIcon={() => {
         handleDelete(selectedRow.id);
     }}
-    pagination={false}
+    pagination={true}
 >
     <thead slot="thead" class="sticky top-0 z-50">
         <tr>
             <th>id</th>
             <th>Fecha</th>
-            <th>Estudiante</th>
-            <th>Representante legal</th>
-            <th>Monto USD$</th>
-            <th>Monto Bs</th>
+            <th>Estudiante/s</th>
+            <th>Total USD$</th>
+            <th>Total Bs</th>
             <th>Método de pago</th>
             <th>Referencia</th>
             <!-- <th>Representante</th> -->
         </tr>
     </thead>
 
-     <tbody slot="tbody">
-         <!-- {#each data?.students?.data as row, i} 
+    <tbody slot="tbody">
+        {#each data?.payments?.data as row, i}
             <tr
                 on:click={(e) => {
                     // let newSelectedRowStatus = !selectedRow.status;
@@ -488,12 +503,46 @@
             >
                 <td>{row.id}</td>
                 <td>{row.date}</td>
-                <td>{row.student_name} {row.student_last_name} {row.student_ci} </td>
-                <td>{row.student_sex}</td>
-                <td>{row.student_date_birth}</td>
-                <td>{row.rep_name} {row.rep_last_name}</td>
-                <td>{row.rep_phone_number}</td>
+                <td class=" space-y-2">
+                    {#each row?.students as student, j}
+                        <div class="flex items-center gap-2 ">
+                            <span>
+                                <b class=""
+                                    ><span class="text-gray-600">$</span
+                                    >{student.pivot.amount_in_dolars}
+                                </b>
+                                {student.name}
+                                {student.last_name}
+                                {student.ci}
+                                {student.course.name} - {student.section.name}
+                            </span>
+                        </div>
+                    {/each}
+                </td>
+                <!-- <td
+                    >{row.representative.user.name}
+                    {row.representative.user.last_name}</td
+                > -->
+                <td>${row.total_in_dolars}</td>
+                <td>{row.total_in_bs} Bs</td>
+                <td class="">
+                    <!-- <ColorsPayMethods
+                        payment_method_id={row.account_payment.method.name}
+                        accounts={data.accounts.data}
+                    /> -->
+                    <span
+                        class={`h-5 text-${ColorsPayMethods()[row.account_payment.method.name]}  bg-${ColorsPayMethods()[row.account_payment.method.name]} w-5  left-0 top-0`}
+                    >|</span>
+                    {row.account_payment.method.name}
+                    {#if row.account_payment.bank}- {row.account_payment
+                            .bank}{/if}
+                    {#if row.account_payment.cash_currency}- {row
+                            .account_payment.cash_currency}{/if}
+                    {#if row.account_payment.username}- {row.account_payment
+                            .username}{/if}
+                </td>
+                <td>{row.reference}</td>
             </tr>
-        {/each}  -->
-    </tbody> 
+        {/each}
+    </tbody>
 </Table>
