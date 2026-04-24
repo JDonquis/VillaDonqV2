@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\AccountPayment;
 use App\Models\Payment;
 use App\Models\Student;
+use App\Services\BalanceService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -34,6 +35,8 @@ class PaymentService
 
         $studentsData = collect($data['students']);
 
+        $balanceService = new BalanceService();
+
         foreach ($studentsData as $studentData) {
             $student = Student::where('id', $studentData['id'])
                 ->where('status', '!=', 0)
@@ -43,14 +46,12 @@ class PaymentService
                 'amount_in_dolars' => $studentData['amount_in_dolars'],
             ]);
 
-            // $students
+            $balanceService->updateStudentBalance($payment, $student);
         }
 
         $payment->load('students', 'accountPayment');
 
         // TODO: Aquí se debe llamar al servicio de balance para actualizar el estado de cuenta del estudiante
-        Ejemplo:
-        // $balanceService->updateStudentBalance($payment, );
 
         // TODO: Histórico de pagos - hay un problema con MySQL/MariaDB guardando JSON
         // $this->createHistory($payment, 'created', null, $payment->toArray());
