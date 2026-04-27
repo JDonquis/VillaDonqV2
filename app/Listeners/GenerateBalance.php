@@ -55,11 +55,12 @@ class GenerateBalance
             }
         }
 
+
         DB::table('balance_students')->insert(
             [
                 'student_id' => $student->id,
                 'school_lapse_id' => $schoolLapseActive->id,
-                'inscription' => $configData->new_inscription_price,
+                'inscription' => -$configData->new_inscription_price,
                 'august' => $this->months['august'],
                 'september' => $this->months['september'],
                 'october' => $this->months['october'],

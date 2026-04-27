@@ -24,16 +24,7 @@ class MainConfigController extends Controller
 
         $methods = $this->mainConfigService->getMethods();
         $accounts  = $this->mainConfigService->getAccounts();
-        $configData = $this->mainConfigService->getConfigData();
-        $prices = [
-            'regular_inscription_price' => $configData->regular_inscription_price,
-            'new_inscription_price' => $configData->new_inscription_price,
-            'monthly_payment' => $configData->monthly_payment,
-            'ame_price' => $configData->ame_price,
-            'investment_plan_price' => $configData->investment_plan_price,
-            'day_of_monthly_payment' => $configData->day_of_monthly_payment,
-            'grace_period' => $configData->grace_period,
-        ];
+        $prices = $this->mainConfigService->getPrices();
         return inertia(
             'Dashboard/Configuracion',
             [

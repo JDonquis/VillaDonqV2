@@ -219,19 +219,41 @@ class StudentService
 
     public function searchStudent($search)
     {
-
-        $student = Student::where('ci', 'LIKE', '%' . $search . '%')
-            ->orWhere('name', 'LIKE', '%' . $search . '%')
-            ->orWhere('last_name', 'LIKE', '%' . $search . '%')
+        $students = Student::where(function ($query) use ($search) {
+            $query->where('ci', 'LIKE', '%' . $search . '%')
+                ->orWhere('name', 'LIKE', '%' . $search . '%')
+                ->orWhere('last_name', 'LIKE', '%' . $search . '%')
+                ->orWhereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%']);
+        })
             ->orWhereHas('representative.user', function ($query) use ($search) {
-                $query->where('name', 'LIKE', '%' . $search . '%')
-                    ->orWhere('last_name', 'LIKE', '%' . $search . '%')
-                    ->orWhere('ci', 'LIKE', '%' . $search . '%');
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'LIKE', '%' . $search . '%')
+                        ->orWhere('last_name', 'LIKE', '%' . $search . '%')
+                        ->orWhere('ci', 'LIKE', '%' . $search . '%')
+                        ->orWhereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%']);
+                });
             })
-            ->with('representative.user', 'course', 'section')
-            ->get();
+            ->with([
+                'representative.user',
+                'course',
+                'section',
+                'balances' => function ($query) {
+                    // Traemos los que tengan status específicos O el más reciente
+                    $query->whereIn('status', ['pending', 'debt'])
+                        ->with('schoolLapse')
+                        ->latest(); // Ordenar por fecha de creación (el más nuevo primero)
+                }
+            ])
+            ->get()
+            ->map(function ($student) {
+                // Lógica adicional: Si no tiene pendientes/deuda, asegurar que al menos traiga el último
+                if ($student->balances->isEmpty()) {
+                    $student->setRelation('balances', $student->balances()->latest()->take(1)->get());
+                }
+                return $student;
+            });
 
-        return $student;
+        return $students;
     }
 
     public function searchRepresentativeByCI($ci)

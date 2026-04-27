@@ -51,16 +51,21 @@ class Student extends Model
             ->withTimestamps();
     }
 
+    public function balances()
+    {
+        return $this->hasMany(BalanceStudent::class);
+    }
+
     public static function saveDocs($document, $current, $documentName)
     {
 
         if ($current) {
-            Storage::disk('public')->delete('request/'.$documentName.'/'.$current);
+            Storage::disk('public')->delete('request/' . $documentName . '/' . $current);
         }
 
-        $doc_name = Str::random(25).'.'.$document->extension();
+        $doc_name = Str::random(25) . '.' . $document->extension();
 
-        $document->storeAs('request/'.$documentName, $doc_name, 'public');
+        $document->storeAs('request/' . $documentName, $doc_name, 'public');
 
         return $doc_name;
     }
@@ -73,10 +78,10 @@ class Student extends Model
             $courseName = $this->course?->name ?? '';
             $sectionName = $this->section?->name ?? '';
 
-            return trim($repName.' '.$repLastName.' '.$courseName.' '.$sectionName.' '
-                .$this->name.' '.$this->last_name.' '.$this->date_birth.' '
-                .$this->email.' '.$this->ci.' '.$this->phone_number.' '
-                .$this->sex.' '.$this->previous_school);
+            return trim($repName . ' ' . $repLastName . ' ' . $courseName . ' ' . $sectionName . ' '
+                . $this->name . ' ' . $this->last_name . ' ' . $this->date_birth . ' '
+                . $this->email . ' ' . $this->ci . ' ' . $this->phone_number . ' '
+                . $this->sex . ' ' . $this->previous_school);
         });
     }
 }

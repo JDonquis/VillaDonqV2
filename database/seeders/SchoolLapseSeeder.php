@@ -14,17 +14,19 @@ class SchoolLapseSeeder extends Seeder
      * @return void
      */
     public function run()
-    {       
-        $date = Carbon::yesterday();
-        $nextWeek = Carbon::today()->addWeek();
+    {
+        $currentYear = Carbon::now()->year;
 
-        DB::table('school_lapses')->insert(
-            [
-            'start' => $date,
-            'end' => $nextWeek,
+        $start = Carbon::create($currentYear, 9, 1, 0, 0, 0);
+
+        $end = Carbon::create($currentYear + 1, 8, 31, 23, 59, 59);
+
+        DB::table('school_lapses')->insert([
+            'start' => $start,
+            'end' => $end,
             'status' => 1,
-            'created_at' => $date,
-            'updated_at' => $date
-            ]);
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now()
+        ]);
     }
 }

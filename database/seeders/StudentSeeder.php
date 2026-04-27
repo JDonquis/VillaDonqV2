@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\UserTypeEnum;
+use App\Events\StudentCreated;
 use App\Models\Course;
 use App\Models\Representative;
 use App\Models\Section;
@@ -34,7 +35,7 @@ class StudentSeeder extends Seeder
             $repLastName = $this->generateLastName();
             $repCi = $this->generateUniqueCi();
             $repPhone = $this->generatePhone();
-            $repEmail = strtolower($repName.'.'.$repLastName.rand(1, 999).'@gmail.com');
+            $repEmail = strtolower($repName . '.' . $repLastName . rand(1, 999) . '@gmail.com');
             $profession = $professions[array_rand($professions)];
             $workplace = $workplaces[array_rand($workplaces)];
             $relationship = $relationships[array_rand($relationships)];
@@ -47,7 +48,7 @@ class StudentSeeder extends Seeder
                 'email' => $repEmail,
                 'password' => Hash::make($repCi),
                 'phone_number' => $repPhone,
-                'address' => 'Dirección '.rand(1, 500).' - Ciudad',
+                'address' => 'Dirección ' . rand(1, 500) . ' - Ciudad',
                 'photo' => 'guest.webp',
             ]);
 
@@ -69,14 +70,14 @@ class StudentSeeder extends Seeder
                 $sectionId = 1;
                 $dateBirth = $this->generateDateBirth();
 
-                Student::create([
+                $student = Student::create([
                     'representative_id' => $representative->id,
                     'course_id' => $courseId,
                     'section_id' => $sectionId,
                     'name' => $studentName,
                     'last_name' => $studentLastName,
                     'date_birth' => $dateBirth,
-                    'email' => strtolower($studentName.'.'.$studentLastName.$studentCounter.'@gmail.com'),
+                    'email' => strtolower($studentName . '.' . $studentLastName . $studentCounter . '@gmail.com'),
                     'ci' => $studentCi,
                     'phone_number' => $studentPhone,
                     'sex' => $sex,
@@ -88,6 +89,8 @@ class StudentSeeder extends Seeder
                 if ($studentCounter % 20 === 0) {
                     $this->command->info("{$studentCounter} estudiantes creados...");
                 }
+
+                event(new StudentCreated($student));
             }
         }
 
@@ -120,12 +123,54 @@ class StudentSeeder extends Seeder
     private function generateName(): string
     {
         $names = [
-            'Juan', 'Carlos', 'Miguel', 'José', 'Antonio', 'Luis', 'Francisco', 'Pedro',
-            'Fernando', 'Alberto', 'Rafael', 'Jorge', 'Ricardo', 'Eduardo', 'Daniel', 'Manuel',
-            'Andrés', 'Diego', 'Santiago', 'Jesús', 'Alejandro', 'David', 'Oscar', 'Roberto',
-            'María', 'Carmen', 'Ana', 'Rosa', 'Margarita', 'Isabel', 'Juana', 'Francisca',
-            'Antonia', 'Dolores', 'Luisa', 'Carmen', 'Elizabeth', 'Patricia', 'Jennifer', 'Andrea',
-            'Catherine', 'Gabriela', 'Daniela', 'Valentina', 'Mariana', 'Natalia', 'Stephanie', 'Carolina',
+            'Juan',
+            'Carlos',
+            'Miguel',
+            'José',
+            'Antonio',
+            'Luis',
+            'Francisco',
+            'Pedro',
+            'Fernando',
+            'Alberto',
+            'Rafael',
+            'Jorge',
+            'Ricardo',
+            'Eduardo',
+            'Daniel',
+            'Manuel',
+            'Andrés',
+            'Diego',
+            'Santiago',
+            'Jesús',
+            'Alejandro',
+            'David',
+            'Oscar',
+            'Roberto',
+            'María',
+            'Carmen',
+            'Ana',
+            'Rosa',
+            'Margarita',
+            'Isabel',
+            'Juana',
+            'Francisca',
+            'Antonia',
+            'Dolores',
+            'Luisa',
+            'Carmen',
+            'Elizabeth',
+            'Patricia',
+            'Jennifer',
+            'Andrea',
+            'Catherine',
+            'Gabriela',
+            'Daniela',
+            'Valentina',
+            'Mariana',
+            'Natalia',
+            'Stephanie',
+            'Carolina',
         ];
 
         return $names[array_rand($names)];
@@ -134,11 +179,47 @@ class StudentSeeder extends Seeder
     private function generateLastName(): string
     {
         $lastNames = [
-            'García', 'Rodríguez', 'Martínez', 'Hernández', 'López', 'González', 'Pérez', 'Sánchez',
-            'Ramírez', 'Torres', 'Flores', 'Rivera', 'Gómez', 'Díaz', 'Reyes', 'Cruz', 'Morales',
-            'Ortiz', 'Gutiérrez', 'Chávez', 'Ramos', 'Vargas', 'Castillo', 'Jiménez', 'Vega',
-            'Mendoza', 'Rosas', 'Aguilar', 'Vargas', 'Medina', 'Castro', 'Maldonado', 'Moreno',
-            'Herrera', 'Nuñez', 'Ibarra', 'Peréz', 'Guerrero', 'León', 'Salas', 'Franco',
+            'García',
+            'Rodríguez',
+            'Martínez',
+            'Hernández',
+            'López',
+            'González',
+            'Pérez',
+            'Sánchez',
+            'Ramírez',
+            'Torres',
+            'Flores',
+            'Rivera',
+            'Gómez',
+            'Díaz',
+            'Reyes',
+            'Cruz',
+            'Morales',
+            'Ortiz',
+            'Gutiérrez',
+            'Chávez',
+            'Ramos',
+            'Vargas',
+            'Castillo',
+            'Jiménez',
+            'Vega',
+            'Mendoza',
+            'Rosas',
+            'Aguilar',
+            'Vargas',
+            'Medina',
+            'Castro',
+            'Maldonado',
+            'Moreno',
+            'Herrera',
+            'Nuñez',
+            'Ibarra',
+            'Peréz',
+            'Guerrero',
+            'León',
+            'Salas',
+            'Franco',
         ];
 
         return $lastNames[array_rand($lastNames)];
@@ -164,7 +245,7 @@ class StudentSeeder extends Seeder
 
     private function generatePhone(): string
     {
-        return '04'.rand(12, 99).rand(1000000, 9999999);
+        return '04' . rand(12, 99) . rand(1000000, 9999999);
     }
 
     private function generateDateBirth(): string
@@ -173,6 +254,6 @@ class StudentSeeder extends Seeder
         $month = rand(1, 12);
         $day = rand(1, 28);
 
-        return $year.'-'.str_pad($month, 2, '0', STR_PAD_LEFT).'-'.str_pad($day, 2, '0', STR_PAD_LEFT);
+        return $year . '-' . str_pad($month, 2, '0', STR_PAD_LEFT) . '-' . str_pad($day, 2, '0', STR_PAD_LEFT);
     }
 }
