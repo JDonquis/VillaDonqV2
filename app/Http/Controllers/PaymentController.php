@@ -24,9 +24,15 @@ class PaymentController extends Controller
 
     public function index()
     {
+        $prices = $this->mainConfigService->getPrices();
         $accounts  = $this->mainConfigService->getAccounts();
         $payments = $this->paymentService->getAll();
-        return inertia('Dashboard/Pagos', ['data' => ['accounts' => $accounts, 'payments' => $payments]]);
+        return inertia('Dashboard/Pagos', ['data' =>
+        [
+            'accounts' => $accounts,
+            'payments' => $payments,
+            'prices' => $prices,
+        ]]);
     }
 
 
@@ -56,35 +62,21 @@ class PaymentController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        try {
+
+            $this->paymentService->delete($id);
+
+            return redirect('/dashboard/pagos');
+        } catch (Exception $e) {
+            Log::error('Error al eliminar pago ID ' . $id . ': ' . $e->getMessage());
+
+            return redirect('/dashboard/pagos')->withErrors(['message' => 'Ha ocurrido un error al eliminar el pago. Por favor, intente más tarde.']);
+        }
     }
 }

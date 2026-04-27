@@ -57,6 +57,19 @@ class MainConfigService
         return $this->mainConfigModel->first();
     }
 
+    public function getPrices()
+    {
+        return [
+            'regular_inscription_price' => $this->mainConfigModel->regular_inscription_price,
+            'new_inscription_price' => $this->mainConfigModel->new_inscription_price,
+            'monthly_payment' => $this->mainConfigModel->monthly_payment,
+            'ame_price' => $this->mainConfigModel->ame_price,
+            'investment_plan_price' => $this->mainConfigModel->investment_plan_price,
+            'day_of_monthly_payment' => $this->mainConfigModel->day_of_monthly_payment,
+            'grace_period' => $this->mainConfigModel->grace_period,
+        ];
+    }
+
     public function updatePaymentConfig($data)
     {
         $this->mainConfigModel->update($data);

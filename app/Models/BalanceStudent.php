@@ -37,4 +37,9 @@ class BalanceStudent extends Model
     {
         return $this->belongsTo(SchoolLapse::class);
     }
+
+    public function balancePayments()
+    {
+        return $this->hasMany(BalancePayment::class);
+    }
 }

@@ -13,7 +13,6 @@ class GenerateBalance
 {
 
     private $months = [
-        'august' => 0,
         'september' => 0,
         'october' => 0,
         'november' => 0,
@@ -25,6 +24,7 @@ class GenerateBalance
         'may' => 0,
         'june' => 0,
         'july' => 0,
+        'august' => 0,
     ];
 
     public function __construct()
@@ -38,22 +38,20 @@ class GenerateBalance
     public function handle(object $event): void
     {
         $student = $event->student;
-        
+
         $configData = MainConfig::select('new_inscription_price', 'monthly_payment')->first();
-        $schoolLapseActive = SchoolLapse::where('status',1)->first();
+        $schoolLapseActive = SchoolLapse::where('status', 1)->first();
 
         $currentDate = Carbon::now();
         $currentMonthName = strtolower($currentDate->englishMonth);
         $setValue = false;
 
-        foreach ($this->months as $monthName => $value) 
-        {
-            if($monthName == $currentMonthName && $monthName !== 'august')
+        foreach ($this->months as $monthName => $value) {
+            if ($monthName == $currentMonthName)
                 $setValue = true;
 
-            if($setValue)
-            {
-                $this->months[$monthName] = $configData->monthly_payment;
+            if ($setValue) {
+                $this->months[$monthName] = $this->months[$monthName] - $configData->monthly_payment;
             }
         }
 
@@ -76,12 +74,8 @@ class GenerateBalance
                 'july' => $this->months['july'],
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
-                
+
             ]
-            );
-
-
+        );
     }
-
-
 }

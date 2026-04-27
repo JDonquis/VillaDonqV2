@@ -51,23 +51,19 @@ class PaymentService
 
         $payment->load('students', 'accountPayment');
 
-        // TODO: Aquí se debe llamar al servicio de balance para actualizar el estado de cuenta del estudiante
-
-        // TODO: Histórico de pagos - hay un problema con MySQL/MariaDB guardando JSON
-        // $this->createHistory($payment, 'created', null, $payment->toArray());
-
         return $payment;
     }
 
-    private function createHistory(Payment $payment, string $action, ?array $oldData, ?array $newData): void
+    public function delete($id)
     {
-        $userId = Auth::id() ?? 1;
+        $payment = Payment::findOrFail($id);
 
-        $oldJson = $oldData ? "'" . json_encode($oldData) . "'" : "'{}'";
-        $newJson = $newData ? "'" . json_encode($newData) . "'" : "'{}'";
+        $balanceService = new BalanceService();
 
-        $sql = "INSERT INTO payment_histories (payment_id, user_id, action, old_data, new_data, created_at) VALUES ({$payment->id}, {$userId}, '{$action}', {$oldJson}, {$newJson}, NOW())";
+        foreach ($payment->students as $student) {
+            $balanceService->revertStudentBalance($payment, $student);
+        }
 
-        DB::statement($sql);
+        $payment->delete();
     }
 }

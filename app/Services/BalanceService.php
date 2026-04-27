@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\BalancePayment;
 use App\Models\BalanceStudent;
 use App\Models\Payment;
 use App\Models\Student;
@@ -9,9 +10,18 @@ use App\Models\Student;
 class BalanceService
 {
     private const MONTH_ORDER = [
-        'september', 'october', 'november', 'december',
-        'january', 'february', 'march', 'april', 'may',
-        'june', 'july', 'august',
+        'september',
+        'october',
+        'november',
+        'december',
+        'january',
+        'february',
+        'march',
+        'april',
+        'may',
+        'june',
+        'july',
+        'august',
     ];
 
     public function updateStudentBalance(Payment $payment, Student $student): void
@@ -53,5 +63,32 @@ class BalanceService
 
         $balance->$monthToPay += $amount;
         $balance->save();
+
+        $balancePayment = new BalancePayment();
+        $balancePayment->payment_id = $payment->id;
+        $balancePayment->balance_student_id = $balance->id;
+        $balancePayment->amount = $amount;
+        $balancePayment->month = $monthToPay;
+        $balancePayment->save();
+    }
+
+    public function revertStudentBalance(Payment $payment, Student $student): void
+    {
+        $balancePayment = BalancePayment::where('payment_id', $payment->id)
+            ->whereHas('balanceStudent', function ($query) use ($student) {
+                $query->where('student_id', $student->id);
+            })
+            ->first();
+
+        if (! $balancePayment) {
+            return;
+        }
+
+        $balance = $balancePayment->balanceStudent;
+        $month = $balancePayment->month;
+        $balance->$month -= $balancePayment->amount;
+
+        $balance->save();
+        $balancePayment->delete();
     }
 }
