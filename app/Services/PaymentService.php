@@ -5,15 +5,13 @@ namespace App\Services;
 use App\Models\AccountPayment;
 use App\Models\Payment;
 use App\Models\Student;
-use App\Services\BalanceService;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class PaymentService
 {
     public function getAll()
     {
-        return Payment::query()->with('students', 'accountPayment.method', 'user')->paginate(25)->withQueryString();
+        return Payment::query()->with('students', 'accountPayment.method', 'user', 'deletedBy')->paginate(25)->withQueryString();
     }
 
     public function create(array $data): Payment
@@ -35,7 +33,7 @@ class PaymentService
 
         $studentsData = collect($data['students']);
 
-        $balanceService = new BalanceService();
+        $balanceService = new BalanceService;
 
         foreach ($studentsData as $studentData) {
             $student = Student::where('id', $studentData['id'])
@@ -58,12 +56,14 @@ class PaymentService
     {
         $payment = Payment::findOrFail($id);
 
-        $balanceService = new BalanceService();
+        $balanceService = new BalanceService;
 
         foreach ($payment->students as $student) {
             $balanceService->revertStudentBalance($payment, $student);
         }
 
+        $payment->deleted_by = Auth::id();
+        $payment->save();
         $payment->delete();
     }
 }

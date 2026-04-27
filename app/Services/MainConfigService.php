@@ -67,6 +67,7 @@ class MainConfigService
             'investment_plan_price' => $this->mainConfigModel->investment_plan_price,
             'day_of_monthly_payment' => $this->mainConfigModel->day_of_monthly_payment,
             'grace_period' => $this->mainConfigModel->grace_period,
+            'payment_carton_price' => $this->mainConfigModel->payment_carton_price,
         ];
     }
 
