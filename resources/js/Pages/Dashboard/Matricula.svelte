@@ -643,7 +643,7 @@
                         selectedRow = { status: true, data: { ...row, _clickPosition: clickPos } };
                     }
                 }}
-                class={`cursor-pointer  ${selectedRow?.data?.student_id == row.student_id ? "bg-yellow hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
+                class={`cursor-pointer  ${selectedRow?.data?.student_id == row.student_id ? "bg-yellow hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-100"}`}
             >
                 <td>{i + 1}</td>
                 <td>{row.student_name}</td>

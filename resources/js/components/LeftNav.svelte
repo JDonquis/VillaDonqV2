@@ -13,13 +13,13 @@
             name: "Configuración",
         },
         {
-            icon: "mdi:google-classroom",
+            icon: "mdi:school",
             href: "/dashboard/matricula",
             name: "Matricula",
         },
 
         {
-            icon: "streamline:payment-10",
+            icon: "streamline:payment-10-solid",
             href: "/dashboard/pagos",
             name: "Pagos",
         },
@@ -59,7 +59,7 @@
                     class="hover:text-purple z-10 rounded-md flex md:gap-2 items-center p-2"
                     class:active={$page.url.startsWith(navPage.href)}
                     ><iconify-icon
-                        class="text-xlc md:text-lg"
+                        class="text-xl "
                         icon={navPage.icon}
                     /><span class="label_link hidden md:block"
                         >{navPage.name}</span

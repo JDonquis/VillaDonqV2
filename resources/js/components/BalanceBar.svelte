@@ -1,80 +1,148 @@
 <script>
-export let balance = {}
-console.log(balance);
+    export let balances = {};
+    const months = {
+        sep: "september",
+        oct: "october",
+        nov: "november",
+        dic: "december",
+        ene: "january",
+        feb: "february",
+        mar: "march",
+        abr: "april",
+        may: "may",
+        jun: "june",
+        jul: "july",
+        ago: "august",
+    };
+
+    export let amountToPay = 0;
+    const firstUnpaidMonth = Object.entries(months).findIndex(
+        ([spanisMonth, monthName]) => {
+            const status = balances[0][`${monthName}_status`];
+            return status === "debt" || status === "partially_paid";
+        },
+    );
+
+    const startPointToPay = {
+        school_lapse_index: 0,
+        month: firstUnpaidMonth || Object.values(months)[0], // Si no hay deudas, cae al primer mes por defecto
+    };
+
+    let endPointToPay = {};
+    console.log(amountToPay);
+
+    function getLastPaymentMonth(amountToPay) {
+        let lastPaymentMonth = null;
+        let endMonthIndex = firstUnpaidMonth;
+        let endYearIndex = startPointToPay.school_lapse_index;
+        let partialToPay = 0;
+        while (amountToPay > 0) {
+            const balance = Math.abs(
+                balances[endYearIndex][Object.values(months)[endMonthIndex]],
+            );
+
+            if (amountToPay < balance) {
+                partialToPay = amountToPay;
+            }
+
+            amountToPay -= balance;
+
+            if (endMonthIndex == 12) {
+                endYearIndex++;
+                endMonthIndex = 0;
+            } else {
+                endMonthIndex++;
+            }
+            console.log({
+                endMonthIndex,
+                endYearIndex,
+                partialToPay,
+                amountToPay,
+                balance,
+            });
+        }
+        endPointToPay = { endMonthIndex, endYearIndex, partialToPay };
+        return { endMonthIndex, endYearIndex, partialToPay };
+    }
+
+    // Reactive statement: run getLastPaymentMonth whenever amountToPay changes
+    $: endPointToPay = getLastPaymentMonth(amountToPay);
 </script>
 
-<div
-class="progress_balance text-sm relative grid grid-cols-12 rounded-full py-2  border border-color1"
->
-<span class="px-2 opacity-0">Ene</span>
-<span class="px-2 opacity-0">Feb</span>
-<span class="px-2 opacity-0">Mar</span>
-<span class="px-2 opacity-0">Abr</span>
-<span class="px-2 opacity-0">May</span>
-<span class="px-2 opacity-0">Jun</span>
-<span class="px-2 opacity-0">Jul</span>
-<span class="px-2 opacity-0">Ago</span>
-<span class="px-2 opacity-0">Sep</span>
-<span class="px-2 opacity-0 border-color4">Oct</span>
-<span class="px-2 opacity-0">Nov</span>
-<span class="px-2 opacity-0">Dic</span>
+<div>
+    {#each balances as balance, indexYear}
+        <div class="flex items-center">
+            <!-- <button>
+                <iconify-icon
+                    class="rotate-180 relative top-1"
+                    icon="grommet-icons:form-next"
+                    width="24"
+                    height="24"
+                ></iconify-icon>
+            </button> -->
+            <p class="text-lg font-bold">
+                {balance.school_lapse.start.slice(0, 4)} - {balance.school_lapse.end.slice(
+                    0,
+                    4,
+                )}
+            </p>
+            <!-- <button>
+                <iconify-icon
+                    class="relative top-1"
+                    icon="grommet-icons:form-next"
+                    width="24"
+                    height="24"
+                ></iconify-icon>
+            </button> -->
+        </div>
+        <div class="grid p-0 grid-cols-12 border-2 border-black">
+            <div class="col-span-1 bg-green font-bold flex justify-center pt-1">
+                Inscr
+            </div>
+            <div class="col-span-11 grid grid-cols-12">
+                {#each Object.entries(months) as [spanishLabel, month], indexMonth}
+                    <div
+                        class={` hover:brightness-110  relative col-span-1 z-10  text-sm capitalize overflow-hidden text-center font-bold ${balance[month + "_status"] == "debt" ? "bg-red" : balance[month + "_status"] == "paid" ? "bg-green" : balance[month + "_status"] == "partially_paid" ? "bg-yellow" : "bg-gray-100 border-l-2 border-l-gray-400"} text-black  p-2`}
+                    >
+                        {spanishLabel}
+                        <p>
+                            {#if balance[month + "_status"] == "debt" || balance[month + "_status"] == "partially_paid"}
+                                ${Math.abs(balance[month])}
+                            {/if}
+                        </p>
 
-<div
-    class=" left-0 bottom-0 absolute w-full h-full grid grid-cols-12 rounded-full overflow-hidden"
->
-    <span class="px-2 col-span-12 z-50 h-full rounded-l-full bg-white bg-opacity-30 "
-    ></span>
-</div>
-
-
-<div
-    class={`left-0 bottom-0 absolute w-full h-full grid grid-cols-12 rounded-full overflow-hidden`}
->
-    <span class={`px-2 z-50 h-full rounded-l-full bg-color4 bg-opacity-20 border-4  border-color4`}
-    style={`grid-column: span ${balance?.paying} `}
-
-    ></span>
-</div>
-<div
-    class={`left-0 bottom-0 absolute w-full h-full grid grid-cols-12 rounded-full overflow-hidden`}
->
-    <span class={`px-2 z-40 h-full rounded-ful bg-color3`}
-    style={`grid-column: span ${balance?.lastPaidMonth}`}
-
-    ></span>
-</div>
-<div
-    class={`left-0 bottom-0 absolute w-full h-full grid grid-cols-12 rounded-full overflow-hidden`}
->
-    <span class={`px-2 z-30 h-full rounded-ful bg-binance`}
-    style={`grid-column: span ${balance?.lastPartiallyPaidMonth}`}
-
-    ></span>
-</div>
-<div
-    class={`left-0 bottom-0 absolute w-full h-full grid grid-cols-12 rounded-full overflow-hidden`}
->
-    <span class={`px-2  z-20 h-full rounded-ful bg-red`}
-    style={`grid-column: span ${balance?.lastOverdueMonth}`}
-
-    ></span>
-</div>
-
-
-<div
-    class=" left-0 text-center font-bold bottom-0 text-sm absolute bg-white w-full grid grid-cols-12 rounded-full py-2"
->
-    <span class="px-2 z-50">Ene</span>
-    <span class="px-2 z-50">Feb</span>
-    <span class="px-2 z-50">Mar</span>
-    <span class="px-2 z-50">Abr</span>
-    <span class="px-2 z-50">May</span>
-    <span class="px-2 z-50">Jun</span>
-    <span class="px-2 z-50">Jul</span>
-    <span class="px-2 z-50">Ago</span>
-    <span class="px-2 z-50">Sep</span>
-    <span class="px-2 z-50">Oct</span>
-    <span class="px-2 z-50">Nov</span>
-    <span class="px-2 z-50">Dic</span>
-</div>
+                        <div
+                            class={`months_to_pay absolute top-0.5 left-0 w-full h-[95%] z-40 
+                            ${indexMonth === startPointToPay.month && startPointToPay.school_lapse_index == +indexYear ? "border-l-4 border-black/50" : ""} 
+                            ${indexMonth === endPointToPay.endMonthIndex - 1 && endPointToPay.endYearIndex == +indexYear ? "border-r-4 border-black/50" : ""}
+                            ${endPointToPay.endYearIndex == indexYear && +startPointToPay.month <= +indexMonth && endPointToPay.endMonthIndex > indexMonth ? "bg-purple/30 border-y-4 border-black/50" : ""}`}
+                            style={indexMonth ===
+                                endPointToPay.endMonthIndex - 1 &&
+                            endPointToPay.endYearIndex == +indexYear &&
+                            endPointToPay.partialToPay > 0
+                                ? `width: ${(endPointToPay.partialToPay / Math.abs(balance[month])) * 100}%`
+                                : ""}
+                        ></div>
+                    </div>
+                {/each}
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <p>Deuda Total:</p>
+            <b>
+                ${Math.abs(
+                    Object.entries(months).reduce((total, [_, month]) => {
+                        if (
+                            (balance[month] < 0 &&
+                                balance[month + "_status"] == "debt") ||
+                            balance[month + "_status"] == "partially_paid"
+                        ) {
+                            total += balance[month];
+                        }
+                        return total;
+                    }, 0),
+                )}
+            </b>
+        </div>
+    {/each}
 </div>

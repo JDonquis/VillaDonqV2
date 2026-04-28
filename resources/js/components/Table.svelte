@@ -28,6 +28,46 @@
         };
     }
 
+    let perPageOptions = [1, 5, 10, 15, 25, 50];
+    let perPageKey = 'table_per_page_' + $page.component.replace(/\//g, '_');
+    let rowsPerPage = typeof localStorage !== 'undefined' 
+        ? parseInt(localStorage.getItem(perPageKey)) || 25 
+        : 25;
+
+    $: visibleLinks = buildVisibleLinks(serverSideData?.links || [], serverSideData?.current_page || 1);
+
+    function buildVisibleLinks(links, currentPage) {
+        if (!links.length) return [];
+        
+        // Filtrar solo los botones numerados (los que tienen url)
+        const numberedLinks = links.filter(l => l.url && !isNaN(parseInt(l.label)));
+        if (numberedLinks.length <= 7) return links;
+        
+        // Mostrar máximo 5 botones de página
+        const totalPages = numberedLinks.length;
+        let start = Math.max(1, currentPage - 2);
+        let end = Math.min(totalPages, start + 4);
+        
+        if (end - start < 4) {
+            start = Math.max(1, end - 4);
+        }
+        
+        return links.filter((link, index) => {
+            if (!link.url) return true; // Mantener Previous/Next
+            const pageNum = parseInt(link.label);
+            if (isNaN(pageNum)) return false;
+            return pageNum >= start && pageNum <= end || pageNum === 1 || pageNum === totalPages;
+        });
+    }
+
+    function changePerPage(newPerPage) {
+        rowsPerPage = newPerPage;
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(perPageKey, newPerPage);
+        }
+        router.get($page.url, { ...filterClientData, per_page: newPerPage }, { preserveState: true });
+    }
+
     const handleFilters = () => {
         router.get(`${$page.url}`, filterClientData, { preserveState: true, replace: true });
     };
@@ -157,63 +197,44 @@
 
     {#if pagination}
         <!-- Pagination ---------------------------------------------------------------------------------------------- -->
-        <div class="mt-2 sm:flex sm:items-center sm:justify-between">
-            <div class="text-sm text-gray-500">
-                Page <span class="font-medium text-gray-700"
-                    >{serverSideData.current_page} of {serverSideData.last_page}</span
+        <div class="mt-2 sm:flex sm:items-center sm:justify-between flex-wrap gap-2">
+            <div class="text-sm text-gray-500 flex items-center gap-2">
+                <span>Mostrando</span>
+                <span class="font-medium text-gray-700">{serverSideData.from || 0}</span>
+                <span>a</span>
+                <span class="font-medium text-gray-700">{serverSideData.to || 0}</span>
+                <span>de</span>
+                <span class="font-medium text-gray-700">{serverSideData.total || 0}</span>
+                <span>entradas</span>
+                <select 
+                    class="ml-2 px-2 py-1 border rounded text-sm"
+                    bind:value={rowsPerPage}
+                    on:change={(e) => changePerPage(parseInt(e.target.value))}
                 >
+                    {#each perPageOptions as option}
+                        <option value={option}>{option}</option>
+                    {/each}
+                </select>
+                <span>por página</span>
             </div>
 
             <!-- pagination buttons -->
-            <div class="flex items-center mt-4 gap-x-4 sm:mt-0">
-                <a
-                    use:inertia
-                    href={serverSideData.prev_page_url}
-                    class="flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 disabled:cursor-not-allowed
-                    white border sm:w-auto gap-x-2 hover:bg-gray-100"
-                    disabled={serverSideData.prev_page_url == null}
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="w-5 h-5 rtl:-scale-x-100"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
-                        />
-                    </svg>
-
-                    <span> previous </span>
-                </a>
-
-                <a
-                    use:inertia
-                    href={serverSideData.next_page_url}
-                    class="flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border sm:w-auto gap-x-2 hover:bg-gray-100"
-                    disabled={serverSideData.next_page_url == null}
-                >
-                    <span> Next </span>
-
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="w-5 h-5 rtl:-scale-x-100"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
-                        />
-                    </svg>
-                </a>
+            <div class="flex items-center gap-1 flex-wrap">
+                {#each visibleLinks as link, i}
+                    {#if link.url === null}
+                        <span class="px-3 py-1 text-gray-400 cursor-not-allowed">{link.label.replace(/&laquo;/g, '<').replace(/&raquo;/g, '>')}</span>
+                    {:else if link.active}
+                        <span class="px-3 py-1 bg-yellow font-bold border border-black">{link.label}</span>
+                    {:else}
+                        <a
+                            use:inertia
+                            href={link.url}
+                            class="px-3 py-1 border hover:bg-gray-100"
+                        >
+                            {link.label.replace(/&laquo;/g, '«').replace(/&raquo;/g, '»')}
+                        </a>
+                    {/if}
+                {/each}
             </div>
         </div>
     {/if}
@@ -242,5 +263,8 @@
     }
     .scroll-table::-webkit-scrollbar-corner {
         background: rgba(0, 0, 0, 0.5);
+    }
+    tr {
+        border-bottom: 1px solid black;
     }
 </style>

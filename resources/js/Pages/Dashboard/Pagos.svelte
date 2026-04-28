@@ -9,8 +9,53 @@
     import axios from "axios";
     import debounce from "lodash/debounce";
     import ColorsPayMethods from "../../components/ColorsPayMethods";
+    import BalanceBar from "../../components/BalanceBar.svelte";
     export let data = { students: { data: [] }, accounts: { data: [] } };
-    $: console.log({ data });
+   
+    const balances = [
+        {
+            id: 58,
+            student_id: 58,
+            status: "pending",
+            inscription: -50,
+            january: 0,
+            january_status: "paid",
+            february: 0,
+            february_status: "paid",
+            march: -30,
+            march_status: "partially_paid",
+            april: -50,
+            april_status: "debt",
+            may: -50,
+            may_status: "pending",
+            june: -50,
+            june_status: "pending",
+            july: -50,
+            july_status: "pending",
+            august: -50,
+            august_status: "pending",
+            september: 0,
+            september_status: "paid",
+            october: 0,
+            october_status: "paid",
+            november: 0,
+            november_status: "paid",
+            december: 0,
+            december_status: "paid",
+            school_lapse_id: 1,
+            created_at: "2026-04-27T19:59:49.000000Z",
+            updated_at: "2026-04-27T19:59:49.000000Z",
+            school_lapse: {
+                id: 1,
+                start: "2026-09-01",
+                end: "2027-08-31",
+                status: 1,
+                created_at: "2026-04-27 19:59:43",
+                updated_at: "2026-04-27 19:59:43",
+            },
+        },
+    ];
+   
     export let searched_students = [];
     let isSearchTableOpen = false;
     let searchInputRef;
@@ -21,7 +66,6 @@
     getMonitor("BCV", "lastUpdate")
         .then((response) => {
             dolarPrice = response.bcv.price;
-            console.log(dolarPrice);
         })
         .catch((error) => {
             console.error("Error:", error);
@@ -29,13 +73,15 @@
 
     // Format the date as a string in the "YYYY-MM-DD" format
     const currentDateString = currentDate.toISOString().split("T")[0];
-    console.log(data);
-    const emptyDataForm = {
-        date: "",
 
+    const emptyDataForm = {
+        date: currentDateString,
+        students: [],
         account_payment_id: "",
-        total_in_dolars: "",
+        total_in_dolars: "1",
         total_in_bs: "",
+        reference: "",
+        observations: "",
     };
 
     let form = useForm({
@@ -45,6 +91,7 @@
         total_in_dolars: "1",
         total_in_bs: "",
         reference: "",
+        observations: "",
     });
 
     let formEdit = useForm({
@@ -110,7 +157,6 @@
                     params: { search: search_text },
                 },
             );
-            console.log(response);
             searched_students = response.data;
             // Aquí puedes actualizar el estado con los resultados de la búsqueda
         } catch (error) {
@@ -153,15 +199,11 @@
         showModalFormEdit = true;
     }
 
-    $: console.log($form);
-    $: console.log(data.course_sections?.data?.[`course_${$form.course_id}`]);
-
     $: $form.total_in_dolars, exchange();
 
     function exchange() {
         // $form.total_in_bs = $form.total_in_dolars * +dolarPrice;
         // $form.total_in_dolars = $form.total_in_bs / dolarPrice;
-        console.log("tambien");
     }
 </script>
 
@@ -171,16 +213,16 @@
 
 <Alert />
 
-<Modal bind:showModal classes="w-[980px]">
+<Modal bind:showModal classes="w-11/12">
     <h2 slot="header" class="text-sm text-center">REGISTRO DE PAGO</h2>
 
     <form
         id="a-form"
         on:submit={handleSubmit}
         action=""
-        class="w-full grid md:grid-cols-2 md:gap-x-5 px-5"
+        class="w-full grid md:grid-cols-12 md:gap-x-5 px-5"
     >
-        <div class="col-span-2 relative mx-auto text-center w-full">
+        <div class="col-span-8 relative mx-auto text-center w-full">
             <!-- <Input
                 type="text"
                 required={true}
@@ -261,9 +303,9 @@
 
             <table
                 id="selected_student"
-                class={`${$form.students.length > 0 ? "block" : "hidden"}  w-full font-semibold relative [&_*]:px-4 [&_*]:py-2 [&_*]:text-left bg-background  text-sm overflow-hidden mt-5`}
+                class={`${$form.students.length > 0 ? "block" : "hidden"}  w-full font-semibold relative  bg-background  text-sm overflow-hidden mt-5`}
             >
-                <thead class="">
+                <thead class="[&_*]:px-4 [&_*]:py-2 [&_*]:text-left">
                     <tr>
                         <th>Dólares ($)</th>
                         <th>Bolívares (Bs)</th>
@@ -277,7 +319,7 @@
                 <tbody>
                     {#each $form.students as student, i}
                         <tr
-                            class={` w-full [&_*]:px-4 [&_*]:py-2 cursor-pointer  border-gray-500`}
+                            class={` w-full [&_*]:px-4 [&_*]:py-2 text-base cursor-pointer  border-gray-500`}
                         >
                             <td>
                                 <input
@@ -310,12 +352,12 @@
                                     }}
                                 />
                             </td>
-                            <td>
+                            <td class="w-40">
                                 <input
                                     type="number"
                                     min="0"
                                     step="0.01"
-                                    class="w-28 border-3 p-1 border-black small-shadow focus:outline-0"
+                                    class="w-full border-3 p-1 border-black small-shadow focus:outline-0"
                                     value={student.amount_in_bs || ""}
                                     on:input={(e) => {
                                         $form.students[i] = {
@@ -341,7 +383,9 @@
                                     }}
                                 />
                             </td>
-                            <td>{student.name} {student.last_name}</td>
+                            <td class="font-bold"
+                                >{student.name} {student.last_name}</td
+                            >
                             <td>{student.ci}</td>
                             <td
                                 >{student.course_name} - {student.section_name}</td
@@ -352,7 +396,6 @@
                                     type="button"
                                     class="h-full hover:bg-paper"
                                     on:click={() => {
-                                        console.log("eliminar", student.id);
                                         // Eliminar el estudiante del arreglo
                                         $form.students = $form.students.filter(
                                             (s) => s.id !== student.id,
@@ -364,59 +407,74 @@
                                 </button>
                             </td>
                         </tr>
+                        <tr>
+                        <td colspan="7">
+                            <BalanceBar balances={balances} amountToPay={student.amount_in_dolars } />
+
+                        </td>
+                        </tr>
                     {/each}
                 </tbody>
             </table>
         </div>
-        <Input
-            type="date"
-            required={true}
-            label={"Fecha del pago"}
-            bind:value={$form.date}
-            error={$form.errors?.date}
-            max={currentDateString}
-        />
-        <Input
-            type="select"
-            label={"Método de pago"}
-            bind:value={$form.account_payment_id}
-            error={$form.errors?.account_payment_id}
-            required={true}
-        >
-            {#each data.accounts.data as account}
-                <option
-                    value={account.id}
-                    class={`border-l-4 mix-blend-difference  }`}
-                >
-                    {account.payment_method_name}
-                    {#if account.bank}- {account.bank}{/if}
-                    {#if account.cash_currency}- {account.cash_currency}{/if}
-                    {#if account.username}- {account.username}{/if}
-                </option>
-            {/each}
-        </Input>
-        <Input
-            type="number"
-            label={"Total en Dólares ($)"}
-            required={true}
-            readonly={true}
-            bind:value={$form.total_in_dolars}
-            error={$form.errors?.total_in_dolars}
-        />
-        <Input
-            type="number"
-            label={"Total en Bolívares (Bs)"}
-            readonly={true}
-            bind:value={$form.total_in_bs}
-            error={$form.errors?.total_in_bs}
-        />
-        <Input
-            type="number"
-            label={"Referencia"}
-            required={true}
-            bind:value={$form.reference}
-            error={$form.errors?.reference}
-        />
+
+        <div class="col-span-4 w-full grid md:grid-cols-2 md:gap-x-5">
+            <Input
+                type="date"
+                required={true}
+                label={"Fecha del pago"}
+                bind:value={$form.date}
+                error={$form.errors?.date}
+                max={currentDateString}
+            />
+            <Input
+                type="select"
+                label={"Método de pago"}
+                bind:value={$form.account_payment_id}
+                error={$form.errors?.account_payment_id}
+                required={true}
+            >
+                {#each data.accounts.data as account}
+                    <option
+                        value={account.id}
+                        class={`border-l-4 mix-blend-difference  }`}
+                    >
+                        {account.payment_method_name}
+                        {#if account.bank}- {account.bank}{/if}
+                        {#if account.cash_currency}- {account.cash_currency}{/if}
+                        {#if account.username}- {account.username}{/if}
+                    </option>
+                {/each}
+            </Input>
+            <Input
+                type="number"
+                label={"Total en Dólares ($)"}
+                required={true}
+                readonly={true}
+                bind:value={$form.total_in_dolars}
+                error={$form.errors?.total_in_dolars}
+            />
+            <Input
+                type="number"
+                label={"Total en Bolívares (Bs)"}
+                readonly={true}
+                bind:value={$form.total_in_bs}
+                error={$form.errors?.total_in_bs}
+            />
+            <Input
+                type="number"
+                label={"Referencia"}
+                required={true}
+                bind:value={$form.reference}
+                error={$form.errors?.reference}
+            />
+            <Input
+                type="textarea"
+                label={"Observaciones"}
+                bind:value={$form.observations}
+                error={$form.errors?.observations}
+            />
+        </div>
         <button
             type="submit"
             class="btn btn-green col-span-2 mt-7 flex items-center justify-center gap-3"
@@ -453,8 +511,10 @@
     </p>
 </div>
 
+
 <Table
     {selectedRow}
+    serverSideData={data?.payments}
     on:fillFormToEdit={fillFormToEdit}
     on:clickDeleteIcon={() => {
         handleDelete(selectedRow.id);
@@ -478,12 +538,13 @@
         {#each data?.payments?.data as row, i}
             <tr
                 on:click={(e) => {
-                    // let newSelectedRowStatus = !selectedRow.status;
+                    const clickPos = { x: e.clientX, y: e.clientY };
                     if (row.id != selectedRow.id) {
                         selectedRow = {
                             status: true,
                             id: row.id,
                             title: row.title,
+                            _clickPosition: clickPos,
                         };
                         $formEdit.defaults({
                             ...row,
@@ -499,13 +560,13 @@
                         });
                     }
                 }}
-                class={`cursor-pointer hover:bg-gray-500 hover:bg-opacity-5 ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : ""}`}
+                class={`py-2 cursor-pointer hover:bg-gray-100 ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : ""}`}
             >
                 <td>{row.id}</td>
                 <td>{row.date}</td>
                 <td class=" space-y-2">
                     {#each row?.students as student, j}
-                        <div class="flex items-center gap-2 ">
+                        <div class="flex items-center gap-2">
                             <span>
                                 <b class=""
                                     ><span class="text-gray-600">$</span
@@ -513,8 +574,12 @@
                                 </b>
                                 {student.name}
                                 {student.last_name}
-                                {student.ci}
-                                {student.course.name} - {student.section.name}
+                                <span class="text-gray-500">
+                                    | C.I:
+                                    {student.ci}
+                                    | {student.course.name}-{student.section
+                                        .name}
+                                </span>
                             </span>
                         </div>
                     {/each}
@@ -532,7 +597,8 @@
                     /> -->
                     <span
                         class={`h-5 text-${ColorsPayMethods()[row.account_payment.method.name]}  bg-${ColorsPayMethods()[row.account_payment.method.name]} w-5  left-0 top-0`}
-                    >|</span>
+                        >|</span
+                    >
                     {row.account_payment.method.name}
                     {#if row.account_payment.bank}- {row.account_payment
                             .bank}{/if}
@@ -546,3 +612,14 @@
         {/each}
     </tbody>
 </Table>
+
+<style>
+    .grid-container > div:first-child .months_to_pay {
+        border-left: 3px solid white;
+    }
+
+    /* Selecciona el último DIV que es hijo directo del contenedor del grid */
+    .grid-container > div:last-child .months_to_pay {
+        border-right: 3px solid white;
+    }
+</style>
