@@ -18,6 +18,7 @@ class Payment extends Model
         'reference',
         'status',
         'observations',
+        'deleted_by',
     ];
 
     protected $casts = [
@@ -47,5 +48,10 @@ class Payment extends Model
     public function histories()
     {
         return $this->hasMany(PaymentHistory::class);
+    }
+
+    public function deletedBy()
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
     }
 }

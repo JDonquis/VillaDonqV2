@@ -31,6 +31,7 @@ class MainConfigSeeder extends Seeder
                 'grace_period' => 5,
                 'ame_price' => 0,
                 'investment_plan_price' => 0,
+                'payment_carton_price' => 0,
             ]
 
 
