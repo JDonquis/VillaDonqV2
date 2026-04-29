@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\BalanceStudentStatusEnum;
 use App\Enums\UserTypeEnum;
 use App\Events\StudentCreated;
 use App\Events\StudentUpdated;
@@ -239,10 +240,10 @@ class StudentService
                 'section',
                 'balances' => function ($query) {
                     // Traemos los que tengan status específicos O el más reciente
-                    $query->whereIn('status', ['pending', 'debt'])
+                    $query->whereIn('status', [BalanceStudentStatusEnum::Pending->value, BalanceStudentStatusEnum::Debt->value])
                         ->with('schoolLapse')
                         ->latest(); // Ordenar por fecha de creación (el más nuevo primero)
-                }
+                },
             ])
             ->get()
             ->map(function ($student) {
@@ -250,6 +251,7 @@ class StudentService
                 if ($student->balances->isEmpty()) {
                     $student->setRelation('balances', $student->balances()->latest()->take(1)->get());
                 }
+
                 return $student;
             });
 

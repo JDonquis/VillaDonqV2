@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\BalanceStudentStatusEnum;
 use App\Models\BalancePayment;
 use App\Models\BalanceStudent;
 use App\Models\Payment;
@@ -27,13 +28,13 @@ class BalanceService
     public function updateStudentBalance(Payment $payment, Student $student): void
     {
         $balance = BalanceStudent::where('student_id', $student->id)
-            ->where('status', 'in_debt')
+            ->where('status', BalanceStudentStatusEnum::Debt->value)
             ->orderBy('id', 'asc')
             ->first();
 
         if (! $balance) {
             $balance = BalanceStudent::where('student_id', $student->id)
-                ->where('status', 'pending')
+                ->where('status', BalanceStudentStatusEnum::Pending->value)
                 ->orderBy('id', 'asc')
                 ->first();
         }
@@ -51,7 +52,7 @@ class BalanceService
         }
 
         if ($monthToPay === null) {
-            $balance->update(['status' => 'paid']);
+            $balance->update(['status' => BalanceStudentStatusEnum::Paid->value]);
 
             return;
         }
@@ -62,9 +63,22 @@ class BalanceService
             ->pivot->amount_in_dolars;
 
         $balance->$monthToPay += $amount;
+
+        $monthValue = $balance->$monthToPay;
+
+        $newMonthStatus = match (true) {
+            $monthValue == 0 => BalanceStudentStatusEnum::Paid->value,
+            $monthValue < 0 => BalanceStudentStatusEnum::Debt->value,
+            default => BalanceStudentStatusEnum::PartiallyPaid->value,
+        };
+
+        $balance->{$monthToPay.'_status'} = $newMonthStatus;
+
+        $this->updateGeneralStatus($balance);
+
         $balance->save();
 
-        $balancePayment = new BalancePayment();
+        $balancePayment = new BalancePayment;
         $balancePayment->payment_id = $payment->id;
         $balancePayment->balance_student_id = $balance->id;
         $balancePayment->amount = $amount;
@@ -88,7 +102,34 @@ class BalanceService
         $month = $balancePayment->month;
         $balance->$month -= $balancePayment->amount;
 
+        $monthValue = $balance->$month;
+
+        $balance->{$month.'_status'} = match (true) {
+            $monthValue == 0 => BalanceStudentStatusEnum::Paid->value,
+            $monthValue < 0 => BalanceStudentStatusEnum::Debt->value,
+            default => BalanceStudentStatusEnum::PartiallyPaid->value,
+        };
+
+        $this->updateGeneralStatus($balance);
+
         $balance->save();
         $balancePayment->delete();
+    }
+
+    private function updateGeneralStatus(BalanceStudent $balance): void
+    {
+        $allPaid = true;
+
+        foreach (self::MONTH_ORDER as $month) {
+            $statusField = $month.'_status';
+            if (BalanceStudentStatusEnum::Paid->value !== $balance->$statusField) {
+                $allPaid = false;
+                break;
+            }
+        }
+
+        $balance->status = $allPaid
+            ? BalanceStudentStatusEnum::Paid->value
+            : BalanceStudentStatusEnum::Debt->value;
     }
 }

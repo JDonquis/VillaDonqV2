@@ -2,16 +2,14 @@
 
 namespace App\Listeners;
 
-use Carbon\Carbon;
+use App\Enums\BalanceStudentStatusEnum;
 use App\Models\MainConfig;
 use App\Models\SchoolLapse;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class GenerateBalance
 {
-
     private $months = [
         'september' => 0,
         'october' => 0,
@@ -26,6 +24,8 @@ class GenerateBalance
         'july' => 0,
         'august' => 0,
     ];
+
+    private $monthStatuses = [];
 
     public function __construct()
     {
@@ -47,14 +47,17 @@ class GenerateBalance
         $setValue = false;
 
         foreach ($this->months as $monthName => $value) {
-            if ($monthName == $currentMonthName)
+            if ($monthName == $currentMonthName) {
                 $setValue = true;
-
-            if ($setValue) {
+                $this->monthStatuses[$monthName] = BalanceStudentStatusEnum::Debt->value;
                 $this->months[$monthName] = $this->months[$monthName] - $configData->monthly_payment;
+            } elseif ($setValue) {
+                $this->monthStatuses[$monthName] = BalanceStudentStatusEnum::Pending->value;
+                $this->months[$monthName] = $this->months[$monthName] - $configData->monthly_payment;
+            } else {
+                $this->monthStatuses[$monthName] = BalanceStudentStatusEnum::Paid->value;
             }
         }
-
 
         DB::table('balance_students')->insert(
             [
@@ -62,17 +65,29 @@ class GenerateBalance
                 'school_lapse_id' => $schoolLapseActive->id,
                 'inscription' => -$configData->new_inscription_price,
                 'august' => $this->months['august'],
+                'august_status' => $this->monthStatuses['august'],
                 'september' => $this->months['september'],
+                'september_status' => $this->monthStatuses['september'],
                 'october' => $this->months['october'],
+                'october_status' => $this->monthStatuses['october'],
                 'november' => $this->months['november'],
+                'november_status' => $this->monthStatuses['november'],
                 'december' => $this->months['december'],
+                'december_status' => $this->monthStatuses['december'],
                 'january' => $this->months['january'],
+                'january_status' => $this->monthStatuses['january'],
                 'february' => $this->months['february'],
+                'february_status' => $this->monthStatuses['february'],
                 'march' => $this->months['march'],
+                'march_status' => $this->monthStatuses['march'],
                 'april' => $this->months['april'],
+                'april_status' => $this->monthStatuses['april'],
                 'may' => $this->months['may'],
+                'may_status' => $this->monthStatuses['may'],
                 'june' => $this->months['june'],
+                'june_status' => $this->monthStatuses['june'],
                 'july' => $this->months['july'],
+                'july_status' => $this->monthStatuses['july'],
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
 
