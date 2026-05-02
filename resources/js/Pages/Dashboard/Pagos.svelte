@@ -222,7 +222,7 @@
         action=""
         class="w-full grid md:grid-cols-12 md:gap-x-5 px-5"
     >
-        <div class="col-span-8 relative mx-auto text-center w-full">
+        <div class="col-span-8 relative mx-auto text-left w-full">
             <!-- <Input
                 type="text"
                 required={true}
@@ -279,6 +279,7 @@
                                                 " " +
                                                 student.representative.user
                                                     .last_name,
+                                            balances: student.balances
                                         },
                                     ];
                                 }
@@ -303,7 +304,7 @@
 
             <table
                 id="selected_student"
-                class={`${$form.students.length > 0 ? "block" : "hidden"}  w-full font-semibold relative  bg-background  text-sm overflow-hidden mt-5`}
+                class={`${$form.students.length > 0 ? "block" : "hidden"}  w-full font-semibold relative    text-sm overflow-hidden mt-5`}
             >
                 <thead class="[&_*]:px-4 [&_*]:py-2 [&_*]:text-left">
                     <tr>
@@ -319,7 +320,7 @@
                 <tbody>
                     {#each $form.students as student, i}
                         <tr
-                            class={` w-full [&_*]:px-4 [&_*]:py-2 text-base cursor-pointer  border-gray-500`}
+                            class={` w-full [&_*]:px-4 [&_*]:py-2 text-sm cursor-pointer  border-gray-500`}
                         >
                             <td>
                                 <input
@@ -352,12 +353,12 @@
                                     }}
                                 />
                             </td>
-                            <td class="w-40">
+                            <td class="w-36">
                                 <input
                                     type="number"
                                     min="0"
                                     step="0.01"
-                                    class="w-full border-3 p-1 border-black small-shadow focus:outline-0"
+                                    class="w-full border-3 p-0.5 border-black small-shadow focus:outline-0"
                                     value={student.amount_in_bs || ""}
                                     on:input={(e) => {
                                         $form.students[i] = {
@@ -408,8 +409,8 @@
                             </td>
                         </tr>
                         <tr>
-                        <td colspan="7">
-                            <BalanceBar balances={balances} amountToPay={student.amount_in_dolars } />
+                        <td colspan="7" class="px-3">
+                            <BalanceBar balances={student.balances} amountToPay={student.amount_in_dolars } />
 
                         </td>
                         </tr>
