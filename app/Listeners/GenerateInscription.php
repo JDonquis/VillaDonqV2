@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Models\Inscription;
 use App\Models\SchoolLapse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Queue\InteractsWithQueue;
@@ -23,9 +24,11 @@ class GenerateInscription
     public function handle(object $event): void
     {
         $student = $event->student;
-        $schoolLapseActive = SchoolLapse::where('status',1)->first();
+        $schoolLapseActive = SchoolLapse::where('status', 1)->first();
 
-        DB::table('inscriptions')->insert(['school_lapse_id' => $schoolLapseActive->id, 'student_id' => $student->id]);
-
+        Inscription::create([
+            'school_lapse_id' => $schoolLapseActive->id,
+            'student_id' => $student->id,
+        ]);
     }
 }
