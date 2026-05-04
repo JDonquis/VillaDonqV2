@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateStudentRequest;
+use App\Http\Requests\ReEnrollStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Http\Resources\CourseSectionCollection;
 use App\Models\Course;
@@ -111,6 +112,25 @@ class StudentController extends Controller
             Log::error('Error al eliminar estudiante ID ' . $studentId . ': ' . $e->getMessage());
 
             return redirect('/dashboard/matricula')->withErrors(['message' => 'Ha ocurrido un error al eliminar el estudiante. Por favor, intente más tarde.']);
+        }
+    }
+
+    public function reEnrollment(ReEnrollStudentRequest $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $this->studentService->reEnroll($request->validated());
+
+            DB::commit();
+
+            return redirect('/dashboard/matricula');
+        } catch (Exception $e) {
+            DB::rollback();
+
+            Log::error('Error al reinscribir estudiante ID ' . $request->student_id . ': ' . $e->getMessage());
+
+            return redirect('/dashboard/matricula')->withErrors(['message' => 'Ha ocurrido un error al reinscribir el estudiante. Por favor, intente más tarde.']);
         }
     }
 

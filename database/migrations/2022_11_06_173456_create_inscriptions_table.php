@@ -17,8 +17,7 @@ class CreateInscriptionsTable extends Migration
             $table->id();
             $table->foreignId('school_lapse_id')->constrained()->onDelete('restrict')->onUpdate('restrict');
             $table->foreignId('student_id')->constrained()->onDelete('restrict')->onUpdate('restrict');
-
-
+            $table->timestamps();
         });
     }
 

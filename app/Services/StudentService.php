@@ -4,10 +4,13 @@ namespace App\Services;
 
 use App\Enums\BalanceStudentStatusEnum;
 use App\Enums\UserTypeEnum;
+use App\Events\ReEnrollEvent;
 use App\Events\StudentCreated;
 use App\Events\StudentUpdated;
 use App\Http\Resources\StudentCollection;
+use App\Models\Inscription;
 use App\Models\Representative;
+use App\Models\SchoolLapse;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -67,6 +70,36 @@ class StudentService
         // $this->createDocuments($request,$student->id);
 
         event(new StudentCreated($student));
+
+        return 0;
+    }
+
+    public function reEnroll($data)
+    {
+        $student = Student::where('id', $data['student_id'])->first();
+
+        if (! isset($student->id)) {
+            throw new \Exception('Estudiante no encontrado');
+        }
+
+        $latestInscription = Inscription::where('student_id', $student->id)->latest()->first();
+
+        $schoolLapse = SchoolLapse::where('id', $latestInscription->school_lapse_id)->first();
+
+        if ($schoolLapse->status != 0) {
+            throw new \Exception('No se puede reinscribir al estudiante porque el período escolar actual no está cerrado.');
+        }
+
+        $previousCourseId = $student->course_id;
+
+        $student->update([
+            'course_id' => $data['course_id'],
+            'section_id' => $data['section_id'],
+        ]);
+
+        $student->load('representative.user', 'course', 'section');
+
+        event(new ReEnrollEvent($student));
 
         return 0;
     }
