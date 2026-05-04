@@ -18,6 +18,23 @@
         search: new URLSearchParams($page.url.split('?')[1] || '').get('search') || '',
         ...serverSideData.filters,
     };
+    
+    // Inicializar arrays para multiselect
+    $: if (filtersOptions && typeof filtersOptions === 'object') {
+        Object.entries(filtersOptions).forEach(([key, option]) => {
+            if (option.type === 'multiselect' && !filterClientData[key]) {
+                // Verificar si ya viene del servidor como array
+                const urlParams = new URLSearchParams($page.url.split('?')[1] || '');
+                if (urlParams.has(key + '[]')) {
+                    filterClientData[key] = urlParams.getAll(key + '[]');
+                } else if (urlParams.has(key)) {
+                    filterClientData[key] = [urlParams.get(key)];
+                } else {
+                    filterClientData[key] = [];
+                }
+            }
+        });
+    }
 
     let buttonPosition = { top: '-100px', left: 'auto' };
 
@@ -69,11 +86,39 @@
     }
 
     const handleFilters = () => {
-        router.get(`${$page.url}`, filterClientData, { preserveState: true, replace: true });
+        // Procesar arrays para URL
+        const params = { ...filterClientData };
+        Object.keys(params).forEach(key => {
+            if (Array.isArray(params[key])) {
+                const arr = params[key];
+                delete params[key];
+                arr.forEach(value => {
+                    if (!params[key + '[]']) {
+                        params[key + '[]'] = [];
+                    }
+                    params[key + '[]'].push(value);
+                });
+            }
+        });
+        router.get(`${$page.url.split('?')[0]}`, params, { preserveState: true, replace: true });
     };
 
     const handleSearch = debounce(() => {
-        router.get(`${$page.url}`, filterClientData, { preserveState: true, replace: true });
+        // Procesar arrays para URL
+        const params = { ...filterClientData };
+        Object.keys(params).forEach(key => {
+            if (Array.isArray(params[key])) {
+                const arr = params[key];
+                delete params[key];
+                arr.forEach(value => {
+                    if (!params[key + '[]']) {
+                        params[key + '[]'] = [];
+                    }
+                    params[key + '[]'].push(value);
+                });
+            }
+        });
+        router.get(`${$page.url.split('?')[0]}`, params, { preserveState: true, replace: true });
     }, 300);
 </script>
 

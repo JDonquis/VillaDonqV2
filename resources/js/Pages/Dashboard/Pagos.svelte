@@ -10,8 +10,9 @@
     import debounce from "lodash/debounce";
     import ColorsPayMethods from "../../components/ColorsPayMethods";
     import BalanceBar from "../../components/BalanceBar.svelte";
+    import Search from "../../components/Search.svelte";
     export let data = { students: { data: [] }, accounts: { data: [] } };
-   
+
     const balances = [
         {
             id: 58,
@@ -55,7 +56,7 @@
             },
         },
     ];
-   
+
     export let searched_students = [];
     let isSearchTableOpen = false;
     let searchInputRef;
@@ -279,7 +280,7 @@
                                                 " " +
                                                 student.representative.user
                                                     .last_name,
-                                            balances: student.balances
+                                            balances: student.balances,
                                         },
                                     ];
                                 }
@@ -409,10 +410,12 @@
                             </td>
                         </tr>
                         <tr>
-                        <td colspan="7" class="px-3">
-                            <BalanceBar balances={student.balances} amountToPay={student.amount_in_dolars } />
-
-                        </td>
+                            <td colspan="7" class="px-3">
+                                <BalanceBar
+                                    balances={student.balances}
+                                    amountToPay={student.amount_in_dolars}
+                                />
+                            </td>
                         </tr>
                     {/each}
                 </tbody>
@@ -512,6 +515,27 @@
     </p>
 </div>
 
+<Search
+    filtersOptions={{
+        date: {
+            type: "date",
+            label: "Fecha de ingreso",
+        },
+        account_payment_id: {
+            type: "multiselect",
+            label: "Método de pago",
+            options: data.accounts.data.map((account) => ({
+                id: account.id,
+                name: [
+                    account.payment_method_name,
+                    account?.bank || '',
+                    account?.cash_currency || '',
+                    account?.username || ''
+                ].filter(Boolean).join(' '),
+            })),
+        }
+    }}
+/>
 
 <Table
     {selectedRow}
