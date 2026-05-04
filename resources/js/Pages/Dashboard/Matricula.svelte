@@ -335,6 +335,7 @@
                 label={"Año escolar"}
                 bind:value={$form.course_id}
                 error={$form.errors?.course_id}
+                disabled={submitStatus == "Editar"}
             >
                 {#each data.courses as course}
                     <option value={course.id}>{course.name}</option>
@@ -544,7 +545,7 @@
                 width="24"
                 height="24"
             />
-            <span> {submitStatus === "Crear" ? "Crear" : "Actualizar"} </span>
+            <span> {submitStatus === "Crear" ? "Crear" : "Editar"} </span>
         {/if}
     </button>
 </Modal>

@@ -14,6 +14,7 @@
     export let name = "";
 
     export let error = false;
+    export let disabled = false
 </script>
 
 <div class={`text-left w-full mt-5 ${classes} `}>
@@ -42,6 +43,7 @@
                 on:change
                 on:input
                 {readonly}
+                {disabled}
             >
                 <slot></slot>
             </select>
