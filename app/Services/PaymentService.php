@@ -33,8 +33,17 @@ class PaymentService
                         });
                 });
             })
-            ->when(isset($params['date']), function ($q) use ($params) {
-                $q->whereDate('date', $params['date']);
+            ->when(isset($params['start_date']), function ($q) use ($params) {
+                $startDate = is_numeric($params['start_date'])
+                    ? date('Y-m-d', $params['start_date'] / 1000)
+                    : $params['start_date'];
+                $q->whereDate('date', '>=', $startDate);
+            })
+            ->when(isset($params['end_date']), function ($q) use ($params) {
+                $endDate = is_numeric($params['end_date'])
+                    ? date('Y-m-d', $params['end_date'] / 1000)
+                    : $params['end_date'];
+                $q->whereDate('date', '<=', $endDate);
             })
             ->when(isset($params['account_payment_id']), function ($q) use ($params) {
                 $accountPaymentIds = is_array($params['account_payment_id'])
