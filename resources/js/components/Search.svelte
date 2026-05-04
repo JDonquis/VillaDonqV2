@@ -4,31 +4,50 @@
     import Modal from "./Modal.svelte";
     import DateRange from "../components/DateRange.svelte";
 
-    let search;
+    const parseUrlFilters = () => {
+        const params = new URLSearchParams($page.url.split("?")[1] || "");
+        const filters = {};
+
+        for (const [key, value] of params.entries()) {
+            if (key.endsWith("[]")) {
+                const baseKey = key.replace(/\[\]$/, "");
+                if (!filters[baseKey]) {
+                    filters[baseKey] = [];
+                }
+                filters[baseKey].push(value);
+            } else {
+                filters[key] = value;
+            }
+        }
+
+        return filters;
+    };
+
+    let initialUrlFilters = parseUrlFilters();
+    let search = $page.props.filters?.search || initialUrlFilters.search || "";
 
     const handleSearch = debounce((event) => {
-        router.get(
-            `${$page.url}`,
-            { search, page: "1" },
-            { preserveState: true },
-        );
+        router.get(`${$page.url.split("?")[0]}`, { search, page: "1" }, { preserveState: true });
     }, 300);
 
     let showModal = false;
-    let showMultiSelect = {};
     export let filtersOptions = false;
     export let allowSearch = true;
-    $: console.log({ filtersOptions });
     let isFilterAply = false;
     let firstTime = true;
-    let filterClientData;
-    $: {
-        filterClientData = { ...$page.props.filters };
-        isFilterAply = Object.keys(filterClientData).some(
-            (value) => value != "search" && value != "page",
-        );
-        console.log(Object.keys(filterClientData));
+    let filterClientData = { ...initialUrlFilters, ...$page.props.filters };
+    let isFilterDataInitialized = false;
+
+    $: if (!isFilterDataInitialized) {
+        filterClientData = { ...initialUrlFilters, ...$page.props.filters };
+        isFilterDataInitialized = true;
     }
+
+    $: isFilterAply = Object.keys(filterClientData).some(
+        (value) => value != "search" && value != "page"
+    );
+    $: console.log(Object.keys(filterClientData));
+
     const changeDateFilter = (args) => {
         filterClientData = {
             ...filterClientData,
@@ -38,49 +57,16 @@
         handleFilters();
     };
 
-    function toggleMultiSelect(filterKey, optionId) {
-        if (!filterClientData[filterKey]) {
-            filterClientData[filterKey] = [];
-        }
-
-        const index = filterClientData[filterKey].indexOf(optionId);
-        if (index > -1) {
-            filterClientData[filterKey] = filterClientData[filterKey].filter(
-                (id) => id != optionId,
-            );
-        } else {
-            filterClientData[filterKey] = [
-                ...filterClientData[filterKey],
-                optionId,
-            ];
-        }
-
-        // Si no hay elementos seleccionados, eliminar la clave
-        if (filterClientData[filterKey].length === 0) {
-            delete filterClientData[filterKey];
-        }
-
-        handleFilters();
-    }
-
-    function removeMultiSelect(filterKey, optionId) {
-        if (filterClientData[filterKey]) {
-            filterClientData[filterKey] = filterClientData[filterKey].filter(
-                (id) => id != optionId,
-            );
-            if (filterClientData[filterKey].length === 0) {
-                delete filterClientData[filterKey];
-            }
-            handleFilters();
-        }
-    }
 
     const handleFilters = () => {
         firstTime = false;
         router.get(`${$page.url.split("?")[0]}`, filterClientData, {
             preserveState: true,
+            preserveScroll: true,
         });
     };
+
+    console.log(filterClientData)
 </script>
 
 <div
@@ -138,7 +124,11 @@
     {/if}
 </div>
 
-<Modal bind:showModal classes={"w-5/6 h-full"} showCancelButton={false}>
+<Modal
+    bind:showModal
+    classes={"max-w-[960px] h-full"}
+    showCancelButton={false}
+>
     <p slot="header" class="opacity-60">Filtros de busqueda</p>
     <div class="grid grid-cols-1 h-full md:grid-cols-3 gap-5 md:gap-10">
         {#each Object.entries(filtersOptions) as [filterKey, filterOption] (filterKey)}
@@ -167,81 +157,9 @@
                             }
                         }}
                     />
-                {:else if filterOption.type === "multiselect"}
-                    <div class="relative">
-                        <!-- Selected tags display -->
-                        <div
-                            class="flex flex-wrap gap-1 p-2 border rounded bg-gray-200 min-h-[36px] cursor-pointer items-center"
-                            on:click={() =>
-                                (showMultiSelect[filterKey] =
-                                    !showMultiSelect[filterKey])}
-                        >
-                            {#if filterClientData?.[filterKey]?.length > 0}
-                                {#each filterClientData[filterKey] as selectedId}
-                                    {@const selected =
-                                        filterOption.options.find(
-                                            (o) => o.id == selectedId,
-                                        )}
-                                    <span
-                                        class="bg-yellow px-2 py-1 rounded-full text-xs flex items-center gap-1"
-                                    >
-                                        {selected?.name}
-                                        <button
-                                            on:click|stopPropagation={() =>
-                                                removeMultiSelect(
-                                                    filterKey,
-                                                    selectedId,
-                                                )}
-                                            class="hover:text-red font-bold"
-                                            >×</button
-                                        >
-                                    </span>
-                                {/each}
-                            {:else}
-                                <span class="text-gray-500 text-sm pl-2"
-                                    >Seleccionar...</span
-                                >
-                            {/if}
-                            <iconify-icon
-                                icon={showMultiSelect[filterKey]
-                                    ? "mdi:chevron-up"
-                                    : "mdi:chevron-down"}
-                                class="ml-auto text-gray-500"
-                                width="16"
-                                height="16"
-                            ></iconify-icon>
-                        </div>
-
-                        <!-- Dropdown -->
-                        {#if showMultiSelect[filterKey]}
-                            <div
-                                class="absolute top-full left-0 z-50 bg-white border shadow-lg max-h-40 overflow-y-auto w-full mt-1"
-                            >
-                                {#each filterOption.options as option}
-                                    <div
-                                        class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
-                                        on:click|stopPropagation={() =>
-                                            toggleMultiSelect(
-                                                filterKey,
-                                                option.id,
-                                            )}
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            checked={filterClientData[
-                                                filterKey
-                                            ]?.includes(option.id) || false}
-                                            readonly
-                                            class="cursor-pointer"
-                                        />
-                                        {option.name}
-                                    </div>
-                                {/each}
-                            </div>
-                        {/if}
-                    </div>
                 {:else if filterOption.type === "select"}
                     <select
+                        value={filterClientData?.[filterKey] ?? "todos"}
                         on:change={(e) => {
                             if (e.target.value == "todos") {
                                 delete filterClientData[filterKey];
@@ -264,11 +182,8 @@
                         {/each}
                     </select>
                 {:else if filterOption.type === "date"}
-                    <DateRange
-                        startDate={Number(filterClientData?.start_date)}
-                        endDate={Number(filterClientData?.end_date)}
-                        on:changeDateFilter={changeDateFilter}
-                    />
+                    <DateRange  startDate={Number(filterClientData?.start_date)}
+                    endDate={Number(filterClientData?.end_date)} on:changeDateFilter={changeDateFilter} />
                 {:else}
                     {#each filterOption.options as filter, i (filter.id)}
                         <button

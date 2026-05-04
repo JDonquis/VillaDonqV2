@@ -22,14 +22,13 @@
     // Inicializar arrays para multiselect
     $: if (filtersOptions && typeof filtersOptions === 'object') {
         Object.entries(filtersOptions).forEach(([key, option]) => {
-            if (option.type === 'multiselect' && !filterClientData[key]) {
-                // Verificar si ya viene del servidor como array
+            if (option.type === 'multiselect') {
                 const urlParams = new URLSearchParams($page.url.split('?')[1] || '');
                 if (urlParams.has(key + '[]')) {
                     filterClientData[key] = urlParams.getAll(key + '[]');
                 } else if (urlParams.has(key)) {
                     filterClientData[key] = [urlParams.get(key)];
-                } else {
+                } else if (!filterClientData[key]) {
                     filterClientData[key] = [];
                 }
             }
@@ -82,40 +81,56 @@
         if (typeof localStorage !== 'undefined') {
             localStorage.setItem(perPageKey, newPerPage);
         }
-        router.get($page.url, { ...filterClientData, per_page: newPerPage }, { preserveState: true });
-    }
-
-    const handleFilters = () => {
-        // Procesar arrays para URL
-        const params = { ...filterClientData };
+        const params = { ...filterClientData, per_page: newPerPage };
+        // Remover arrays del params principal
         Object.keys(params).forEach(key => {
             if (Array.isArray(params[key])) {
-                const arr = params[key];
                 delete params[key];
-                arr.forEach(value => {
-                    if (!params[key + '[]']) {
-                        params[key + '[]'] = [];
-                    }
-                    params[key + '[]'].push(value);
-                });
             }
         });
-        router.get(`${$page.url.split('?')[0]}`, params, { preserveState: true, replace: true });
-    };
+        // Agregar arrays como key[]
+        Object.keys(filterClientData).forEach(key => {
+            if (Array.isArray(filterClientData[key])) {
+                params[key + '[]'] = filterClientData[key];
+            }
+        });
+        router.get($page.url.split('?')[0], params, { preserveState: true });
+    }
 
-    const handleSearch = debounce(() => {
-        // Procesar arrays para URL
+    function handleFilters() {
         const params = { ...filterClientData };
+        // Procesar arrays: convertir key[] del servidor a arrays
+        const urlParams = new URLSearchParams($page.url.split('?')[1] || '');
+        
+        // Limpiar arrays existentes en params
         Object.keys(params).forEach(key => {
             if (Array.isArray(params[key])) {
-                const arr = params[key];
                 delete params[key];
-                arr.forEach(value => {
-                    if (!params[key + '[]']) {
-                        params[key + '[]'] = [];
-                    }
-                    params[key + '[]'].push(value);
-                });
+            }
+        });
+        
+        // Agregar arrays como key[]
+        Object.keys(filterClientData).forEach(key => {
+            if (Array.isArray(filterClientData[key]) && filterClientData[key].length > 0) {
+                params[key + '[]'] = filterClientData[key];
+            }
+        });
+        
+        router.get(`${$page.url.split('?')[0]}`, params, { preserveState: true, replace: true });
+    }
+
+    const handleSearch = debounce(() => {
+        const params = { ...filterClientData };
+        // Remover arrays del params principal
+        Object.keys(params).forEach(key => {
+            if (Array.isArray(params[key])) {
+                delete params[key];
+            }
+        });
+        // Agregar arrays como key[]
+        Object.keys(filterClientData).forEach(key => {
+            if (Array.isArray(filterClientData[key])) {
+                params[key + '[]'] = filterClientData[key];
             }
         });
         router.get(`${$page.url.split('?')[0]}`, params, { preserveState: true, replace: true });

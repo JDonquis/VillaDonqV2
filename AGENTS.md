@@ -1,9 +1,30 @@
-Yes — Install dependencies: run `composer install` and `yarn install` as per README.
-Yes — Prepare env: copy `.env.example` to `.env` and generate app key with `php artisan key:generate`.
-Yes — Configure environment: ensure DB and other env vars are set before migrating.
-Yes — Initialize database: run `php artisan migrate` (seed if needed) to create schema.
-Yes — Build frontend: run `yarn run build` (after dependencies install).
-Yes — Run local server: start with `php artisan serve` and access at http://localhost:8000.
-Yes — Validate routes and entrypoints: review routes/web.php for the app’s main flow (login, dashboard, modules).
-Yes — Run tests: execute `vendor/bin/phpunit` or `php artisan test`.
-Yes — Use the controller/routes structure to plan changes: major endpoints live in routes/web.php and controllers under app/Http/Controllers.
+# AGENTS.md — VillaDonq V2
+
+Laravel 10 + Inertia.js + Svelte 4 + Vite + Tailwind CSS
+
+## Commands
+
+```bash
+composer install          # PHP deps
+yarn install              # Node deps (yarn, not npm)
+php artisan key:generate  # after copying .env
+yarn run build            # production assets (Vite)
+yarn run dev              # dev with HMR
+php artisan serve         # http://localhost:8000
+php artisan migrate       # DB setup (MySQL default)
+vendor/bin/phpunit        # or: php artisan test
+```
+
+## Architecture
+
+- **Inertia + Svelte**: not Blade — pages are `.svelte` files in `resources/js/Pages/`, served via Inertia responses from controllers
+- **Entrypoints**: `resources/js/app.js`, `resources/css/app.css` (Vite config)
+- **Routes**: `routes/web.php` — all dashboard routes wrapped in `auth` middleware
+- **Controllers**: `app/Http/Controllers/` — main modules: Auth, User (personal), Student (matrícula), Payment, Section, MainConfig
+
+## Gotchas
+
+- `Payment` model uses `PaymentObserver` (registered in `AppServiceProvider`) — side effects on create/update/delete
+- Test env uses `array` cache/mail, `sync` queue (see `phpunit.xml`)
+- SQLite available for testing: uncomment `DB_CONNECTION=sqlite` + `DB_DATABASE=:memory:` in phpunit.xml
+- Routes and Svelte pages are in Spanish (e.g., `/dashboard/matricula`, `Matricula.svelte`)

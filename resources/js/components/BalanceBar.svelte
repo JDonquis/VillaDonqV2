@@ -1,6 +1,5 @@
 <script>
-
-    $: console.log(balances);
+    export let balances;
     const months = {
         sep: "september",
         oct: "october",

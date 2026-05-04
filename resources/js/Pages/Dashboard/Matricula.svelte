@@ -593,6 +593,7 @@
     on:clickDeleteIcon={() => {
         handleDelete(selectedRow.data.student_id);
     }}
+    otherSelectOptions={[{}]}
     serverSideData={{ filters: data.filters }}
     filtersOptions={{ section_id: sectionsOfThisYear }}
     pagination={false}

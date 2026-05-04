@@ -523,7 +523,7 @@
             label: "Fecha de ingreso",
         },
         account_payment_id: {
-            type: "multiselect",
+            type: "select",
             label: "Método de pago",
             options: data.accounts.data.map((account) => ({
                 id: account.id,

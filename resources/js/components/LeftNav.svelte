@@ -29,7 +29,6 @@
             name: "Personal",
         },
     ];
-    console.log($page);
 </script>
 
 <nav
