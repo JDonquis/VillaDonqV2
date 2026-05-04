@@ -26,12 +26,13 @@ class PaymentController extends Controller
     {
         $prices = $this->mainConfigService->getPrices();
         $accounts  = $this->mainConfigService->getAccounts();
-        $payments = $this->paymentService->getAll($request->all());
+        $result = $this->paymentService->getAll($request->all());
         return inertia('Dashboard/Pagos', ['data' =>
         [
             'accounts' => $accounts,
-            'payments' => $payments,
+            'payments' => $result['payments'],
             'prices' => $prices,
+            'total_income' => $result['total_income'],
         ]]);
     }
 
