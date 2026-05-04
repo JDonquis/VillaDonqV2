@@ -22,11 +22,11 @@ class PaymentController extends Controller
         $this->paymentService = new PaymentService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $prices = $this->mainConfigService->getPrices();
         $accounts  = $this->mainConfigService->getAccounts();
-        $payments = $this->paymentService->getAll();
+        $payments = $this->paymentService->getAll($request->all());
         return inertia('Dashboard/Pagos', ['data' =>
         [
             'accounts' => $accounts,
