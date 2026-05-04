@@ -13,6 +13,7 @@
     import Search from "../../components/Search.svelte";
     export let data = { students: { data: [] }, accounts: { data: [] } };
 
+<<<<<<< HEAD
     const balances = [
         {
             id: 58,
@@ -56,6 +57,51 @@
             },
         },
     ];
+=======
+    // const balances = [
+    //     {
+    //         id: 58,
+    //         student_id: 58,
+    //         status: "pending",
+    //         inscription: -50,
+    //         january: 0,
+    //         january_status: "paid",
+    //         february: 0,
+    //         february_status: "paid",
+    //         march: -30,
+    //         march_status: "partially_paid",
+    //         april: -50,
+    //         april_status: "debt",
+    //         may: -50,
+    //         may_status: "pending",
+    //         june: -50,
+    //         june_status: "pending",
+    //         july: -50,
+    //         july_status: "pending",
+    //         august: -50,
+    //         august_status: "pending",
+    //         september: 0,
+    //         september_status: "paid",
+    //         october: 0,
+    //         october_status: "paid",
+    //         november: 0,
+    //         november_status: "paid",
+    //         december: 0,
+    //         december_status: "paid",
+    //         school_lapse_id: 1,
+    //         created_at: "2026-04-27T19:59:49.000000Z",
+    //         updated_at: "2026-04-27T19:59:49.000000Z",
+    //         school_lapse: {
+    //             id: 1,
+    //             start: "2026-09-01",
+    //             end: "2027-08-31",
+    //             status: 1,
+    //             created_at: "2026-04-27 19:59:43",
+    //             updated_at: "2026-04-27 19:59:43",
+    //         },
+    //     },
+    // ];
+>>>>>>> 325f8d08a50001ee75adcb768071d28ae14646e8
 
     export let searched_students = [];
     let isSearchTableOpen = false;
@@ -270,6 +316,7 @@
                                         {
                                             id: student.id,
                                             name: student.name,
+                                            balances: student.balances || [],
                                             last_name: student.last_name,
                                             ci: student.ci,
                                             course_name: student.course.name,
@@ -515,6 +562,7 @@
     </p>
 </div>
 
+<<<<<<< HEAD
 <Search
     filtersOptions={{
         date: {
@@ -537,6 +585,8 @@
     }}
 />
 
+=======
+>>>>>>> 325f8d08a50001ee75adcb768071d28ae14646e8
 <Table
     {selectedRow}
     serverSideData={data?.payments}

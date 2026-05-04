@@ -9,9 +9,45 @@ use Illuminate\Support\Facades\Auth;
 
 class PaymentService
 {
-    public function getAll()
+    public function getAll($params = [])
     {
-        return Payment::query()->with('students', 'accountPayment.method', 'user', 'deletedBy')->paginate(25)->withQueryString();
+        $query = Payment::query()
+            ->with('students', 'accountPayment.method', 'user', 'deletedBy')
+            ->when(isset($params['search']), function ($q) use ($params) {
+                $search = $params['search'];
+                $q->where(function ($query) use ($search) {
+                    $query->where('reference', 'like', '%' . $search . '%')
+                        ->orWhere('observations', 'like', '%' . $search . '%')
+                        ->orWhereHas('user', function ($q) use ($search) {
+                            $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%'])
+                                ->orWhere('name', 'like', '%' . $search . '%')
+                                ->orWhere('last_name', 'like', '%' . $search . '%');
+                        })
+                        ->orWhereHas('accountPayment.method', function ($q) use ($search) {
+                            $q->where('name', 'like', '%' . $search . '%');
+                        })
+                        ->orWhereHas('students', function ($q) use ($search) {
+                            $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%'])
+                                ->orWhere('name', 'like', '%' . $search . '%')
+                                ->orWhere('last_name', 'like', '%' . $search . '%');
+                        });
+                });
+            })
+            ->when(isset($params['date']), function ($q) use ($params) {
+                $q->whereDate('date', $params['date']);
+            })
+            ->when(isset($params['account_payment_id']), function ($q) use ($params) {
+                $q->where('account_payment_id', $params['account_payment_id']);
+            });
+
+        $totalIncome = (clone $query)->sum('total_in_dolars');
+
+        $payments = $query->paginate($params['per_page'] ?? 25)->withQueryString();
+
+        return [
+            'payments' => $payments,
+            'total_income' => $totalIncome
+        ];
     }
 
     public function create(array $data): Payment
