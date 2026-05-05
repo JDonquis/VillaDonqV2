@@ -136,7 +136,7 @@
             console.log(balances[endYearIndex].inscription);
             console.log(endYearIndex, startMonth);
             if (
-                startMonth == 0 &&
+                endMonthIndex == 0 &&
                 balances[endYearIndex].inscription < 0
             ) {
                 console.log("inscripción se debe!", amountToPay)
