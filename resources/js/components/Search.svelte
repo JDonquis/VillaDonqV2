@@ -3,6 +3,7 @@
     import debounce from "lodash/debounce";
     import Modal from "./Modal.svelte";
     import DateRange from "../components/DateRange.svelte";
+    import { filter } from "lodash";
 
     const parseUrlFilters = () => {
         const params = new URLSearchParams($page.url.split("?")[1] || "");
@@ -44,9 +45,12 @@
     }
 
     $: isFilterAply = Object.keys(filterClientData).some(
-        (value) => value != "search" && value != "page"
+        (value) => {
+            console.log(filterClientData[value])
+           return  value != "search" && value != "page" && filterClientData[value] != "todos"
+        } 
+        
     );
-    $: console.log(Object.keys(filterClientData));
 
     const changeDateFilter = (args) => {
         filterClientData = {
@@ -159,12 +163,11 @@
                     />
                 {:else if filterOption.type === "select"}
                     <select
-                        value={filterClientData?.[filterKey] ?? "todos"}
+                        bind:value={filterClientData[filterKey]}
                         on:change={(e) => {
-                            if (e.target.value == "todos") {
+                            const selectedValue = e.target.value;
+                            if (selectedValue == "todos") {
                                 delete filterClientData[filterKey];
-                            } else {
-                                filterClientData[filterKey] = e.target.value;
                             }
                             handleFilters();
                         }}
@@ -175,9 +178,8 @@
                         <option value="todos">Todos</option>
                         {#each filterOption.options as filter, i (filter.id)}
                             <option
-                                selected={filterClientData?.[filterKey] ==
-                                    filter.id}
-                                value={filter.id}>{filter.name}</option
+                                selected={String(filterClientData?.[filterKey]) === String(filter.id)}
+                                value={String(filter.id)}>{filter.name}</option
                             >
                         {/each}
                     </select>
