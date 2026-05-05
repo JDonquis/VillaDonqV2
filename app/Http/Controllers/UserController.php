@@ -6,7 +6,9 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Services\LoginService;
 use App\Services\UserService;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -35,19 +37,29 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        $data = $request->validated();
+        try {
+            $data = $request->validated();
 
-        $randomPassword = bin2hex(random_bytes(8));
-        $data['password'] = bcrypt($randomPassword);
+            throw new Exception("Error de prueba para verificar el manejo de excepciones en la creación de usuarios.");
 
-        $user = $this->userService->createUser($data);
+            $randomPassword = bin2hex(random_bytes(8));
+            $data['password'] = bcrypt($randomPassword);
 
-        $this->userService->sendPasswordSetupEmail($user);
+            $user = $this->userService->createUser($data);
+            $this->userService->sendPasswordSetupEmail($user);
 
-        return to_route('personal.index')->with([
-            'status' => true,
-            'message' => 'Usuario creado exitosamente. Se ha enviado un correo para establecer la contraseña.',
-        ]);
+            return to_route('personal.index')->with([
+                'status' => true,
+                'message' => 'Usuario creado exitosamente. Se ha enviado un correo para establecer la contraseña.',
+            ]);
+        } catch (Exception $e) {
+            Log::error("Error al crear usuario: " . $e->getMessage());
+
+            return back()->withInput()->with([
+                'status' => false,
+                'message' => $e->getMessage() ?: 'Ha ocurrido un error al crear el usuario. Por favor, intente nuevamente.',
+            ]);
+        }
     }
 
     public function show(int $id)
