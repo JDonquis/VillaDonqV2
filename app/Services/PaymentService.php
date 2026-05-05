@@ -79,7 +79,7 @@ class PaymentService
             'observations' => $data['observations'] ?? null,
         ]);
 
-
+        //Asociar estudiantes con el pago
 
         $studentsData = collect($data['students']);
 

@@ -49,7 +49,7 @@ class DatabaseSeeder extends Seeder
         //     TypeDocumentSeeder::class,
         //     MainConfigSeeder::class,
         //     SchoolLapseSeeder::class,
-        //     QuotaSeeder::class,
+        // QuotaSeeder::class,
         //     StudentSeeder::class,
 
         // ]);
@@ -61,6 +61,8 @@ class DatabaseSeeder extends Seeder
             'end' => '2028-08-31',
             'status' => 1,
         ]);
+
+        $this->call([QuotaSeeder::class]);
     }
 
     protected function truncateTable(array $tables)

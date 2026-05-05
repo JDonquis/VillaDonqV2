@@ -37,6 +37,15 @@ class StudentService
             ->where('section_id', $sectionId)
             ->when($request->input('search'), function ($query, $search) {
                 $query->where('search', 'like', '%' . $search . '%');
+                $query->orWhere('ci', 'like', '%' . $search . '%')
+                    ->orWhere('name', 'like', '%' . $search . '%')
+                    ->orWhere('last_name', 'like', '%' . $search . '%')
+                    ->orWhereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%']);
+                $query->orWhereHas('representative.user', function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('last_name', 'like', '%' . $search . '%')
+                        ->orWhere('ci', 'like', '%' . $search . '%');
+                });
             })
 
             ->with('representative.user', 'course', 'section')
