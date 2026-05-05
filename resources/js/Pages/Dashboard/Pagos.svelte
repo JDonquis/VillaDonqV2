@@ -327,7 +327,7 @@
                                         type="number"
                                         min="0"
                                         step="0.01"
-                                        class=" w-32 border-3 py-2 px-3  border-3  border-black small-shadow focus:outline-0"
+                                        class=" w-32 border-3 py-2 px-3 border-3 border-black small-shadow focus:outline-0"
                                         value={student.amount_in_bs || ""}
                                         placeholder="Bolívares"
                                         on:input={(e) => {
@@ -355,14 +355,35 @@
                                     />
                                 </div>
                             </td>
-                            <td class="font-bold"
-                                >{student.name} {student.last_name}</td
-                            >
-                            <td>{student.ci}</td>
+                            <td class="font-bold">
+                                <div class="flex items-center">
+                                    <iconify-icon
+                                        icon="bx:child"
+                                        width="24"
+                                        height="24"
+                                    ></iconify-icon>
+                                    <span>
+                                        {student.name}
+                                        {student.last_name}
+                                    </span>
+                                </div>
+                            </td>
+                            <td>C.I:{student.ci}</td>
+                            <td>
+                                {student.course_name} - {student.section_name}
+                            </td>
                             <td
-                                >{student.course_name} - {student.section_name}</td
-                            >
-                            <td>{student.legal_rep_name}</td>
+                                ><div class="flex items-center">
+                                    <span
+                                        ><iconify-icon
+                                            icon="boxicons:parent-child"
+                                            width="24"
+                                            height="24"
+                                        ></iconify-icon></span
+                                    >
+                                    <span>{student.legal_rep_name}</span>
+                                </div>
+                            </td>
                             <td class="max-w-[60px]">
                                 <button
                                     type="button"
@@ -449,34 +470,38 @@
                 error={$form.errors?.observations}
             />
         </div>
-        <button
-            type="submit"
-            class="btn btn-green col-span-2 mt-7 flex items-center justify-center gap-3"
-            disabled={$form.processing}
-        >
-            {#if $form.processing}
-                Cargando...
-            {:else}
-                <iconify-icon
-                    icon="material-symbols:save-sharp"
-                    width="24"
-                    height="24"
-                />
-                <span> Guardar </span>
-            {/if}
-        </button>
+        <div class="flex justify-end col-span-12">
+            <button
+                type="submit"
+                class="w-[480px] btn btn-green mt-7 flex items-center justify-center gap-3"
+                disabled={$form.processing}
+            >
+                {#if $form.processing}
+                    Cargando...
+                {:else}
+                    <iconify-icon
+                        icon="material-symbols:save-sharp"
+                        width="24"
+                        height="24"
+                    />
+                    <span> Guardar </span>
+                {/if}
+            </button>
+        </div>
     </form>
 </Modal>
 
-<div class=" items-center">
+<div class="flex flex-col justify-end items-end gap-3 mt-1">
     <button
         class="btn inline-block"
         on:click={(e) => {
             e.preventDefault();
             showModal = true;
-        }}>Registrar pago</button
+        }}
     >
-    <p class="mt-3">
+        Registrar pago
+    </button>
+    <p>
         1$ = {#if dolarPrice}{dolarPrice}{:else}<iconify-icon
                 icon="line-md:loading-loop"
                 width="24"
