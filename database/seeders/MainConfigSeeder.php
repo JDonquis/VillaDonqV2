@@ -25,7 +25,7 @@ class MainConfigSeeder extends Seeder
                 'release' => '2002-09-07',
                 'motto' => 'La escuela del futuro ya llegó a prestarte a mejor educación',
                 'regular_inscription_price' => 35,
-                'new_inscription_price' => 50,
+                'new_inscription_price' => 30,
                 'monthly_payment' => 50,
                 'day_of_monthly_payment' => 30,
                 'grace_period' => 5,
