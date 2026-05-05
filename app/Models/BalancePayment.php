@@ -14,6 +14,7 @@ class BalancePayment extends Model
         'balance_student_id',
         'amount',
         'month',
+        'is_inscription',
     ];
 
     public function payment()

@@ -40,8 +40,6 @@ class UserController extends Controller
         try {
             $data = $request->validated();
 
-            throw new Exception("Error de prueba para verificar el manejo de excepciones en la creación de usuarios.");
-
             $randomPassword = bin2hex(random_bytes(8));
             $data['password'] = bcrypt($randomPassword);
 

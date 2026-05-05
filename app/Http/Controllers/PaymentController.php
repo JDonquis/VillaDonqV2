@@ -59,7 +59,7 @@ class PaymentController extends Controller
 
             Log::error('Error al crear pago: ' . $e->getMessage());
 
-            return redirect('/dashboard/pagos')->withErrors(['message' => 'Ha ocurrido un error al crear el pago. Por favor, intente más tarde.']);
+            return redirect('/dashboard/pagos')->withErrors(['message' => $e->getMessage() ?? 'Ha ocurrido un error al crear el pago. Por favor, intente más tarde.']);
         }
     }
 
