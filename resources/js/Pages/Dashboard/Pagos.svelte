@@ -13,8 +13,6 @@
     import Search from "../../components/Search.svelte";
     export let data = { students: { data: [] }, accounts: { data: [] } };
 
-    
-
     export let searched_students = [];
     let isSearchTableOpen = false;
     let searchInputRef;
@@ -164,6 +162,8 @@
         // $form.total_in_bs = $form.total_in_dolars * +dolarPrice;
         // $form.total_in_dolars = $form.total_in_bs / dolarPrice;
     }
+
+    $: console.log($form);
 </script>
 
 <svelte:head>
@@ -192,7 +192,7 @@
             <input
                 type="search"
                 placeholder="Buscar Estudiante"
-                class={"z-50 mx-auto p-2 mt-6 md:w-60 nb-input  border rounded-md"}
+                class={"z-50 mx-auto p-2 mt-6 md:w-60 nb-input ml-5  border rounded-md"}
                 bind:this={searchInputRef}
                 on:input={(e) => {
                     search_student(e.target.value);
@@ -268,81 +268,92 @@
             >
                 <thead class="[&_*]:px-4 [&_*]:py-2 [&_*]:text-left">
                     <tr>
-                        <th>Dólares ($)</th>
-                        <th>Bolívares (Bs)</th>
-                        <th>Estudiante</th>
-                        <th>C.I</th>
-                        <th>Grado/Año</th>
-                        <th>Rep Legal</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     {#each $form.students as student, i}
                         <tr
-                            class={` w-full [&_*]:px-4 [&_*]:py-2 text-sm cursor-pointer  border-gray-500`}
+                            class={` w-full [&_td]:px-4 [&_td*]:py-2 text-sm cursor-pointer  border-gray-500`}
                         >
                             <td>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
-                                    class="w-24 border-3 p-1 border- small-shadow focus:outline-0"
-                                    value={student.amount_in_dolars || ""}
-                                    on:input={(e) => {
-                                        $form.students[i] = {
-                                            ...$form.students[i],
-                                            amount_in_dolars: e.target.value,
-                                            amount_in_bs: (
-                                                e.target.value * dolarPrice
-                                            ).toFixed(2),
-                                        };
-                                        $form.total_in_dolars = $form.students
-                                            .reduce(
-                                                (total, s) =>
-                                                    total +
-                                                    (parseFloat(
-                                                        s.amount_in_dolars,
-                                                    ) || 0),
-                                                0,
-                                            )
-                                            .toFixed(2);
-                                        $form.total_in_bs = (
-                                            $form.total_in_dolars * dolarPrice
-                                        ).toFixed(2);
-                                    }}
-                                />
+                                <div class="flex items-center">
+                                    <b class="pr-1">$</b>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        placeholder="Dólares"
+                                        step="0.01"
+                                        class="w-28 border-3 py-2 px-3 border- small-shadow focus:outline-0"
+                                        value={student.amount_in_dolars || ""}
+                                        on:input={(e) => {
+                                            $form.students[i] = {
+                                                ...$form.students[i],
+                                                amount_in_dolars:
+                                                    e.target.value,
+                                                amount_in_bs: (
+                                                    e.target.value * dolarPrice
+                                                ).toFixed(2),
+                                            };
+                                            $form.total_in_dolars =
+                                                $form.students
+                                                    .reduce(
+                                                        (total, s) =>
+                                                            total +
+                                                            (parseFloat(
+                                                                s.amount_in_dolars,
+                                                            ) || 0),
+                                                        0,
+                                                    )
+                                                    .toFixed(2);
+                                            $form.total_in_bs = (
+                                                $form.total_in_dolars *
+                                                dolarPrice
+                                            ).toFixed(2);
+                                        }}
+                                    />
+                                </div>
                             </td>
-                            <td class="w-36">
-                                <input
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
-                                    class="w-full border-3 p-0.5 border-black small-shadow focus:outline-0"
-                                    value={student.amount_in_bs || ""}
-                                    on:input={(e) => {
-                                        $form.students[i] = {
-                                            ...$form.students[i],
-                                            amount_in_bs: e.target.value,
-                                            amount_in_dolars: (
-                                                e.target.value / dolarPrice
-                                            ).toFixed(2),
-                                        };
-                                        $form.total_in_bs = $form.students
-                                            .reduce(
-                                                (total, s) =>
-                                                    total +
-                                                    (parseFloat(
-                                                        s.amount_in_bs,
-                                                    ) || 0),
-                                                0,
-                                            )
-                                            .toFixed(2);
-                                        $form.total_in_dolars = (
-                                            $form.total_in_bs / dolarPrice
-                                        ).toFixed(2);
-                                    }}
-                                />
+                            <td>
+                                <div class="flex items-center">
+                                    <b class="pr-1">VES</b>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        class=" w-32 border-3 py-2 px-3  border-3  border-black small-shadow focus:outline-0"
+                                        value={student.amount_in_bs || ""}
+                                        placeholder="Bolívares"
+                                        on:input={(e) => {
+                                            $form.students[i] = {
+                                                ...$form.students[i],
+                                                amount_in_bs: e.target.value,
+                                                amount_in_dolars: (
+                                                    e.target.value / dolarPrice
+                                                ).toFixed(2),
+                                            };
+                                            $form.total_in_bs = $form.students
+                                                .reduce(
+                                                    (total, s) =>
+                                                        total +
+                                                        (parseFloat(
+                                                            s.amount_in_bs,
+                                                        ) || 0),
+                                                    0,
+                                                )
+                                                .toFixed(2);
+                                            $form.total_in_dolars = (
+                                                $form.total_in_bs / dolarPrice
+                                            ).toFixed(2);
+                                        }}
+                                    />
+                                </div>
                             </td>
                             <td class="font-bold"
                                 >{student.name} {student.last_name}</td
@@ -368,8 +379,8 @@
                                 </button>
                             </td>
                         </tr>
-                        <tr>
-                            <td colspan="7" class="px-3">
+                        <tr class=" ">
+                            <td colspan="7" class="px-3 pb-10">
                                 <BalanceBar
                                     balances={student.balances}
                                     amountToPay={student.amount_in_dolars}
@@ -487,12 +498,14 @@
                 id: account.id,
                 name: [
                     account.payment_method_name,
-                    account?.bank || '',
-                    account?.cash_currency || '',
-                    account?.username || ''
-                ].filter(Boolean).join(' '),
+                    account?.bank || "",
+                    account?.cash_currency || "",
+                    account?.username || "",
+                ]
+                    .filter(Boolean)
+                    .join(" "),
             })),
-        }
+        },
     }}
 />
 
