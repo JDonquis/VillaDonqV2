@@ -32,6 +32,8 @@ class StorePaymentRequest extends FormRequest
             'students' => 'required|array|min:1',
             'students.*.id' => 'required|exists:students,id',
             'students.*.amount_in_dolars' => 'required|numeric|min:0',
+            'students.*.balances' => 'required|array|min:1',
+            'students.*.balances.*.id' => 'required|exists:balance_students,id',
         ];
     }
 }

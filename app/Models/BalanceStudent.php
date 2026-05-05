@@ -14,6 +14,7 @@ class BalanceStudent extends Model
         'student_id',
         'status',
         'inscription',
+        'inscription_status',
         'january',
         'january_status',
         'february',
@@ -43,6 +44,7 @@ class BalanceStudent extends Model
 
     protected $casts = [
         'status' => BalanceStudentStatusEnum::class,
+        'inscription_status' => BalanceStudentStatusEnum::class,
         'january_status' => BalanceStudentStatusEnum::class,
         'february_status' => BalanceStudentStatusEnum::class,
         'march_status' => BalanceStudentStatusEnum::class,

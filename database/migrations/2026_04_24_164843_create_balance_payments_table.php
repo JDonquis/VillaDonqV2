@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('payment_id')->constrained()->onDelete('cascade');
             $table->foreignId('balance_student_id')->constrained()->onDelete('cascade');
             $table->decimal('amount', 10, 2);
-            $table->string('month');
+            $table->string('month')->nullable();
             $table->timestamps();
         });
     }

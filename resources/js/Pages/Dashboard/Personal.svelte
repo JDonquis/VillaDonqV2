@@ -60,8 +60,11 @@
         if (submitStatus == "Crear") {
             $form.post("/dashboard/personal", {
                 onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
+                    if (errors.message) {
+                        displayAlert({
+                            type: "error",
+                            message: errors.message,
+                        });
                     }
                 },
                 onSuccess: () => {
@@ -72,14 +75,16 @@
                     showModal = false;
                     editingUser = null;
                     $form.reset();
-                   
                 },
             });
         } else if (submitStatus == "Editar") {
             $form.put(`/dashboard/personal/${editingUser.id}`, {
                 onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
+                    if (errors.message) {
+                        displayAlert({
+                            type: "error",
+                            message: errors.message,
+                        });
                     }
                 },
                 onSuccess: (mensaje) => {
@@ -96,14 +101,12 @@
         }
     }
 
-
-
     function handleEdit() {
         showModal = true;
         editingUser = selectedRow.data;
         submitStatus = "Editar";
-   
-        const personal = selectedRow.data
+
+        const personal = selectedRow.data;
         $form.type_user_id = personal.type_user_id || 1;
         $form.ci = personal.ci;
         $form.name = personal.name;
@@ -184,11 +187,17 @@
                     <tr
                         on:click={(e) => {
                             const clickPos = { x: e.clientX, y: e.clientY };
-                            
-                            if (selectedRow.status && selectedRow.data.id === user.id) {
+
+                            if (
+                                selectedRow.status &&
+                                selectedRow.data.id === user.id
+                            ) {
                                 selectedRow = { status: false, id: 0 };
                             } else {
-                                selectedRow = { status: true, data: { ...user, _clickPosition: clickPos } };
+                                selectedRow = {
+                                    status: true,
+                                    data: { ...user, _clickPosition: clickPos },
+                                };
                             }
                         }}
                         class="cursor-pointer hover:bg-gray-100"
@@ -199,9 +208,11 @@
                         <td>{user.name}</td>
                         <td>{user.last_name}</td>
                         <td>{user.ci}</td>
-                        <td >{user.email}</td>
+                        <td>{user.email}</td>
                         <td>{user.phone_number}</td>
-                        <td class="max-w-[200px] truncate" title={user.address}>{user.address}</td>
+                        <td class="max-w-[200px] truncate" title={user.address}
+                            >{user.address}</td
+                        >
                     </tr>
                 {/each}
             </tbody>

@@ -74,7 +74,7 @@
 </script>
 
 <div
-    class="fixed top-3 z-50 lg right-20 md:right-64 flex items-center rounded-full bg-gray-50 border border-gray-200"
+    class="fixed top-3 z-50 lg right-20 md:right-64 flex items-center  bg-gray-50 border border-gray-200"
 >
     <span class="absolute">
         <svg
@@ -100,13 +100,13 @@
         on:input={() => {
             handleSearch();
         }}
-        class={`block w-full py-1.5 pr-5 text-gray-700 rounded-full ${filtersOptions ? "rounded-r-none" : ""}  md:w-56  placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40`}
+        class={`block w-full py-1.5 pr-5 text-gray-700 -full ${filtersOptions ? "-r-none" : ""}  md:w-56  placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40`}
         style={$$props.style}
     />
     {#if filtersOptions}
         <div class="md:right-64 top-3 z-50">
             <button
-                class=" relative flex gap-2 hover:bg-gray-300 rounded-full rounded-l-none p-2 px-3"
+                class=" relative flex gap-2 hover:bg-gray-300 -full -l-none p-2 px-3"
                 class:bg-gray-300={isFilterAply}
                 title="Busqueda de filtros"
                 on:click={(e) => {
@@ -117,7 +117,7 @@
             >
                 {#if isFilterAply}
                     <div
-                        class="absolute bg-color1 h-2 w-2 rounded-full right-1 top-0"
+                        class="absolute bg-color1 h-2 w-2 -full right-1 top-0"
                     ></div>
                 {/if}
                 <span> Filtros </span>
@@ -136,16 +136,16 @@
     <p slot="header" class="opacity-60">Filtros de busqueda</p>
     <div class="grid grid-cols-1 h-full md:grid-cols-3 gap-5 md:gap-10">
         {#each Object.entries(filtersOptions) as [filterKey, filterOption] (filterKey)}
-            <article class="md:flex md:flex-col">
+            <article class="md:flex md:flex-col mt-3">
                 <h4
-                    class="uppercase w-fit md:w-full text-xs md:text-sm font-medium border-b px-2 flex items-center pb-2 lg:mb-1.5"
+                    class="capitalize w-fit md:w-full text-xs md:text-sm font-medium  px-2 flex items-center pb-2 lg:mb-1.5"
                 >
                     {filterOption.label}
                 </h4>
                 {#if filterOption.type === "search"}
                     <input
                         value={filterClientData?.[filterKey] || ""}
-                        class="h-auto border-gray-400 bg-gray-200 border p-2 py-1 rounded"
+                        class="h-auto border-gray-400  border p-2 py-1 "
                         placeholder={"🔍 " + filterOption.label}
                         type="search"
                         name=""
@@ -173,7 +173,7 @@
                         }}
                         name={filterOption.label}
                         id=""
-                        class="bg-gray-200 p-1 py-2 rounded-md"
+                        class="border-2 small-shadow border-black p-1 py-2 "
                     >
                         <option value="todos">Todos</option>
                         {#each filterOption.options as filter, i (filter.id)}
@@ -189,7 +189,7 @@
                 {:else}
                     {#each filterOption.options as filter, i (filter.id)}
                         <button
-                            class="text-left filter_button px-2 py-1 my-1 text-xs font-medium hover:text-dark rounded-full text-gray-700 block transition-colors duration-75 sm:text-sm hover:bg-gray-200"
+                            class="text-left filter_button px-2 py-1 my-1 text-xs font-medium hover:text-dark -full text-gray-700 block transition-colors duration-75 sm:text-sm hover:bg-gray-200"
                             class:bg-gray-200={filterClientData?.[filterKey] ==
                                 filter.id}
                             on:click={(e) => {

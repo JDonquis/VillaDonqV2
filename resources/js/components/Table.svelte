@@ -176,7 +176,7 @@
         </div>
 
         <div class="flex  gap-10">
-        <div class="relative flex items-center mt-4 md:mt-0 duration-100">
+        <!-- <div class="relative flex items-center mt-4 md:mt-0 duration-100">
             <span class="absolute">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -204,7 +204,7 @@
                 style="padding-left: 2.5em"
                 class="block nb-input md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
             />
-        </div>
+        </div> -->
         {#if selectedRow.status}
             <div 
                 class="fixed z-50 flex fadeIn gap-2"
