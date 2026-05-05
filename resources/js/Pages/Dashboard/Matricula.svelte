@@ -9,6 +9,7 @@
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, router, page } from "@inertiajs/svelte";
     import { claim_svg_element } from "svelte/internal";
+    import Search from "../../components/Search.svelte";
     export let data = [];
 
     $: selectedCourseId = (data.filters?.course_id || "1").toString();
@@ -18,6 +19,22 @@
 
     $: lastSectionId = sectionsOfThisYear?.[sectionsOfThisYear?.length - 1].id;
 
+    const generarCorreoAleatorio = () => {
+        const caracteres = "abcdefghijklmnopqrstuvwxyz0123456789";
+        let prefijo = "";
+
+        // Generamos 8 caracteres aleatorios
+        for (let i = 0; i < 8; i++) {
+            prefijo += caracteres.charAt(
+                Math.floor(Math.random() * caracteres.length),
+            );
+        }
+
+        // Añadimos el timestamp actual para garantizar unicidad
+        const timestamp = Date.now().toString(36);
+
+        return `${prefijo}-${timestamp}@test.test`;
+    };
     let form = useForm({
         student_name: "",
         student_last_name: "",
@@ -36,7 +53,7 @@
         rep_last_name: "",
         rep_ci: "",
         rep_phone_number: "",
-        rep_email: "",
+        rep_email: generarCorreoAleatorio(),
         rep_profession: "",
         rep_workplace: "",
         second_rep_name: "",
@@ -74,8 +91,11 @@
             $form.clearErrors();
             $form.post("/dashboard/matricula", {
                 onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
+                    if (errors.message) {
+                        displayAlert({
+                            type: "error",
+                            message: errors.message,
+                        });
                     }
                 },
                 onSuccess: () => {
@@ -91,8 +111,11 @@
             $form.clearErrors();
             $form.put(`/dashboard/matricula/${editingStudentId}`, {
                 onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
+                    if (errors.message) {
+                        displayAlert({
+                            type: "error",
+                            message: errors.message,
+                        });
                     }
                 },
                 onSuccess: () => {
@@ -201,8 +224,11 @@
             { course_id: data.filters.course_id, section_id: lastSectionId },
             {
                 onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
+                    if (errors.message) {
+                        displayAlert({
+                            type: "error",
+                            message: errors.message,
+                        });
                     }
                 },
                 onSuccess: (mensaje) => {
@@ -633,6 +659,8 @@
         }}>Inscribir</button
     >
 </div>
+
+<Search />
 
 <Table
     {selectedRow}

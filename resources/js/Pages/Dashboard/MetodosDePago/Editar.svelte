@@ -19,9 +19,12 @@
             `/dashboard/configuracion/editar-cuenta/${$formData.id}`,
             {
                 preserveScroll: false,
-                onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
+                 onError: (errors) => {
+                if (errors.message) {
+                        displayAlert({
+                            type: "error",
+                            message: errors.message,
+                        });
                     }
                 },
                 onSuccess: (mensaje) => {
