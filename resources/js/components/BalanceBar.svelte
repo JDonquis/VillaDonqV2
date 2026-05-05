@@ -74,7 +74,7 @@
 
     // Reactive statement: run getLastPaymentMonth whenever amountToPay changes
     $: endPointToPay = getLastPaymentMonth(amountToPay);
-    $: console.log(balances[0].inscription);
+    $: console.log(balances, balances[0].school_lapse);
 </script>
 
 <div>

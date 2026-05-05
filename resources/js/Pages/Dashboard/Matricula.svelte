@@ -13,38 +13,6 @@
 
     $: selectedCourseId = (data.filters?.course_id || "1").toString();
 
-    const emptyDataForm = {
-        student_id: "",
-        student_name: "",
-        student_last_name: "",
-        student_date_birth: "",
-        student_email: "",
-        student_ci: "",
-        student_phone_number: "",
-        course_id: "",
-        section_id: "",
-        student_sex: "",
-        student_previous_school: "",
-        state: "",
-        city: "",
-        address: "",
-        rep_name: "",
-        rep_last_name: "",
-        rep_ci: "",
-        rep_phone_number: "",
-        rep_email: "",
-        rep_profession: "",
-        rep_workplace: "",
-        second_rep_name: "",
-        second_rep_last_name: "",
-        second_rep_ci: "",
-        second_rep_phone_number: "",
-        second_rep_email: "",
-        second_rep_profession: "",
-        second_rep_workplace: "",
-        rep_id: "",
-    };
-
     $: sectionsOfThisYear =
         data.course_sections?.data?.[`course_${data.filters.course_id}`];
 
@@ -81,10 +49,17 @@
         rep_id: null,
     });
 
+    let formReinscribe = useForm({
+        course_id: 1,
+        section_id: "",
+        student_id: "",
+    });
+
     let submitStatus = "Crear";
     let editingStudentId = null;
 
     let showModal = false;
+    let showModalReinscribe = false;
     let selectedRow = { status: false, id: 0 };
 
     document.addEventListener("keydown", ({ key }) => {
@@ -189,8 +164,35 @@
         $form.second_rep_email = student.second_rep_email;
         $form.second_rep_profession = student.second_rep_profession;
         $form.second_rep_workplace = student.second_rep_workplace;
+    }
 
-        showModal = true;
+    function handleInscribeClick() {
+        showModalReinscribe = true;
+        const student = selectedRow.data;
+        $formReinscribe.course_id = student.course_id - 1 || 1;
+        $formReinscribe.section_id = student.section_id;
+        $formReinscribe.student_id = student.student_id;
+        console.log(showModalReinscribe);
+    }
+
+    function handleSubmitReinscribe(e) {
+        e.preventDefault();
+        $formReinscribe.clearErrors();
+        $formReinscribe.post("/dashboard/matricula/reinscribir", {
+            onError: (errors) => {
+                if (errors.data) {
+                    displayAlert({ type: "error", message: errors.data });
+                }
+            },
+            onSuccess: () => {
+                $formReinscribe.reset();
+                displayAlert({
+                    type: "success",
+                    message: "Estudiante reinscrito correctamente",
+                });
+                showModal = false;
+            },
+        });
     }
 
     function createSection() {
@@ -249,8 +251,7 @@
             $form.rep_workplace = rep.rep_workplace;
             $form.rep_id = rep.rep_id;
 
-
-            console.log(rep)
+            console.log(rep);
         } catch (error) {}
     }, 300);
 
@@ -266,6 +267,52 @@
 </svelte:head>
 
 <Alert />
+
+<Modal bind:showModal={showModalReinscribe} classes={"w-96"}>
+    <form class="px-2" id="r-form" on:submit={handleSubmitReinscribe}>
+        <Input
+            type="select"
+            required={true}
+            label={"Año escolar"}
+            bind:value={$formReinscribe.course_id}
+            error={$formReinscribe.errors?.course_id}
+            disabled={submitStatus == "Editar"}
+        >
+            {#each data.courses as course}
+                <option value={course.id}>{course.name}</option>
+            {/each}
+        </Input>
+        <Input
+            type="select"
+            required={true}
+            label={"Sección"}
+            bind:value={$formReinscribe.section_id}
+            error={$formReinscribe.errors?.section_id}
+        >
+            {#each data.course_sections?.data?.[`course_${$formReinscribe.course_id}`] as section}
+                <option value={section.id}>{section.name}</option>
+            {/each}
+        </Input>
+    </form>
+    <button
+        form="r-form"
+        slot="btn_footer"
+        type="submit"
+        class="btn btn-green w-full flex items-center justify-center gap-3"
+        disabled={$formReinscribe.processing}
+    >
+        {#if $formReinscribe.processing}
+            Cargando...
+        {:else}
+            <iconify-icon
+                icon="material-symbols:save-sharp"
+                width="24"
+                height="24"
+            />
+            <span>Reinscribir</span>
+        {/if}
+    </button>
+</Modal>
 
 <Modal bind:showModal classes={"w-fit"}>
     <form
@@ -593,11 +640,17 @@
     on:clickDeleteIcon={() => {
         handleDelete(selectedRow.data.student_id);
     }}
-    otherSelectOptions={[{}]}
+    otherSelectOptions={[
+        {
+            label: "Reinscribir",
+            icon: "mdi:school",
+            classes: "bg-purple",
+            onClick: handleInscribeClick,
+        },
+    ]}
     serverSideData={{ filters: data.filters }}
     filtersOptions={{ section_id: sectionsOfThisYear }}
     pagination={false}
-    
 >
     <div slot="filterBox">
         {#if lastSectionId < 6}
@@ -638,11 +691,17 @@
             <tr
                 on:click={(e) => {
                     const clickPos = { x: e.clientX, y: e.clientY };
-                    
-                    if (selectedRow.status && selectedRow.data.student_id === row.student_id) {
+
+                    if (
+                        selectedRow.status &&
+                        selectedRow.data.student_id === row.student_id
+                    ) {
                         selectedRow = { status: false, data: null };
                     } else {
-                        selectedRow = { status: true, data: { ...row, _clickPosition: clickPos } };
+                        selectedRow = {
+                            status: true,
+                            data: { ...row, _clickPosition: clickPos },
+                        };
                     }
                 }}
                 class={`cursor-pointer  ${selectedRow?.data?.student_id == row.student_id ? "bg-yellow hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-100"}`}
