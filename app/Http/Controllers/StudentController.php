@@ -111,7 +111,7 @@ class StudentController extends Controller
         } catch (Exception $e) {
             Log::error('Error al eliminar estudiante ID ' . $studentId . ': ' . $e->getMessage());
 
-            return redirect('/dashboard/matricula')->withErrors(['message' => 'Ha ocurrido un error al eliminar el estudiante. Por favor, intente más tarde.']);
+            return redirect('/dashboard/matricula')->withErrors(['message' => $e->getMessage()]);
         }
     }
 
