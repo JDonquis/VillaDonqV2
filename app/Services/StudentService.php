@@ -289,7 +289,6 @@ class StudentService
             ])
             ->get()
             ->map(function ($student) {
-                // Lógica adicional: Si no tiene pendientes/deuda, asegurar que al menos traiga el último
                 if ($student->balances->isEmpty()) {
                     $student->setRelation('balances', $student->balances()->latest()->take(1)->get());
                 }
