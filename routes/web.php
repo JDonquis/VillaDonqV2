@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountStatementController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MainConfigController;
@@ -56,6 +57,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/pagos', [PaymentController::class, 'store']);
     Route::put('/dashboard/pagos/{id}', [PaymentController::class, 'update']);
     Route::delete('/dashboard/pagos/{id}', [PaymentController::class, 'destroy']);
+
+    Route::get('/dashboard/estados-cuenta', [AccountStatementController::class, 'index']);
 
     Route::get('/dashboard/configuracion', [MainConfigController::class, 'index']);
     Route::get('/dashboard/configuracion/editar-cuenta/{id}', [MainConfigController::class, 'showEditAccount']);
