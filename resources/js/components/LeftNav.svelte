@@ -32,19 +32,22 @@
 </script>
 
 <nav
-    class="left_nav flex md:block items-center bg-black text-gray-200 h-full relative overflow-hidden"
+    class="left_nav flex md:block items-center bg-color1 text-gray-100 h-full relative overflow-hidden"
 >
     <button
         on:click={() => toggleMenu()}
-        class="hidden md:block burger_icon items-center pt-1 text-center text-2xl text-gray-300 hover:text-purple bg-gray-700 bg-opacity-50"
+        class="hidden md:block burger_icon items-center pt-1 text-center text-2xl text-gray-300 hover:text-yellow bg-gray-700 bg-opacity-50"
     >
         <iconify-icon class="mb-0 pb-0" icon="majesticons:menu-expand-left-line"
         ></iconify-icon>
     </button>
     <a
         href=""
-        class="logo text-lg hidden md:block p-4 text-center w-full inline-block"
-        >VILLADONQ</a
+        class="logo text-lg  md:block p-4 text-center w-full  flex"
+        >
+        <img src="/img/Isotipo-villadonq-blanco.png" alt="Villadonq" class="w-10 h-10 object-contain inline" />
+        VILLADONQ
+        </a
     >
     <ul
         class="flex justify-around items-center w-full md:flex-col
@@ -55,7 +58,7 @@
                 <a
                     href={navPage.href}
                     use:inertia
-                    class="hover:text-purple z-10 rounded-md flex md:gap-2 items-center p-2"
+                    class="hover:text-yellow z-10 rounded-md flex md:gap-2 items-center p-2"
                     class:active={$page.url.startsWith(navPage.href)}
                     ><iconify-icon
                         class="text-xl "
@@ -75,7 +78,7 @@
         position: relative;
         border-radius: 6px;
         /* box-shadow: 0 0 10px 0px #9BF2EA; */
-        color: #b8a9fa !important;
+        color: #FFD23F !important;
         font-weight: bold;
     }
     a:before {

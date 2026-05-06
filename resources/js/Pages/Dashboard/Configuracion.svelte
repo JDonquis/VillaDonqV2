@@ -92,7 +92,7 @@
 <section class="bg-background">
     <div class="py-5"></div>
 
-    <h2 class="font-bold text-xl">Configuración del perfil</h2>
+    <!-- <h2 class="font-bold text-xl">Configuración del perfil</h2>
 
     <form
         class="bg-background px-1 mx-4 md:py-9 md:pb-12 md:grid justify-between grid-flow-col md:gap-x-10 lg:gap-x-24 items-center relative"
@@ -312,9 +312,9 @@
             <iconify-icon icon="material-symbols:save" class="text-3xl"
             ></iconify-icon>
         </button>
-    {/if}
+    {/if} -->
 
-    <hr class=" border-gray-300" />
+    <!-- <hr class=" border-gray-300" /> -->
     <div class="flex gap-10">
         <form
             class="Configuracion_tarifas my-10 mb-4 py-3 min-w-[310px] max-w-[330px]"
