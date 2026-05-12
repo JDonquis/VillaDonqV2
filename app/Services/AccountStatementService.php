@@ -33,7 +33,6 @@ class AccountStatementService
             })
             ->with([
                 'balances' => function ($q) use ($params) {
-                    $q->with(['schoolLapse', 'balancePayments']);
 
                     $q->whereHas('schoolLapse', function ($sq) use ($params) {
                         if (isset($params['school_lapse_year'])) {
@@ -48,6 +47,8 @@ class AccountStatementService
                             $sq->where('end', '<=', $params['end_date']);
                         }
                     });
+
+                    $q->oldest();
                 },
             ]);
 
@@ -82,7 +83,7 @@ class AccountStatementService
                     'inscription' => $balance->inscription,
                     'inscription_status' => $balance->inscription_status,
                     'months' => collect(self::MONTHS)->mapWithKeys(function ($month) use ($balance) {
-                        return [$month => $balance->$month, $month.'_status' => $balance->{$month.'_status'}];
+                        return [$month => $balance->$month, $month . '_status' => $balance->{$month . '_status'}];
                     }),
                     'total_debt' => $balanceDebt,
                     'total_income' => $balanceIncome,
@@ -108,9 +109,9 @@ class AccountStatementService
 
         if (isset($params['debt_status'])) {
             if ($params['debt_status'] === 'debt') {
-                $students = $students->filter(fn ($s) => $s['total_debt'] > 0);
+                $students = $students->filter(fn($s) => $s['total_debt'] > 0);
             } elseif ($params['debt_status'] === 'no_debt') {
-                $students = $students->filter(fn ($s) => $s['total_debt'] == 0);
+                $students = $students->filter(fn($s) => $s['total_debt'] == 0);
             }
         }
 
@@ -128,11 +129,11 @@ class AccountStatementService
                 ? $students->sortByDesc('last_name')
                 : $students->sortBy('last_name'),
             'course' => $sortDirection === 'desc'
-                ? $students->sortByDesc(fn ($s) => optional($s['course'])->name ?? '')
-                : $students->sortBy(fn ($s) => optional($s['course'])->name ?? ''),
+                ? $students->sortByDesc(fn($s) => optional($s['course'])->name ?? '')
+                : $students->sortBy(fn($s) => optional($s['course'])->name ?? ''),
             'section' => $sortDirection === 'desc'
-                ? $students->sortByDesc(fn ($s) => optional($s['section'])->name ?? '')
-                : $students->sortBy(fn ($s) => optional($s['section'])->name ?? ''),
+                ? $students->sortByDesc(fn($s) => optional($s['section'])->name ?? '')
+                : $students->sortBy(fn($s) => optional($s['section'])->name ?? ''),
             default => $students,
         };
 
