@@ -12,7 +12,7 @@ class AccountStatementController extends Controller
         $service = new AccountStatementService;
         $result = $service->getAll($request->all());
 
-        return inertia('Dashboard/EstadosCuenta', [
+        return inertia('Dashboard/EstadosDeCuenta', [
             'data' => $result,
         ]);
     }
