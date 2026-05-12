@@ -48,6 +48,7 @@ class AccountStatementService
                         }
                     });
 
+                    $q->with(['balancePayments.payment.accountPayment.method']);
                     $q->oldest();
                 },
             ]);
@@ -83,10 +84,29 @@ class AccountStatementService
                     'inscription' => $balance->inscription,
                     'inscription_status' => $balance->inscription_status,
                     'months' => collect(self::MONTHS)->mapWithKeys(function ($month) use ($balance) {
-                        return [$month => $balance->$month, $month . '_status' => $balance->{$month . '_status'}];
+                        return [$month => $balance->$month, $month.'_status' => $balance->{$month.'_status'}];
                     }),
                     'total_debt' => $balanceDebt,
                     'total_income' => $balanceIncome,
+                    'balance_payments' => $balance->balancePayments->map(fn ($bp) => [
+                        'id' => $bp->id,
+                        'amount' => $bp->amount,
+                        'month' => $bp->month,
+                        'is_inscription' => $bp->is_inscription,
+                        'payment' => $bp->payment ? [
+                            'id' => $bp->payment->id,
+                            'date' => $bp->payment->date,
+                            'total_in_dolars' => $bp->payment->total_in_dolars,
+                            'total_in_bs' => $bp->payment->total_in_bs,
+                            'reference' => $bp->payment->reference,
+                            'observations' => $bp->payment->observations,
+                            'account_payment' => $bp->payment->accountPayment ? [
+                                'id' => $bp->payment->accountPayment->id,
+                                'person_name' => $bp->payment->accountPayment->person_name,
+                                'method' => $bp->payment->accountPayment->method,
+                            ] : null,
+                        ] : null,
+                    ]),
                 ];
             })->filter(function ($balance) {
                 return $balance['school_lapse'] !== null;
@@ -109,9 +129,9 @@ class AccountStatementService
 
         if (isset($params['debt_status'])) {
             if ($params['debt_status'] === 'debt') {
-                $students = $students->filter(fn($s) => $s['total_debt'] > 0);
+                $students = $students->filter(fn ($s) => $s['total_debt'] > 0);
             } elseif ($params['debt_status'] === 'no_debt') {
-                $students = $students->filter(fn($s) => $s['total_debt'] == 0);
+                $students = $students->filter(fn ($s) => $s['total_debt'] == 0);
             }
         }
 
@@ -129,11 +149,11 @@ class AccountStatementService
                 ? $students->sortByDesc('last_name')
                 : $students->sortBy('last_name'),
             'course' => $sortDirection === 'desc'
-                ? $students->sortByDesc(fn($s) => optional($s['course'])->name ?? '')
-                : $students->sortBy(fn($s) => optional($s['course'])->name ?? ''),
+                ? $students->sortByDesc(fn ($s) => optional($s['course'])->name ?? '')
+                : $students->sortBy(fn ($s) => optional($s['course'])->name ?? ''),
             'section' => $sortDirection === 'desc'
-                ? $students->sortByDesc(fn($s) => optional($s['section'])->name ?? '')
-                : $students->sortBy(fn($s) => optional($s['section'])->name ?? ''),
+                ? $students->sortByDesc(fn ($s) => optional($s['section'])->name ?? '')
+                : $students->sortBy(fn ($s) => optional($s['section'])->name ?? ''),
             default => $students,
         };
 
