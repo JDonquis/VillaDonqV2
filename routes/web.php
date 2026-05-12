@@ -58,7 +58,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/dashboard/pagos/{id}', [PaymentController::class, 'update']);
     Route::delete('/dashboard/pagos/{id}', [PaymentController::class, 'destroy']);
 
-    Route::get('/dashboard/estados-cuenta', [AccountStatementController::class, 'index']);
+    Route::get('/dashboard/estados-de-cuenta', [AccountStatementController::class, 'index']);
 
     Route::get('/dashboard/configuracion', [MainConfigController::class, 'index']);
     Route::get('/dashboard/configuracion/editar-cuenta/{id}', [MainConfigController::class, 'showEditAccount']);

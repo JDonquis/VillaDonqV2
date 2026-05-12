@@ -23,6 +23,11 @@
             href: "/dashboard/pagos",
             name: "Pagos",
         },
+           {
+            icon: "streamline:payment-10-solid",
+            href: "/dashboard/estados-de-cuenta",
+            name: "Estados de Cuenta",
+        },
         {
             icon: "ph:users",
             href: "/dashboard/personal",
