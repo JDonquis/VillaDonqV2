@@ -24,7 +24,7 @@
             name: "Pagos",
         },
            {
-            icon: "streamline:payment-10-solid",
+            icon: "mdi:finance",
             href: "/dashboard/estados-de-cuenta",
             name: "Estados de Cuenta",
         },

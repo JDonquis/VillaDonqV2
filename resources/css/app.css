@@ -262,7 +262,12 @@ progress::-webkit-progress-value {
 .large-shadow {
     box-shadow: 8px 8px 0 0 #000;
 }
-
+.small-shadow-green {
+    box-shadow: 3px 3px 0 0 var(--green);
+}
+.medium-shadow-green {
+    box-shadow: 5px 5px 0 0 var(--green);
+}
 .fadeIn {
     animation: fadeIn 0.3s ease;
 }

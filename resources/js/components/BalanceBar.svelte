@@ -119,7 +119,6 @@
     let payingBalances = [{}];
 
     let endPointToPay = {};
-    console.log(firstUnpaidMonth);
     function getLastPaymentMonth(amountToPay) {
         let lastPaymentMonth = null;
         let endMonthIndex = firstUnpaidMonth;
@@ -134,17 +133,12 @@
                 break;
             }
 
-            console.log(balances[endYearIndex].inscription);
-            console.log(endYearIndex, startMonth);
             if (
                 !payingBalances[endYearIndex].balanceInscription &&
                 balances[endYearIndex].inscription < 0
             ) {
-                console.log("inscripción se debe!", amountToPay)
                 payingBalances[endYearIndex].balanceInscription = amountToPay;
                 amountToPay -= Math.abs(balances[endYearIndex].inscription);
-                console.log(Math.abs(balances[endYearIndex].inscription))
-                console.log({amountToPay})
             }
             if (amountToPay <= 0) {
                 break
@@ -172,9 +166,7 @@
             } else {
                 endMonthIndex++;
             }
-            console.log({
-                payingBalances,
-            });
+      
         }
         endPointToPay = { endMonthIndex, endYearIndex, partialToPay };
         return { endMonthIndex, endYearIndex, partialToPay };
@@ -182,7 +174,6 @@
 
     // Reactive statement: run getLastPaymentMonth whenever amountToPay changes
     $: endPointToPay = getLastPaymentMonth(amountToPay);
-    $: console.log({ payingBalances });
 </script>
 
 <div>
@@ -196,7 +187,7 @@
                     height="24"
                 ></iconify-icon>
             </button> -->
-            <p class="text-sm font-bold">
+            <p class="text-xs font-bold">
                 {balance.school_lapse.start.slice(0, 4)} - {balance.school_lapse.end.slice(
                     0,
                     4,
@@ -231,7 +222,7 @@
         </div>
         <div class="grid p-0 grid-cols-12 border-2 border-black">
             <div
-                class={` hover:brightness-110  relative col-span-1 z-10  text-sm capitalize overflow-hidden text-center font-bold ${balance.inscription < 0 ? "bg-red" : "bg-green"} text-black  p-2`}
+                class={` hover:brightness-110  relative col-span-1 z-10  text-xs capitalize overflow-hidden text-center font-bold ${balance.inscription < 0 ? "bg-red" : "bg-green"} text-black  p-2`}
             >
                 <span> Inscri. </span>
                 <p>${Math.abs(balance.inscription)}</p>
@@ -246,7 +237,7 @@
             <div class="col-span-11 grid grid-cols-12">
                 {#each Object.entries(months) as [spanishLabel, month], indexMonth}
                     <div
-                        class={` hover:brightness-110 border-l-2 border-l-gray-200 relative col-span-1  text-sm capitalize overflow-hidden text-center font-bold ${balance[month + "_status"] == "debt" ? "bg-red" : balance[month + "_status"] == "paid" ? "bg-green" : balance[month + "_status"] == "partially_paid" ? "bg-yellow" : "bg-gray-50 "} text-black  p-2`}
+                        class={` hover:brightness-110 border-l-2 border-l-gray-200 relative col-span-1  text-xs capitalize overflow-hidden text-center font-bold ${balance[month + "_status"] == "debt" ? "bg-red" : balance[month + "_status"] == "paid" ? "bg-green" : balance[month + "_status"] == "partially_paid" ? "bg-yellow" : "bg-gray-50 "} text-black  p-2`}
                     >
                         <div class="z-50">
                             {spanishLabel}
@@ -258,7 +249,7 @@
                         </p>
 
                         <div
-                            class={`text-sm  months_to_pay absolute top-0.5 left-0 w-full text-black h-[95%] z-40 
+                            class={`text-xs  months_to_pay absolute top-0.5 left-0 w-full text-black h-[95%] z-40 
                             ${indexMonth === startPointToPay.month && startPointToPay.school_lapse_index == +indexYear && amountToPay > Math.abs(balance[month]) ? "border-l-4 border-black/50" : ""} 
                             ${indexMonth === endPointToPay.endMonthIndex - 1 && endPointToPay.endYearIndex == +indexYear && amountToPay > 0 ? "border-r-4 border-black/50" : ""}
                             ${startPointToPay.school_lapse_index <= indexYear && payingBalances[indexYear]?.startMonth <= indexMonth && indexMonth <= payingBalances[indexYear]?.endMonthIndex ? "bg-purple/30 border-y-4 border-black/50" : ""}`}

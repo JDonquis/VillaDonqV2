@@ -205,7 +205,7 @@
                 class="block nb-input md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
             />
         </div> -->
-        {#if selectedRow.status}
+        {#if selectedRow?.status}
             <div 
                 class="fixed z-50 flex fadeIn gap-2"
                 style="top: {buttonPosition.top}; left: {buttonPosition.left};"

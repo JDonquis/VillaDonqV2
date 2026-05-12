@@ -11,6 +11,7 @@ let pageName = "";
         'Dashboard/Matricula': 'Matrícula',
         'Dashboard/Personal': 'Personal',
         'Dashboard/Pagos': 'Pagos',
+        'Dashboard/EstadosDeCuenta': 'Estados de Cuenta',
         'Dashboard/Configuracion': 'Configuración',
         'Dashboard/MetodosDePago/Crear': 'Nuevo Método de Pago',
         'Dashboard/MetodosDePago/Editar': 'Editar Método de Pago',

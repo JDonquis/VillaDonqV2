@@ -56,6 +56,7 @@
     });
 
     let showModal = false;
+    let showTotalIncome = false;
     $: showModalFormEdit = false;
     let selectedRow = { status: false, id: 0 };
 
@@ -64,7 +65,7 @@
             selectedRow = { status: false, id: 0 };
         }
     });
-
+    console.log(data);
     function handleSubmit(event) {
         event.preventDefault();
         $form.clearErrors();
@@ -534,6 +535,28 @@
     }}
 />
 
+{#if data.total_income}
+    <div class="px-3 py-2 w-max bg-green/20 border-4 medium-shadow-green border-green text-green  mb-5 flex flex-wrap items-center gap-2">
+        <span class="font-semibold">Total ingresos:</span>
+        <b class={`text-sm ${showTotalIncome ? "opacity-100" : "opacity-0 blur-sm"} font-bold transition-all duration-200`}>
+            {showTotalIncome ? `$${data.total_income}` : "••••••"}
+        </b>
+        <button
+            type="button"
+            class="inline-flex items-center justify-center  border border-green/50 bg-white/10 p-2 text-green transition hover:bg-green/10 focus:outline-none"
+            on:click={() => {
+                showTotalIncome = !showTotalIncome;
+            }}
+            aria-label={showTotalIncome ? "Ocultar total" : "Mostrar total"}
+        >
+            <iconify-icon
+                icon={showTotalIncome ? "formkit:eyeclosed" : "mdi:eye-outline"}
+                width="24"
+                height="24"
+            ></iconify-icon>
+        </button>
+    </div>
+{/if}
 <Table
     {selectedRow}
     serverSideData={data?.payments}
