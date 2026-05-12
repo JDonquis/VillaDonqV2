@@ -33,7 +33,6 @@ class AccountStatementService
             })
             ->with([
                 'balances' => function ($q) use ($params) {
-                    $q->with(['schoolLapse', 'balancePayments']);
 
                     $q->whereHas('schoolLapse', function ($sq) use ($params) {
                         if (isset($params['school_lapse_year'])) {
@@ -48,6 +47,9 @@ class AccountStatementService
                             $sq->where('end', '<=', $params['end_date']);
                         }
                     });
+
+                    $q->with(['balancePayments.payment.accountPayment.method']);
+                    $q->oldest();
                 },
             ]);
 
@@ -86,6 +88,25 @@ class AccountStatementService
                     }),
                     'total_debt' => $balanceDebt,
                     'total_income' => $balanceIncome,
+                    'balance_payments' => $balance->balancePayments->map(fn ($bp) => [
+                        'id' => $bp->id,
+                        'amount' => $bp->amount,
+                        'month' => $bp->month,
+                        'is_inscription' => $bp->is_inscription,
+                        'payment' => $bp->payment ? [
+                            'id' => $bp->payment->id,
+                            'date' => $bp->payment->date,
+                            'total_in_dolars' => $bp->payment->total_in_dolars,
+                            'total_in_bs' => $bp->payment->total_in_bs,
+                            'reference' => $bp->payment->reference,
+                            'observations' => $bp->payment->observations,
+                            'account_payment' => $bp->payment->accountPayment ? [
+                                'id' => $bp->payment->accountPayment->id,
+                                'person_name' => $bp->payment->accountPayment->person_name,
+                                'method' => $bp->payment->accountPayment->method,
+                            ] : null,
+                        ] : null,
+                    ]),
                 ];
             })->filter(function ($balance) {
                 return $balance['school_lapse'] !== null;
