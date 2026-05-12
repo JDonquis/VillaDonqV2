@@ -9,12 +9,13 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use inertia;
 
 class PaymentController extends Controller
 {
     private MainConfigService $mainConfigService;
+
     private PaymentService $paymentService;
+
     public function __construct()
     {
 
@@ -25,18 +26,16 @@ class PaymentController extends Controller
     public function index(Request $request)
     {
         $prices = $this->mainConfigService->getPrices();
-        $accounts  = $this->mainConfigService->getAccounts();
+        $accounts = $this->mainConfigService->getAccounts();
         $result = $this->paymentService->getAll($request->all());
-        return inertia('Dashboard/Pagos', ['data' =>
-        [
+
+        return inertia('Dashboard/Pagos', ['data' => [
             'accounts' => $accounts,
             'payments' => $result['payments'],
             'prices' => $prices,
             'total_income' => $result['total_income'],
         ]]);
     }
-
-
 
     /**
      * Store a newly created resource in storage.
@@ -51,18 +50,16 @@ class PaymentController extends Controller
 
             DB::commit();
 
-
             return redirect('/dashboard/pagos');
         } catch (Exception $e) {
 
             DB::rollback();
 
-            Log::error('Error al crear pago: ' . $e->getMessage());
+            Log::error('Error al crear pago: '.$e->getMessage());
 
             return redirect('/dashboard/pagos')->withErrors(['message' => $e->getMessage() ?? 'Ha ocurrido un error al crear el pago. Por favor, intente más tarde.']);
         }
     }
-
 
     /**
      * Remove the specified resource from storage.
@@ -75,9 +72,33 @@ class PaymentController extends Controller
 
             return redirect('/dashboard/pagos');
         } catch (Exception $e) {
-            Log::error('Error al eliminar pago ID ' . $id . ': ' . $e->getMessage());
+            Log::error('Error al eliminar pago ID '.$id.': '.$e->getMessage());
 
             return redirect('/dashboard/pagos')->withErrors(['message' => 'Ha ocurrido un error al eliminar el pago. Por favor, intente más tarde.']);
+        }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(StorePaymentRequest $request, $id)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $this->paymentService->update($id, $request->validated());
+
+            DB::commit();
+
+            return redirect('/dashboard/pagos');
+        } catch (Exception $e) {
+
+            DB::rollback();
+
+            Log::error('Error al actualizar pago ID '.$id.': '.$e->getMessage());
+
+            return redirect('/dashboard/pagos')->withErrors(['message' => 'Ha ocurrido un error al actualizar el pago. Por favor, intente más tarde.']);
         }
     }
 }

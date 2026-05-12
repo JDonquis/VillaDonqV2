@@ -85,7 +85,7 @@ class BalanceService
                     $balance->$month += $paymentToMonth;
 
                     $monthValue = $balance->$month;
-                    $balance->{$month . '_status'} = match (true) {
+                    $balance->{$month.'_status'} = match (true) {
                         $monthValue == 0 => BalanceStudentStatusEnum::Paid->value,
                         $monthValue < 0 => BalanceStudentStatusEnum::Debt->value,
                         default => BalanceStudentStatusEnum::PartiallyPaid->value,
@@ -116,29 +116,36 @@ class BalanceService
             })
             ->get();
 
-        foreach ($balancePayments as $balancePayment) {
-            $balance = $balancePayment->balanceStudent;
+        $groupedByBalance = $balancePayments->groupBy('balance_student_id');
 
-            if ($balancePayment->is_inscription) {
-                $balance->inscription -= $balancePayment->amount;
+        foreach ($groupedByBalance as $balanceId => $bps) {
+            $balance = BalanceStudent::find($balanceId);
+            if (! $balance) {
+                continue;
+            }
 
-                $inscriptionValue = $balance->inscription;
-                $balance->inscription_status = match (true) {
-                    $inscriptionValue == 0 => BalanceStudentStatusEnum::Paid->value,
-                    $inscriptionValue < 0 => BalanceStudentStatusEnum::Debt->value,
-                    default => BalanceStudentStatusEnum::PartiallyPaid->value,
-                };
-            } else {
-                $month = $balancePayment->month;
-
-                if (! $month) {
-                    continue;
+            foreach ($bps as $balancePayment) {
+                if ($balancePayment->is_inscription) {
+                    $balance->inscription -= $balancePayment->amount;
+                } else {
+                    $month = $balancePayment->month;
+                    if ($month) {
+                        $balance->$month -= $balancePayment->amount;
+                    }
                 }
+                $balancePayment->delete();
+            }
 
-                $balance->$month -= $balancePayment->amount;
+            $inscriptionValue = $balance->inscription;
+            $balance->inscription_status = match (true) {
+                $inscriptionValue == 0 => BalanceStudentStatusEnum::Paid->value,
+                $inscriptionValue < 0 => BalanceStudentStatusEnum::Debt->value,
+                default => BalanceStudentStatusEnum::PartiallyPaid->value,
+            };
 
+            foreach (self::MONTH_ORDER as $month) {
                 $monthValue = $balance->$month;
-                $balance->{$month . '_status'} = match (true) {
+                $balance->{$month.'_status'} = match (true) {
                     $monthValue == 0 => BalanceStudentStatusEnum::Paid->value,
                     $monthValue < 0 => BalanceStudentStatusEnum::Debt->value,
                     default => BalanceStudentStatusEnum::PartiallyPaid->value,
@@ -147,8 +154,6 @@ class BalanceService
 
             $this->updateGeneralStatus($balance);
             $balance->save();
-
-            $balancePayment->delete();
         }
     }
 
@@ -161,12 +166,12 @@ class BalanceService
         }
 
         foreach (self::MONTH_ORDER as $month) {
-            $statusField = $month . '_status';
+            $statusField = $month.'_status';
             $statuses[] = $balance->$statusField;
         }
 
         $allPaid = collect($statuses)->every(
-            fn($status) => $status === BalanceStudentStatusEnum::Paid->value
+            fn ($status) => $status === BalanceStudentStatusEnum::Paid->value
         );
 
         $balance->status = $allPaid

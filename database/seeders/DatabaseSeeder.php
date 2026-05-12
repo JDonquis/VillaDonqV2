@@ -15,7 +15,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+<<<<<<< HEAD
         \App\Models\User::factory(10)->create();
+=======
+>>>>>>> 152f94c281beddff1921dd17dab0aa201dbd0e21
 
         $this->truncateTable([
 

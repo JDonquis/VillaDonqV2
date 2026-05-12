@@ -15,20 +15,20 @@ class PaymentService
             ->when(isset($params['search']), function ($q) use ($params) {
                 $search = $params['search'];
                 $q->where(function ($query) use ($search) {
-                    $query->where('reference', 'like', '%'.$search.'%')
-                        ->orWhere('observations', 'like', '%'.$search.'%')
+                    $query->where('reference', 'like', '%' . $search . '%')
+                        ->orWhere('observations', 'like', '%' . $search . '%')
                         ->orWhereHas('user', function ($q) use ($search) {
-                            $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%'.$search.'%'])
-                                ->orWhere('name', 'like', '%'.$search.'%')
-                                ->orWhere('last_name', 'like', '%'.$search.'%');
+                            $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%'])
+                                ->orWhere('name', 'like', '%' . $search . '%')
+                                ->orWhere('last_name', 'like', '%' . $search . '%');
                         })
                         ->orWhereHas('accountPayment.method', function ($q) use ($search) {
-                            $q->where('name', 'like', '%'.$search.'%');
+                            $q->where('name', 'like', '%' . $search . '%');
                         })
                         ->orWhereHas('students', function ($q) use ($search) {
-                            $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%'.$search.'%'])
-                                ->orWhere('name', 'like', '%'.$search.'%')
-                                ->orWhere('last_name', 'like', '%'.$search.'%');
+                            $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%'])
+                                ->orWhere('name', 'like', '%' . $search . '%')
+                                ->orWhere('last_name', 'like', '%' . $search . '%');
                         });
                 });
             })
@@ -111,8 +111,24 @@ class PaymentService
             $balanceService->revertStudentBalance($payment, $student);
         }
 
+        $payment->status = 0;
         $payment->deleted_by = Auth::id();
         $payment->save();
-        $payment->delete();
+    }
+
+    public function update(int $id, array $data): Payment
+    {
+        $balanceService = new BalanceService;
+        $existingPayment = Payment::findOrFail($id);
+
+        foreach ($existingPayment->students as $student) {
+            $balanceService->revertStudentBalance($existingPayment, $student);
+        }
+
+        $existingPayment->status = 0;
+        $existingPayment->deleted_by = Auth::id();
+        $existingPayment->save();
+
+        return $this->create($data);
     }
 }
