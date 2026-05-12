@@ -53,6 +53,8 @@ class PaymentService
 
         $totalIncome = (clone $query)->sum('total_in_dolars');
 
+        $query->orderBy('created_at', 'desc');
+
         $payments = $query->paginate($params['per_page'] ?? 25)->withQueryString();
 
         return [
