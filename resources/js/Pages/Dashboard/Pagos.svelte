@@ -73,8 +73,7 @@
     function handleSubmit(event) {
         event.preventDefault();
         $form.clearErrors();
-
-        if (submitStatus === "Registrar") {
+ 
             $form.post("/dashboard/pagos", {
                 onError: (errors) => {
                     if (errors.data) {
@@ -90,25 +89,9 @@
                     showModal = false;
                 },
             });
-        } else if (submitStatus === "Editar") {
-            $form.put(`/dashboard/pagos/${$form.id}`, {
-                onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
-                    }
-                },
-                onSuccess: (mensaje) => {
-                    $form.reset();
-                    displayAlert({
-                        type: "success",
-                        message: "Ok todo salió bien",
-                    });
-                    showModal = false;
-                    selectedRow = { status: false, data: null };
-                },
-            });
-        }
+            
     }
+
 
     const search_student = debounce(async (search_text) => {
         isSearchTableOpen = search_text.length > 0;
@@ -147,60 +130,70 @@
     });
 
     function handleDelete(id) {
-        $form.delete(`/dashboard/matriculo/${id}`, {
+        if (selectedRow.data?.status == 0) {
+            displayAlert({ type: "error", message: "Este pago ya ha sido eliminado" });
+            return;
+        }
+        $form.delete(`/dashboard/pagos/${id}`, {
             onBefore: () => confirm(`¿Está seguro de eliminar este pago?`),
+            onError: (errors) => {
+                if (errors.data) {
+                    displayAlert({ type: "error", message: errors.data });
+                }
+            },
+            onSuccess: (mensaje) => {
+                displayAlert({
+                    type: "success",
+                    message: "Pago eliminado correctamente",
+                });
+                 selectedRow = { status: false, data: null };
+            }
         });
     }
 
-    function fillFormToEdit() {
+    async function fillFormToEdit() {
         showModal = true;
         submitStatus = "Editar";
-        getBalanceByStudentId
         const selectedData = selectedRow.data;
         console.log({ selectedData });
 
-        let studentsWithBalances = selectedData.students.map(async(s) => {
-            const balances = await getBalanceByStudentId(s.id);
-            return { ...s, balances };
-        })
+        const studentsWithBalances = await Promise.all(
+            selectedData.students.map(async (s) => {
+                const response_student = await getBalanceByStudentId(s.id);
+                const studentData = Array.isArray(response_student)
+                    ? response_student[0]
+                    : response_student;
 
-        //  Promise.all(getBalances).then((studentsWithBalances) => {
-        //     $form.students = studentsWithBalances.map((s) => ({
-        //         id: s.id,
-        //         name: s.name,
-        //         last_name: s.last_name,
-        //         ci: s.ci,
-        //         course_name: s.course.name,
-        //         section_name: s.section.name,
-        //         legal_rep_name:
-        //             s.representative.user.name +
-        //             " " +
-        //             s.representative.user.last_name,
-        //         balances: s.balances || [],
-        //         amount_in_dolars: s.pivot.amount_in_dolars,
-        //         amount_in_bs: s.pivot.amount_in_bs,
-        //     }));
-        // });
+                return {
+                    ...s,
+                    balances:
+                        studentData?.balances?.length > 0
+                            ? studentData.balances
+                            : s.balances || [],
+                };
+            }),
+        );
+
         $form.id = selectedData.id;
+        console.log({ studentsWithBalances });
         $form.students = studentsWithBalances.map((s) => ({
             id: s.id,
             name: s.name,
             last_name: s.last_name,
             ci: s.ci,
-            course_name: s.course.name,
-            section_name: s.section.name,
+            course_name: s.course?.name || "",
+            section_name: s.section?.name || "",
             legal_rep_name:
-                s.representative.user.name +
+                s.representative?.user?.name +
                 " " +
-                s.representative.user.last_name,
-            balances: s.balances,
-            amount_in_dolars: s.pivot.amount_in_dolars,
-            amount_in_bs: s.pivot.amount_in_bs,
+                s.representative?.user?.last_name,
+            balances: s.balances || [],
+            amount_in_dolars: s.pivot?.amount_in_dolars,
+            amount_in_bs: s.pivot?.amount_in_bs,
         }));
-        $form.date = selectedData.date;
+        $form.date =  new Date(selectedData.date).toISOString().split("T")[0];
         $form.account_payment_id = selectedData.account_payment_id;
         $form.total_in_dolars = selectedData.total_in_dolars;
-        $form.total_in_bs = selectedData.total_in_bs;
         $form.reference = selectedData.reference;
         $form.observations = selectedData.observations;
     }
@@ -219,6 +212,7 @@
                     params: { id: studentId },
                 }
             );
+            console.log(response.data)
             return response.data;
         } catch (error) {
             console.log(error)
@@ -629,10 +623,10 @@
 <Table
     {selectedRow}
     serverSideData={data?.payments}
-    on:fillFormToEdit={fillFormToEdit}
     on:clickDeleteIcon={() => {
         handleDelete(selectedRow.data?.id);
     }}
+    edit={false}
     pagination={true}
 >
     <thead slot="thead" class="sticky top-0 z-50">
@@ -661,6 +655,7 @@
                         e.detail.data ? { ...row } : { ...emptyDataForm },
                     );
                 }}
+                classes={`${row.status === 0 ? "bg-red text-gray-400 bg-opacity-10 opacity-70" : ""} `}
             >
                 <td>{row.id}</td>
                 <td>{row.date}</td>

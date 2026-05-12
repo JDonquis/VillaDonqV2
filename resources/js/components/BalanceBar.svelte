@@ -247,8 +247,8 @@
                                 ${Math.abs(balance[month])}
                             {/if}
                         </p>
-                        {#if balances.balance_payments?.[month]}
-                            <div class="top-0 left-0 absolute w-full-h-full">
+                        {#if balance.balance_payments[month]}
+                            <div class="bottom-0 left-0 min-h-[300px] absolute w-full-h-full">
                                 {balance.balance_payments[month]}
                             </div>
                         {/if}
@@ -257,9 +257,9 @@
                             ${indexMonth === startPointToPay.month && startPointToPay.school_lapse_index == +indexYear && amountToPay > Math.abs(balance[month]) ? "border-l-4 border-black/50" : ""} 
                             ${indexMonth === endPointToPay.endMonthIndex - 1 && endPointToPay.endYearIndex == +indexYear && amountToPay > 0 ? "border-r-4 border-black/50" : ""}
                             ${startPointToPay.school_lapse_index <= indexYear && payingBalances[indexYear]?.startMonth <= indexMonth && indexMonth <= payingBalances[indexYear]?.endMonthIndex ? "bg-purple/30 border-y-4 border-black/50" : ""}`}
-                            style={indexMonth ===
-                                endPointToPay.endMonthIndex - 1 &&
-                            endPointToPay.endYearIndex == +indexYear &&
+                            style={(indexMonth ==
+                                endPointToPay.endMonthIndex  &&
+                            endPointToPay.endYearIndex == +indexYear) || (indexMonth == 11) &&
                             endPointToPay.partialToPay > 0
                                 ? `width: ${(endPointToPay.partialToPay / Math.abs(balance[month])) * 100}%`
                                 : ""}
