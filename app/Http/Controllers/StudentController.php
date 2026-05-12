@@ -138,7 +138,7 @@ class StudentController extends Controller
     {
         $search = $request->input('search');
         $id = $request->input('id');
-        $info = $this->studentService->searchStudent($search);
+        $info = $this->studentService->searchStudent($search, $id);
 
         return response()->json($info);
     }
