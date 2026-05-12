@@ -137,6 +137,7 @@ class StudentController extends Controller
     public function searchStudent(Request $request)
     {
         $search = $request->input('search');
+        $id = $request->input('id');
         $info = $this->studentService->searchStudent($search);
 
         return response()->json($info);

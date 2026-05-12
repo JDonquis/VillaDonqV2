@@ -260,8 +260,33 @@ class StudentService
         return $newStudent;
     }
 
-    public function searchStudent($search)
+    public function searchStudent($search, $id = null)
     {
+        if (isset($id)) {
+            $students = Student::where('id', $id)
+                ->with([
+                    'representative.user',
+                    'course',
+                    'section',
+                    'balances' => function ($query) {
+                        // Traemos los que tengan status específicos O el más reciente
+                        $query->whereIn('status', [BalanceStudentStatusEnum::Pending->value, BalanceStudentStatusEnum::Debt->value])
+                            ->with('schoolLapse')
+                            ->oldest(); // Ordenar por fecha de creación (el más antiguo primero)
+                    },
+                ])
+                ->get()
+                ->map(function ($student) {
+                    if ($student->balances->isEmpty()) {
+                        $student->setRelation('balances', $student->balances()->latest()->take(1)->get());
+                    }
+
+                    return $student;
+                });
+
+            return $students;
+        }
+
         $students = Student::where(function ($query) use ($search) {
             $query->where('ci', 'LIKE', '%' . $search . '%')
                 ->orWhere('name', 'LIKE', '%' . $search . '%')
