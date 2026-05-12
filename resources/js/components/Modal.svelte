@@ -34,7 +34,7 @@
 	}
 	dialog::backdrop {
 		background: rgba(0, 0, 0, 0.3);
-		backdrop-filter: blur(0.5px);
+		backdrop-filter: blur(0.1px);
 	}
 	dialog > div {
 		padding: 1em;

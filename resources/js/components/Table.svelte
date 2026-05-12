@@ -207,7 +207,7 @@
         </div> -->
         {#if selectedRow?.status}
             <div 
-                class="fixed z-50 flex fadeIn gap-2"
+                class="fixed  z-[100] flex fadeIn gap-2"
                 style="top: {buttonPosition.top}; left: {buttonPosition.left};"
             >
                 <button

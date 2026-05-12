@@ -9,9 +9,11 @@
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, router, page } from "@inertiajs/svelte";
     import { claim_svg_element } from "svelte/internal";
+    import SelectableRow from "../../components/SelectableRow.svelte";
     import Search from "../../components/Search.svelte";
-    export let data = [];
 
+    export let data = [];
+    
     $: selectedCourseId = (data.filters?.course_id || "1").toString();
 
     $: sectionsOfThisYear =
@@ -77,11 +79,11 @@
 
     let showModal = false;
     let showModalReinscribe = false;
-    let selectedRow = { status: false, id: 0 };
+    let selectedRow = { status: false, data: null };
 
     document.addEventListener("keydown", ({ key }) => {
         if (key === "Escape") {
-            selectedRow = { status: false, id: 0 };
+            selectedRow = { status: false, data: null };
         }
     });
 
@@ -127,7 +129,7 @@
                     showModal = false;
                     submitStatus = "Crear";
                     editingStudentId = null;
-                    selectedRow = { status: false, id: 0 };
+                    selectedRow = { status: false, data: null };
                 },
             });
         }
@@ -716,23 +718,12 @@
 
     <tbody slot="tbody">
         {#each data.students.data as row, i}
-            <tr
-                on:click={(e) => {
-                    const clickPos = { x: e.clientX, y: e.clientY };
-
-                    if (
-                        selectedRow.status &&
-                        selectedRow.data.student_id === row.student_id
-                    ) {
-                        selectedRow = { status: false, data: null };
-                    } else {
-                        selectedRow = {
-                            status: true,
-                            data: { ...row, _clickPosition: clickPos },
-                        };
-                    }
-                }}
-                class={`cursor-pointer  ${selectedRow?.data?.student_id == row.student_id ? "bg-yellow hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-100"}`}
+            <SelectableRow
+                rowData={row}
+                idKey="student_id"
+                {selectedRow}
+                activeClass="bg-yellow bg-opacity-10 brightness-110"
+                on:select={(e) => { selectedRow = e.detail; }}
             >
                 <td>{i + 1}</td>
                 <td>{row.student_name}</td>
@@ -742,7 +733,7 @@
                 <td>{row.student_age}</td>
                 <td>{row.rep_name} {row.rep_last_name}</td>
                 <td>{row.rep_phone_number}</td>
-            </tr>
+            </SelectableRow>
         {/each}
     </tbody>
 </Table>

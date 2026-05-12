@@ -11,6 +11,9 @@
     import ColorsPayMethods from "../../components/ColorsPayMethods";
     import BalanceBar from "../../components/BalanceBar.svelte";
     import Search from "../../components/Search.svelte";
+    import SelectableRow from "../../components/SelectableRow.svelte";
+    import { onMount, onDestroy } from "svelte";
+
     export let data = { students: { data: [] }, accounts: { data: [] } };
 
     export let searched_students = [];
@@ -58,52 +61,53 @@
     let showModal = false;
     let showTotalIncome = false;
     $: showModalFormEdit = false;
-    let selectedRow = { status: false, id: 0 };
+    let selectedRow = { status: false, data: null };
+    let submitStatus = "Registrar";
 
     document.addEventListener("keydown", ({ key }) => {
         if (key === "Escape") {
-            selectedRow = { status: false, id: 0 };
+            selectedRow = { status: false, data: null };
         }
     });
     console.log(data);
     function handleSubmit(event) {
         event.preventDefault();
         $form.clearErrors();
-        $form.post("/dashboard/pagos", {
-            onError: (errors) => {
-                if (errors.data) {
-                    displayAlert({ type: "error", message: errors.data });
-                }
-            },
-            onSuccess: (mensaje) => {
-                $form.reset();
-                displayAlert({
-                    type: "success",
-                    message: "Ok todo salió bien",
-                });
-                showModal = false;
-            },
-        });
-    }
-    function handleEdit(event) {
-        event.preventDefault();
-        $formEdit.clearErrors();
-        $formEdit.put(`/dashboard/bitacora/${$formEdit.id}`, {
-            onError: (errors) => {
-                if (errors.data) {
-                    displayAlert({ type: "error", message: errors.data });
-                }
-            },
-            onSuccess: (mensaje) => {
-                $formEdit.reset();
-                displayAlert({
-                    type: "success",
-                    message: "Ok todo salió bien",
-                });
-                showModalFormEdit = false;
-                selectedRow = { status: false, id: 0, row: {} };
-            },
-        });
+
+        if (submitStatus === "Registrar") {
+            $form.post("/dashboard/pagos", {
+                onError: (errors) => {
+                    if (errors.data) {
+                        displayAlert({ type: "error", message: errors.data });
+                    }
+                },
+                onSuccess: (mensaje) => {
+                    $form.reset();
+                    displayAlert({
+                        type: "success",
+                        message: "Ok todo salió bien",
+                    });
+                    showModal = false;
+                },
+            });
+        } else if (submitStatus === "Editar") {
+            $form.put(`/dashboard/pagos/${$form.id}`, {
+                onError: (errors) => {
+                    if (errors.data) {
+                        displayAlert({ type: "error", message: errors.data });
+                    }
+                },
+                onSuccess: (mensaje) => {
+                    $form.reset();
+                    displayAlert({
+                        type: "success",
+                        message: "Ok todo salió bien",
+                    });
+                    showModal = false;
+                    selectedRow = { status: false, data: null };
+                },
+            });
+        }
     }
 
     const search_student = debounce(async (search_text) => {
@@ -135,7 +139,6 @@
     }
 
     // Agregar y remover el event listener
-    import { onMount, onDestroy } from "svelte";
     onMount(() => {
         document.addEventListener("mousedown", handleClickOutside);
     });
@@ -145,16 +148,61 @@
 
     function handleDelete(id) {
         $form.delete(`/dashboard/matriculo/${id}`, {
-            onBefore: () =>
-                confirm(
-                    `¿Está seguro de eliminar a este estudiante ${selectedRow.title}?`,
-                ),
+            onBefore: () => confirm(`¿Está seguro de eliminar este pago?`),
         });
     }
 
     function fillFormToEdit() {
-        $formEdit.reset();
-        showModalFormEdit = true;
+        showModal = true;
+        submitStatus = "Editar";
+        getBalanceByStudentId
+        const selectedData = selectedRow.data;
+        console.log({ selectedData });
+
+        let studentsWithBalances = selectedData.students.map(async(s) => {
+            const balances = await getBalanceByStudentId(s.id);
+            return { ...s, balances };
+        })
+
+        //  Promise.all(getBalances).then((studentsWithBalances) => {
+        //     $form.students = studentsWithBalances.map((s) => ({
+        //         id: s.id,
+        //         name: s.name,
+        //         last_name: s.last_name,
+        //         ci: s.ci,
+        //         course_name: s.course.name,
+        //         section_name: s.section.name,
+        //         legal_rep_name:
+        //             s.representative.user.name +
+        //             " " +
+        //             s.representative.user.last_name,
+        //         balances: s.balances || [],
+        //         amount_in_dolars: s.pivot.amount_in_dolars,
+        //         amount_in_bs: s.pivot.amount_in_bs,
+        //     }));
+        // });
+        $form.id = selectedData.id;
+        $form.students = studentsWithBalances.map((s) => ({
+            id: s.id,
+            name: s.name,
+            last_name: s.last_name,
+            ci: s.ci,
+            course_name: s.course.name,
+            section_name: s.section.name,
+            legal_rep_name:
+                s.representative.user.name +
+                " " +
+                s.representative.user.last_name,
+            balances: s.balances,
+            amount_in_dolars: s.pivot.amount_in_dolars,
+            amount_in_bs: s.pivot.amount_in_bs,
+        }));
+        $form.date = selectedData.date;
+        $form.account_payment_id = selectedData.account_payment_id;
+        $form.total_in_dolars = selectedData.total_in_dolars;
+        $form.total_in_bs = selectedData.total_in_bs;
+        $form.reference = selectedData.reference;
+        $form.observations = selectedData.observations;
     }
 
     $: $form.total_in_dolars, exchange();
@@ -163,6 +211,20 @@
         // $form.total_in_bs = $form.total_in_dolars * +dolarPrice;
         // $form.total_in_dolars = $form.total_in_bs / dolarPrice;
     }
+
+    const getBalanceByStudentId = async(studentId) => {
+         try {
+            const response = await axios.get(
+                `/dashboard/pagos/search-student`, {
+                    params: { id: studentId },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.log(error)
+            return [];
+        }
+    };
 
     $: console.log($form);
 </script>
@@ -180,7 +242,7 @@
         id="a-form"
         on:submit={handleSubmit}
         action=""
-        class="w-full grid md:grid-cols-12 md:gap-x-5 px-5"
+        class="w-full grid md:grid-cols-12 md:gap-x-5 px-3 pl-2"
     >
         <div class="col-span-8 relative mx-auto text-left w-full">
             <!-- <Input
@@ -281,7 +343,7 @@
                 <tbody>
                     {#each $form.students as student, i}
                         <tr
-                            class={` w-full [&_td]:px-4 [&_td*]:py-2 text-sm cursor-pointer  border-gray-500`}
+                            class={` w-full [&_td]:px-2 [&_td*]:py-2 text-sm cursor-pointer  border-gray-500`}
                         >
                             <td>
                                 <div class="flex items-center">
@@ -323,7 +385,7 @@
                             </td>
                             <td>
                                 <div class="flex items-center">
-                                    <b class="pr-1">VES</b>
+                                    <b class="pr-1 text-xs">VES</b>
                                     <input
                                         type="number"
                                         min="0"
@@ -360,8 +422,8 @@
                                 <div class="flex items-center">
                                     <iconify-icon
                                         icon="bx:child"
-                                        width="24"
-                                        height="24"
+                                        width="14"
+                                        height="14"
                                     ></iconify-icon>
                                     <span>
                                         {student.name}
@@ -377,12 +439,13 @@
                                 ><div class="flex items-center">
                                     <span
                                         ><iconify-icon
-                                            icon="boxicons:parent-child"
-                                            width="24"
-                                            height="24"
-                                        ></iconify-icon></span
-                                    >
-                                    <span>{student.legal_rep_name}</span>
+                                            icon="bi:person-standing"
+                                            width="16"
+                                            height="16"
+                                        ></iconify-icon>
+
+                                        <span>{student.legal_rep_name}</span>
+                                    </span>
                                 </div>
                             </td>
                             <td class="max-w-[60px]">
@@ -474,7 +537,7 @@
         <div class="flex justify-end col-span-12">
             <button
                 type="submit"
-                class="w-[480px] btn btn-green mt-7 flex items-center justify-center gap-3"
+                class="w-[420px] btn btn-green mt-7 flex items-center justify-center gap-3"
                 disabled={$form.processing}
             >
                 {#if $form.processing}
@@ -485,7 +548,9 @@
                         width="24"
                         height="24"
                     />
-                    <span> Guardar </span>
+                    <span>
+                        {submitStatus}
+                    </span>
                 {/if}
             </button>
         </div>
@@ -519,6 +584,7 @@
         },
         account_payment_id: {
             type: "select",
+            multiple: true,
             label: "Método de pago",
             options: data.accounts.data.map((account) => ({
                 id: account.id,
@@ -530,20 +596,23 @@
                 ]
                     .filter(Boolean)
                     .join(" "),
+                color: ColorsPayMethods()[account.payment_method_name],
             })),
         },
     }}
 />
 
 {#if data.total_income}
-    <div class="px-3 py-2 w-max bg-green/20 border-4 medium-shadow-green border-green text-green  mb-5 flex flex-wrap items-center gap-2">
+    <div class="w-max mb-5 flex flex-wrap items-center gap-2">
         <span class="font-semibold">Total ingresos:</span>
-        <b class={`text-sm ${showTotalIncome ? "opacity-100" : "opacity-0 blur-sm"} font-bold transition-all duration-200`}>
-            {showTotalIncome ? `$${data.total_income}` : "••••••"}
+        <b
+            class={`text-sm ${showTotalIncome ? "opacity-100" : "opacity-0 blur-sm"} text-green transition-all duration-200`}
+        >
+            {showTotalIncome ? `$${data.total_income}` : "•••"}
         </b>
         <button
             type="button"
-            class="inline-flex items-center justify-center  border border-green/50 bg-white/10 p-2 text-green transition hover:bg-green/10 focus:outline-none"
+            class="inline-flex items-center justify-center bg-white/10 p-2 text-gray-700 transition hover:bg-green/10 focus:outline-none"
             on:click={() => {
                 showTotalIncome = !showTotalIncome;
             }}
@@ -562,14 +631,14 @@
     serverSideData={data?.payments}
     on:fillFormToEdit={fillFormToEdit}
     on:clickDeleteIcon={() => {
-        handleDelete(selectedRow.id);
+        handleDelete(selectedRow.data?.id);
     }}
     pagination={true}
 >
     <thead slot="thead" class="sticky top-0 z-50">
         <tr>
             <th>id</th>
-            <th>Fecha</th>
+            <th>Fecha del pago</th>
             <th>Estudiante/s</th>
             <th>Total USD$</th>
             <th>Total Bs</th>
@@ -581,31 +650,17 @@
 
     <tbody slot="tbody">
         {#each data?.payments?.data as row, i}
-            <tr
-                on:click={(e) => {
-                    const clickPos = { x: e.clientX, y: e.clientY };
-                    if (row.id != selectedRow.id) {
-                        selectedRow = {
-                            status: true,
-                            id: row.id,
-                            title: row.title,
-                            _clickPosition: clickPos,
-                        };
-                        $formEdit.defaults({
-                            ...row,
-                        });
-                    } else {
-                        selectedRow = {
-                            status: false,
-                            id: 0,
-                            title: "",
-                        };
-                        $formEdit.defaults({
-                            ...emptyDataForm,
-                        });
-                    }
+            <SelectableRow
+                rowData={row}
+                idKey="id"
+                {selectedRow}
+                activeClass="bg-color2 bg-opacity-10 brightness-110"
+                on:select={(e) => {
+                    selectedRow = e.detail;
+                    $formEdit.defaults(
+                        e.detail.data ? { ...row } : { ...emptyDataForm },
+                    );
                 }}
-                class={`py-2 cursor-pointer hover:bg-gray-100 ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : ""}`}
             >
                 <td>{row.id}</td>
                 <td>{row.date}</td>
@@ -653,7 +708,7 @@
                             .username}{/if}
                 </td>
                 <td>{row.reference}</td>
-            </tr>
+            </SelectableRow>
         {/each}
     </tbody>
 </Table>

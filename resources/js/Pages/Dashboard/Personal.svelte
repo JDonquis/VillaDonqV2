@@ -6,6 +6,7 @@
     import Table from "../../components/Table.svelte";
     import Alert from "../../components/Alert.svelte";
     import { displayAlert } from "../../stores/alertStore";
+    import SelectableRow from "../../components/SelectableRow.svelte";
 
     export let types = [];
     export let data = [];
@@ -184,25 +185,13 @@
             </thead>
             <tbody slot="tbody">
                 {#each data as user}
-                    <tr
-                        on:click={(e) => {
-                            const clickPos = { x: e.clientX, y: e.clientY };
-
-                            if (
-                                selectedRow.status &&
-                                selectedRow.data.id === user.id
-                            ) {
-                                selectedRow = { status: false, id: 0 };
-                            } else {
-                                selectedRow = {
-                                    status: true,
-                                    data: { ...user, _clickPosition: clickPos },
-                                };
-                            }
-                        }}
-                        class="cursor-pointer hover:bg-gray-100"
-                        class:bg-gray-200={selectedRow.status &&
-                            selectedRow.data.id === user.id}
+                    <SelectableRow
+                        rowData={user}
+                        idKey="id"
+                        {selectedRow}
+                        activeClass="bg-gray-200"
+                        inactiveClass="hover:bg-gray-100"
+                        on:select={(e) => { selectedRow = e.detail; }}
                     >
                         <td>{user.id}</td>
                         <td>{user.name}</td>
@@ -213,7 +202,7 @@
                         <td class="max-w-[200px] truncate" title={user.address}
                             >{user.address}</td
                         >
-                    </tr>
+                    </SelectableRow>
                 {/each}
             </tbody>
         </Table>

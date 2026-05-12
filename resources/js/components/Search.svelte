@@ -28,7 +28,11 @@
     let search = $page.props.filters?.search || initialUrlFilters.search || "";
 
     const handleSearch = debounce((event) => {
-        router.get(`${$page.url.split("?")[0]}`, { search, page: "1" }, { preserveState: true });
+        router.get(
+            `${$page.url.split("?")[0]}`,
+            { search, page: "1" },
+            { preserveState: true },
+        );
     }, 300);
 
     let showModal = false;
@@ -44,13 +48,14 @@
         isFilterDataInitialized = true;
     }
 
-    $: isFilterAply = Object.keys(filterClientData).some(
-        (value) => {
-            console.log(filterClientData[value])
-           return  value != "search" && value != "page" && filterClientData[value] != "todos"
-        } 
-        
-    );
+    $: isFilterAply = Object.keys(filterClientData).some((value) => {
+        console.log(filterClientData[value]);
+        return (
+            value != "search" &&
+            value != "page" &&
+            filterClientData[value] != "todos"
+        );
+    });
 
     const changeDateFilter = (args) => {
         filterClientData = {
@@ -61,7 +66,6 @@
         handleFilters();
     };
 
-
     const handleFilters = () => {
         firstTime = false;
         router.get(`${$page.url.split("?")[0]}`, filterClientData, {
@@ -70,11 +74,11 @@
         });
     };
 
-    console.log(filterClientData)
+    console.log(filterClientData);
 </script>
 
 <div
-    class="fixed top-3 z-50 lg right-20 md:right-64 flex items-center  bg-gray-50 border border-gray-200"
+    class="fixed top-3 z-50 lg right-20 md:right-64 flex items-center bg-gray-50 border border-gray-200"
 >
     <span class="absolute">
         <svg
@@ -128,24 +132,20 @@
     {/if}
 </div>
 
-<Modal
-    bind:showModal
-    classes={"max-w-[960px] h-full"}
-    showCancelButton={false}
->
+<Modal bind:showModal classes={"max-w-[960px] h-full"} showCancelButton={false}>
     <p slot="header" class="opacity-60">Filtros de busqueda</p>
     <div class="grid grid-cols-1 h-full md:grid-cols-3 gap-5 md:gap-10">
         {#each Object.entries(filtersOptions) as [filterKey, filterOption] (filterKey)}
             <article class="md:flex md:flex-col mt-3">
                 <h4
-                    class="capitalize w-fit md:w-full text-xs md:text-sm font-medium  px-2 flex items-center pb-2 lg:mb-1.5"
+                    class="capitalize w-fit md:w-full text-xs md:text-sm font-medium px-2 flex items-center pb-2 lg:mb-1.5"
                 >
                     {filterOption.label}
                 </h4>
                 {#if filterOption.type === "search"}
                     <input
                         value={filterClientData?.[filterKey] || ""}
-                        class="h-auto border-gray-400  border p-2 py-1 "
+                        class="h-auto border-gray-400 border p-2 py-1"
                         placeholder={"🔍 " + filterOption.label}
                         type="search"
                         name=""
@@ -161,6 +161,56 @@
                             }
                         }}
                     />
+                {:else if filterOption.type === "select" && filterOption.multiple}
+                    <div class="space-y-1 max-h-56 overflow-y-auto">
+                        {#each filterOption.options as filter, i (filter.id)}
+                            <label
+                                class="flex items-center gap-2 px-2 py-1 text-xs cursor-pointer hover:bg-gray-100 rounded"
+                            >
+                                <input
+                                    type="checkbox"
+                                    checked={filterClientData?.[
+                                        filterKey
+                                    ]?.includes(String(filter.id))}
+                                    on:change={(e) => {
+                                        if (!filterClientData[filterKey]) {
+                                            filterClientData[filterKey] = [];
+                                        }
+                                        if (e.target.checked) {
+                                            filterClientData[filterKey] = [
+                                                ...filterClientData[filterKey],
+                                                String(filter.id),
+                                            ];
+                                        } else {
+                                            filterClientData[filterKey] =
+                                                filterClientData[
+                                                    filterKey
+                                                ].filter(
+                                                    (v) =>
+                                                        v !== String(filter.id),
+                                                );
+                                        }
+                                        if (
+                                            filterClientData[filterKey]
+                                                .length === 0
+                                        ) {
+                                            delete filterClientData[filterKey];
+                                        }
+                                        handleFilters();
+                                    }}
+                                />
+                                <span>
+                                    {#if filter.color}
+                                        <span
+                                            class={`h-5 text-${filter.color}  bg-${filter.color} w-5  left-0 top-0`}
+                                            >|</span
+                                        >
+                                    {/if}
+                                    {filter.name}
+                                </span>
+                            </label>
+                        {/each}
+                    </div>
                 {:else if filterOption.type === "select"}
                     <select
                         bind:value={filterClientData[filterKey]}
@@ -173,19 +223,24 @@
                         }}
                         name={filterOption.label}
                         id=""
-                        class="border-2 small-shadow border-black p-1 py-2 "
+                        class="border-2 small-shadow border-black p-1 py-2"
                     >
                         <option value="todos">Todos</option>
                         {#each filterOption.options as filter, i (filter.id)}
                             <option
-                                selected={String(filterClientData?.[filterKey]) === String(filter.id)}
+                                selected={String(
+                                    filterClientData?.[filterKey],
+                                ) === String(filter.id)}
                                 value={String(filter.id)}>{filter.name}</option
                             >
                         {/each}
                     </select>
                 {:else if filterOption.type === "date"}
-                    <DateRange  startDate={Number(filterClientData?.start_date)}
-                    endDate={Number(filterClientData?.end_date)} on:changeDateFilter={changeDateFilter} />
+                    <DateRange
+                        startDate={Number(filterClientData?.start_date)}
+                        endDate={Number(filterClientData?.end_date)}
+                        on:changeDateFilter={changeDateFilter}
+                    />
                 {:else}
                     {#each filterOption.options as filter, i (filter.id)}
                         <button

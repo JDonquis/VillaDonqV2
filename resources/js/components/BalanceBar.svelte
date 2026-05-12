@@ -104,6 +104,7 @@
     };
 
     export let balances;
+    console.log({ balances });
     export let amountToPay = 0;
     const firstUnpaidMonth = Object.entries(months).findIndex(
         ([spanisMonth, monthName]) => {
@@ -141,7 +142,7 @@
                 amountToPay -= Math.abs(balances[endYearIndex].inscription);
             }
             if (amountToPay <= 0) {
-                break
+                break;
             }
             const balance = Math.abs(
                 balances[endYearIndex][arrMonthsEnglish[endMonthIndex]],
@@ -166,7 +167,6 @@
             } else {
                 endMonthIndex++;
             }
-      
         }
         endPointToPay = { endMonthIndex, endYearIndex, partialToPay };
         return { endMonthIndex, endYearIndex, partialToPay };
@@ -178,7 +178,7 @@
 
 <div>
     {#each balances as balance, indexYear}
-        <div class="flex gap-4 items-center mt-3    ">
+        <div class="flex gap-4 items-center mt-3">
             <!-- <button>
                 <iconify-icon
                     class="rotate-180 relative top-1"
@@ -194,7 +194,7 @@
                 )}
             </p>
 
-            <div class="flex gap-2">
+            <div class="flex items-center gap-2 text-xs">
                 <p>Deuda:</p>
                 <b>
                     ${Math.abs(
@@ -222,7 +222,7 @@
         </div>
         <div class="grid p-0 grid-cols-12 border-2 border-black">
             <div
-                class={` hover:brightness-110  relative col-span-1 z-10  text-xs capitalize overflow-hidden text-center font-bold ${balance.inscription < 0 ? "bg-red" : "bg-green"} text-black  p-2`}
+                class={` hover:brightness-110  relative col-span-1 z-10  text-xs capitalize overflow-hidden text-center font-bold ${balance.inscription < 0 ? "bg-red" : "bg-green"} text-black  p-1`}
             >
                 <span> Inscri. </span>
                 <p>${Math.abs(balance.inscription)}</p>
@@ -237,7 +237,7 @@
             <div class="col-span-11 grid grid-cols-12">
                 {#each Object.entries(months) as [spanishLabel, month], indexMonth}
                     <div
-                        class={` hover:brightness-110 border-l-2 border-l-gray-200 relative col-span-1  text-xs capitalize overflow-hidden text-center font-bold ${balance[month + "_status"] == "debt" ? "bg-red" : balance[month + "_status"] == "paid" ? "bg-green" : balance[month + "_status"] == "partially_paid" ? "bg-yellow" : "bg-gray-50 "} text-black  p-2`}
+                        class={` hover:brightness-110 border-l-2 border-l-gray-200 relative col-span-1  text-xs capitalize overflow-hidden text-center font-bold ${balance[month + "_status"] == "debt" ? "bg-red" : balance[month + "_status"] == "paid" ? "bg-green" : balance[month + "_status"] == "partially_paid" ? "bg-yellow" : "bg-gray-50 "} text-black  p-1`}
                     >
                         <div class="z-50">
                             {spanishLabel}
@@ -247,7 +247,11 @@
                                 ${Math.abs(balance[month])}
                             {/if}
                         </p>
-
+                        {#if balances.balance_payments?.[month]}
+                            <div class="top-0 left-0 absolute w-full-h-full">
+                                {balance.balance_payments[month]}
+                            </div>
+                        {/if}
                         <div
                             class={`text-xs  months_to_pay absolute top-0.5 left-0 w-full text-black h-[95%] z-40 
                             ${indexMonth === startPointToPay.month && startPointToPay.school_lapse_index == +indexYear && amountToPay > Math.abs(balance[month]) ? "border-l-4 border-black/50" : ""} 
