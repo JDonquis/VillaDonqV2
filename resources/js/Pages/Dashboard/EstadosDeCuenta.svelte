@@ -41,9 +41,13 @@
                             </span>
                         </div>
                 </td>
-                <td
+                <td class="group"
                     >{student.representative.user.name}
-                    {student.representative.user.last_name}</td
+                    {student.representative.user.last_name}
+                    <button class="text-green cursor-pointer p-1 hover:bg-gray-100 hidden group-hover:inline-flex">
+                        <iconify-icon icon="ic:baseline-whatsapp" width="16" height="16"></iconify-icon>
+                    </button>
+                    </td
                 >
                 <td> <BalanceBar balances={student.balances.map((b) => ({ ...b, ...b.months }))} /> </td>
             </tr>
