@@ -104,8 +104,8 @@
     };
 
     export let balances;
-    console.log({ balances });
     export let amountToPay = 0;
+    export let id = "";
     const firstUnpaidMonth = Object.entries(months).findIndex(
         ([spanisMonth, monthName]) => {
             const status = balances[0]?.[`${monthName}_status`];
@@ -177,12 +177,11 @@
     // Reactive statement: run getLastPaymentMonth whenever amountToPay changes
     $: endPointToPay = getLastPaymentMonth(amountToPay);
 
-    $: console.log({ payingBalances, endPointToPay, startPointToPay });
 </script>
 
-<div>
+<div {id} class="bg-white p-4 rounded-lg">
     {#each balances as balance, indexYear}
-        <div class="flex gap-4 items-center mt-3">
+        <div class="flex gap-4 items-center mt-4 mb-2">
             <!-- <button>
                 <iconify-icon
                     class="rotate-180 relative top-1"
@@ -228,7 +227,7 @@
             <div
                 class={` hover:brightness-110  relative col-span-1 z-10  text-xs capitalize overflow-hidden text-center font-bold ${balance.inscription < 0 ? "bg-red" : "bg-green"} text-black  p-1`}
             >
-                <span> Inscri. </span>
+                <span> Inscr. </span>
                 <p>${Math.abs(balance.inscription)}</p>
 
                 <div
