@@ -254,10 +254,10 @@
         >
             <div class="inline-block w-full py-2 align-middle md:px-6 lg:px-8">
                 <div
-                    class="overflow-x-auto  overflow-y-auto scroll-table border bg-white border-gray-200"
+                    class="overflow-x-auto   scroll-table border bg-white border-gray-200"
                 >
                     <table
-                        class="table overflow-scroll overflow-y-auto w-full divide-y divide-gray-200"
+                        class="table   w-full divide-y divide-gray-200"
                     >
                         <slot name="thead"></slot>
 
