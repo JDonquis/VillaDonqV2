@@ -104,13 +104,13 @@
     };
 
     export let balances;
-    console.log({ balances });
     export let amountToPay = 0;
     let tooltipVisible = false;
     let tooltipPayments = [];
     let tooltipStyle = "";
     let tooltipHideTimeout;
 
+    export let id = "";
     const firstUnpaidMonth = Object.entries(months).findIndex(
         ([spanisMonth, monthName]) => {
             const status = balances[0]?.[`${monthName}_status`];
@@ -125,6 +125,8 @@
     let payingBalances = [{}];
 
     let endPointToPay = {};
+
+
     function getLastPaymentMonth(amountToPay) {
         let lastPaymentMonth = null;
         let endMonthIndex = firstUnpaidMonth;
@@ -203,11 +205,12 @@
 
     // Reactive statement: run getLastPaymentMonth whenever amountToPay changes
     $: endPointToPay = getLastPaymentMonth(amountToPay);
+
 </script>
 
-<div>
+<div {id} class="bg-white p-4 rounded-lg">
     {#each balances as balance, indexYear}
-        <div class="flex gap-4 items-center mt-3">
+        <div class="flex gap-4 items-center mt-4 mb-2">
             <!-- <button>
                 <iconify-icon
                     class="rotate-180 relative top-1"
@@ -253,7 +256,7 @@
             <div
                 class={` hover:brightness-110  relative col-span-1 z-10  text-xs capitalize  text-center font-bold ${balance.inscription < 0 ? "bg-red" : "bg-green"} text-black  p-1`}
             >
-                <span> Inscri. </span>
+                <span> Inscr. </span>
                 <p>${Math.abs(balance.inscription)}</p>
 
                 <div
@@ -283,11 +286,12 @@
                             ${indexMonth === startPointToPay.month && startPointToPay.school_lapse_index == +indexYear && amountToPay > Math.abs(balance[month]) ? "border-l-4 border-black/50" : ""} 
                             ${indexMonth === endPointToPay.endMonthIndex - 1 && endPointToPay.endYearIndex == +indexYear && amountToPay > 0 ? "border-r-4 border-black/50" : ""}
                             ${startPointToPay.school_lapse_index <= indexYear && payingBalances[indexYear]?.startMonth <= indexMonth && indexMonth <= payingBalances[indexYear]?.endMonthIndex ? "bg-purple/30 border-y-4 border-black/50" : ""}`}
-                            style={(indexMonth == endPointToPay.endMonthIndex &&
-                                endPointToPay.endYearIndex == +indexYear) ||
-                            (indexMonth == 11 && endPointToPay.partialToPay > 0)
+                            style={((indexMonth ==
+                                endPointToPay.endMonthIndex-1 && 
+                            endPointToPay.endYearIndex == +indexYear) || (indexMonth == 11) ) && (
+                            endPointToPay.partialToPay > 0)
                                 ? `width: ${(endPointToPay.partialToPay / Math.abs(balance[month])) * 100}%`
-                                : ""}
+                                : "width: 100%"}
                         ></div>
                     </div>
                 {/each}
