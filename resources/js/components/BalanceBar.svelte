@@ -105,6 +105,7 @@
 
     export let balances;
     export let amountToPay = 0;
+    export let classes = "";
     let tooltipVisible = false;
     let tooltipPayments = [];
     let tooltipStyle = "";
@@ -208,7 +209,7 @@
 
 </script>
 
-<div {id} class="bg-white p-4 rounded-lg">
+<div {id} class={`bg-white p-4 rounded-lg ${classes}`}>
     {#each balances as balance, indexYear}
         <div class="flex gap-4 items-center mt-4 mb-2">
             <!-- <button>

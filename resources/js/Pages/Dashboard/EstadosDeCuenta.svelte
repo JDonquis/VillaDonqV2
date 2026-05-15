@@ -108,6 +108,7 @@
                             ...b,
                             ...b.months,
                         }))}
+                        classes="py-0 px-0"
                     />
                 </td>
                 <td class="group"
