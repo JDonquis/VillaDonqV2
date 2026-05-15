@@ -780,21 +780,24 @@
                 }}
             >
                 <td>{i + 1}</td>
-                <td>
-                    <div class="flex">
-                        {#if row.is_exempt}
-                            <div class="text-purple font-bold">
-                                {row.exemption_percentage}%
-                                <iconify-icon
-                                    icon="mdi:shield-check"
-                                    class="text-purple mr-1"
-                                />
-                            </div>
-                        {/if}
-                        <span>
-                            {row.student_name}
-                        </span>
-                    </div>
+                <td >
+                        <div class="relative max-w-fit">
+                            <span>
+                                {row.student_name}
+                            </span>
+                            {#if row.is_exempt}
+                                <div class="text-purple font-bold absolute -bottom-3 left-0 flex items-center gap-1 text-xs">
+                                    <iconify-icon
+                                        icon="mdi:shield-check"
+                                        class="text-purple mr-1"
+                                    />
+                                    <small>
+                                        {row.exemption_percentage}%
+                                    </small>
+                                </div>
+                            {/if}
+
+                        </div>    
                 </td>
                 <td>{row.student_last_name}</td>
                 <td>{row.student_ci}</td>
