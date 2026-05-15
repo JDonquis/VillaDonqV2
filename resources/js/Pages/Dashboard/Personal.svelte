@@ -21,6 +21,7 @@
         email: "",
         phone_number: "",
         address: "",
+        is_admin: false,
     };
 
     let form = useForm({
@@ -49,6 +50,7 @@
             email: user.email,
             phone_number: user.phone_number,
             address: user.address,
+            is_admin: user.is_admin || false,
         });
         editingUser = user;
         submitStatus = "Editar";
@@ -258,6 +260,18 @@
             bind:value={$form.address}
             error={$form.errors.address}
         />
+        
+        <div class="col-span-2 flex items-center gap-2 mt-2">
+            <input
+                id="is_admin"
+                type="checkbox"
+                bind:checked={$form.is_admin}
+                class="w-4 h-4 text-green bg-gray-100 border-gray-300 rounded focus:ring-green/50 focus:ring-2"
+            />
+            <label for="is_admin" class="text-sm font-medium text-gray-900"
+                >¿Es administrador?</label
+            >
+        </div>
         <button
             type="submit"
             class="btn btn-green col-span-2 mt-7 flex items-center justify-center gap-3"

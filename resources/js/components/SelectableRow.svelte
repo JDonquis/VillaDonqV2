@@ -7,6 +7,7 @@
     export let selectedRow = { status: false, data: null };
     export let activeClass = "bg-yellow bg-opacity-10 brightness-110";
     export let inactiveClass = "hover:bg-gray-100";
+    export let classes = "";
 
     $: isSelected = selectedRow?.status && selectedRow?.data?.[idKey] === rowData[idKey];
 
@@ -23,7 +24,7 @@
 
 <tr
     on:click={handleClick}
-    class={`cursor-pointer transition-colors ${isSelected ? activeClass : inactiveClass}`}
+    class={`cursor-pointer transition-colors ${isSelected ? activeClass : inactiveClass} ${classes}`}
 >
     <slot />
 </tr>

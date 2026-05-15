@@ -104,8 +104,13 @@
     };
 
     export let balances;
-    console.log({ balances });
     export let amountToPay = 0;
+    let tooltipVisible = false;
+    let tooltipPayments = [];
+    let tooltipStyle = "";
+    let tooltipHideTimeout;
+
+    export let id = "";
     const firstUnpaidMonth = Object.entries(months).findIndex(
         ([spanisMonth, monthName]) => {
             const status = balances[0]?.[`${monthName}_status`];
@@ -120,6 +125,8 @@
     let payingBalances = [{}];
 
     let endPointToPay = {};
+
+
     function getLastPaymentMonth(amountToPay) {
         let lastPaymentMonth = null;
         let endMonthIndex = firstUnpaidMonth;
@@ -172,13 +179,38 @@
         return { endMonthIndex, endYearIndex, partialToPay };
     }
 
+    function showBalancePaymentsTooltip(event, payments) {
+        if (!payments || payments.length === 0) {
+            tooltipVisible = false;
+            return;
+        }
+
+        clearTimeout(tooltipHideTimeout);
+        tooltipPayments = payments;
+        const rect = event.currentTarget.getBoundingClientRect();
+        tooltipStyle = `position: fixed; top: ${rect.bottom}px; left: ${rect.left + rect.width / 2}px; transform: translateX(-50%); z-index: 9999;`;
+        tooltipVisible = true;
+    }
+
+    function scheduleTooltipHide() {
+        clearTimeout(tooltipHideTimeout);
+        tooltipHideTimeout = setTimeout(() => {
+            tooltipVisible = false;
+        }, 150);
+    }
+
+    function hideBalancePaymentsTooltip() {
+        tooltipVisible = false;
+    }
+
     // Reactive statement: run getLastPaymentMonth whenever amountToPay changes
     $: endPointToPay = getLastPaymentMonth(amountToPay);
+
 </script>
 
-<div>
+<div {id} class="bg-white p-4 rounded-lg">
     {#each balances as balance, indexYear}
-        <div class="flex gap-4 items-center mt-3">
+        <div class="flex gap-4 items-center mt-4 mb-2">
             <!-- <button>
                 <iconify-icon
                     class="rotate-180 relative top-1"
@@ -222,10 +254,11 @@
         </div>
         <div class="grid p-0 grid-cols-12 border-2 border-black">
             <div
-                class={` hover:brightness-110  relative col-span-1 z-10  text-xs capitalize overflow-hidden text-center font-bold ${balance.inscription < 0 ? "bg-red" : "bg-green"} text-black  p-1`}
+                class={` hover:brightness-110  relative col-span-1 z-10  text-xs capitalize  text-center font-bold ${balance.inscription < 0 ? "bg-red" : "bg-green"} text-black  p-1`}
             >
-                <span> Inscri. </span>
-                <p>${Math.abs(balance.inscription)}</p>
+                <span> Inscr. </span>
+                
+                <p>{Math.abs(balance.inscription) > 0 ? "$"+Math.abs(balance.inscription) : ""}</p>
 
                 <div
                     class={`absolute top-0.5 left-0  h-[95%] z-40 ${payingBalances[indexYear]?.balanceInscription > 0 ? "bg-purple/30 border-y-4 border-black/50 border" : ""}`}
@@ -237,9 +270,11 @@
             <div class="col-span-11 grid grid-cols-12">
                 {#each Object.entries(months) as [spanishLabel, month], indexMonth}
                     <div
-                        class={` hover:brightness-110 border-l-2 border-l-gray-200 relative col-span-1  text-xs capitalize overflow-hidden text-center font-bold ${balance[month + "_status"] == "debt" ? "bg-red" : balance[month + "_status"] == "paid" ? "bg-green" : balance[month + "_status"] == "partially_paid" ? "bg-yellow" : "bg-gray-50 "} text-black  p-1`}
+                        class={`group/month hover:brightness-110 border-l-2 border-l-gray-200 relative col-span-1  text-xs capitalize  text-center font-bold ${balance[month + "_status"] == "debt" ? "bg-red" : balance[month + "_status"] == "paid" ? "bg-green" : balance[month + "_status"] == "partially_paid" ? "bg-yellow" : "bg-gray-50 "} text-black  p-1`}
+                        on:mouseenter={(e) => balance.balance_payments[month] ? showBalancePaymentsTooltip(e, balance.balance_payments[month]) : null}
+                        on:mouseleave={scheduleTooltipHide}
                     >
-                        <div class="z-50">
+                        <div class="z-40">
                             {spanishLabel}
                         </div>
                         <p>
@@ -247,26 +282,40 @@
                                 ${Math.abs(balance[month])}
                             {/if}
                         </p>
-                        {#if balances.balance_payments?.[month]}
-                            <div class="top-0 left-0 absolute w-full-h-full">
-                                {balance.balance_payments[month]}
-                            </div>
-                        {/if}
                         <div
                             class={`text-xs  months_to_pay absolute top-0.5 left-0 w-full text-black h-[95%] z-40 
                             ${indexMonth === startPointToPay.month && startPointToPay.school_lapse_index == +indexYear && amountToPay > Math.abs(balance[month]) ? "border-l-4 border-black/50" : ""} 
                             ${indexMonth === endPointToPay.endMonthIndex - 1 && endPointToPay.endYearIndex == +indexYear && amountToPay > 0 ? "border-r-4 border-black/50" : ""}
                             ${startPointToPay.school_lapse_index <= indexYear && payingBalances[indexYear]?.startMonth <= indexMonth && indexMonth <= payingBalances[indexYear]?.endMonthIndex ? "bg-purple/30 border-y-4 border-black/50" : ""}`}
-                            style={indexMonth ===
-                                endPointToPay.endMonthIndex - 1 &&
-                            endPointToPay.endYearIndex == +indexYear &&
-                            endPointToPay.partialToPay > 0
+                            style={((indexMonth ==
+                                endPointToPay.endMonthIndex-1 && 
+                            endPointToPay.endYearIndex == +indexYear) || (indexMonth == 11) ) && (
+                            endPointToPay.partialToPay > 0)
                                 ? `width: ${(endPointToPay.partialToPay / Math.abs(balance[month])) * 100}%`
-                                : ""}
+                                : "width: 100%"}
                         ></div>
                     </div>
                 {/each}
             </div>
         </div>
     {/each}
+
+    {#if tooltipVisible}
+        <div
+            class="min-h-[100px] w-fit bg-white text-dark p-2  shadow-lg border border-black"
+            style={tooltipStyle}
+            on:mouseenter={() => clearTimeout(tooltipHideTimeout)}
+            on:mouseleave={scheduleTooltipHide}
+        >
+            {#each tooltipPayments as payment}
+                <div class="flex flex-col gap-1 items-center mb-2  p-1">
+                    <p class="text-xs">{payment.payment.date}</p>
+                    <div class="flex items-center gap-1">
+                        <b class="text-sm">${payment.payment.total_in_dolars}</b>
+                        <p class="text-xs">Ref: {payment.payment.reference}</p>
+                    </div>
+                </div>
+            {/each}
+        </div>
+    {/if}
 </div>

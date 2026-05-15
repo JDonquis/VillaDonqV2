@@ -14,6 +14,7 @@
     export let pagination = true;
     export let allowFilters = true;
     export let otherSelectOptions = false
+    export let edit = true
 
     let filterClientData = {
         search: new URLSearchParams($page.url.split('?')[1] || '').get('search') || '',
@@ -210,6 +211,8 @@
                 class="fixed  z-[100] flex fadeIn gap-2"
                 style="top: {buttonPosition.top}; left: {buttonPosition.left};"
             >
+
+                {#if edit}
                 <button
                     on:click={() => dispatch("fillFormToEdit")}
                     class="bg-yellow cursor-pointer text-2xl hover:-translate-x-0.5 hover:-translate-y-0.5 hover:medium-shadow border-3 border-black small-shadow px-4 py-1"
@@ -217,6 +220,7 @@
                 >
                    <iconify-icon icon="ic:baseline-edit" class="relative top-1" width="24" height="24"></iconify-icon>
                 </button>
+                {/if}
 
                 <button
                     on:click={() => dispatch("clickDeleteIcon")}
@@ -250,10 +254,10 @@
         >
             <div class="inline-block w-full py-2 align-middle md:px-6 lg:px-8">
                 <div
-                    class="overflow-x-auto  overflow-y-auto scroll-table border bg-white border-gray-200"
+                    class="overflow-x-auto   scroll-table border bg-white border-gray-200"
                 >
                     <table
-                        class="table overflow-scroll overflow-y-auto w-full divide-y divide-gray-200"
+                        class="table   w-full divide-y divide-gray-200"
                     >
                         <slot name="thead"></slot>
 
