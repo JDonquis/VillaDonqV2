@@ -257,7 +257,8 @@
                 class={` hover:brightness-110  relative col-span-1 z-10  text-xs capitalize  text-center font-bold ${balance.inscription < 0 ? "bg-red" : "bg-green"} text-black  p-1`}
             >
                 <span> Inscr. </span>
-                <p>${Math.abs(balance.inscription)}</p>
+                
+                <p>{Math.abs(balance.inscription) > 0 ? "$"+Math.abs(balance.inscription) : ""}</p>
 
                 <div
                     class={`absolute top-0.5 left-0  h-[95%] z-40 ${payingBalances[indexYear]?.balanceInscription > 0 ? "bg-purple/30 border-y-4 border-black/50 border" : ""}`}

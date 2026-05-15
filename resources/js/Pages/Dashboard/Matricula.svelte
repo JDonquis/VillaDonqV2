@@ -13,7 +13,7 @@
     import Search from "../../components/Search.svelte";
 
     export let data = [];
-    
+
     $: selectedCourseId = (data.filters?.course_id || "1").toString();
 
     $: sectionsOfThisYear =
@@ -66,6 +66,9 @@
         second_rep_profession: "",
         second_rep_workplace: "",
         rep_id: null,
+        is_exempt: false,
+        exemption_percentage: "",
+        exemption_observations: "",
     });
 
     let formReinscribe = useForm({
@@ -189,6 +192,9 @@
         $form.second_rep_email = student.second_rep_email;
         $form.second_rep_profession = student.second_rep_profession;
         $form.second_rep_workplace = student.second_rep_workplace;
+        $form.is_exempt = student.is_exempt ?? false;
+        $form.exemption_percentage = student.exemption_percentage ?? "";
+        $form.exemption_observations = student.exemption_observations ?? "";
     }
 
     function handleInscribeClick() {
@@ -349,92 +355,135 @@
         action=""
         class="max-w-[1260px] gap-10 flex justify-around pt-2 px-7"
     >
-        <fieldset
-            class="  border-3 medium-shadow border-black pb-9 px-5 bg-gray-50 grid grid-cols-2 gap-x-10 h-fit md:px-9 md:pt-2"
-        >
-            <legend class="text-center px-5 font-bold rounded-sm bg"
-                >DATOS DEL ESTUDIANTE</legend
+        <div>
+            <fieldset
+                class="  border-3 medium-shadow border-black pb-9 px-5 bg-gray-50 grid grid-cols-2 gap-x-10 h-fit md:px-9 md:pt-2"
             >
-            <Input
-                type="text"
-                required={true}
-                label={"Nombres"}
-                bind:value={$form.student_name}
-                error={$form.errors?.student_name}
-            />
-            <Input
-                type="text"
-                required={true}
-                label={"Apellidos"}
-                bind:value={$form.student_last_name}
-                error={$form.errors?.student_last_name}
-            />
-            <Input
-                type="date"
-                required={true}
-                label={"Fecha de nacimiento"}
-                bind:value={$form.student_date_birth}
-                error={$form.errors?.student_date_birth}
-            />
-            <Input
-                type="email"
-                label="Correo"
-                bind:value={$form.student_email}
-                error={$form.errors?.student_email}
-            />
-            <Input
-                type="number"
-                required={true}
-                label={"Cédula"}
-                bind:value={$form.student_ci}
-                error={$form.errors?.student_ci}
-            />
-            <Input
-                type="tel"
-                label={"Teléfono"}
-                bind:value={$form.student_phone_number}
-                error={$form.errors?.student_phone_number}
-            />
-            <Input
-                type="select"
-                label={"Sexo"}
-                bind:value={$form.student_sex}
-                error={$form.errors?.student_sex}
-            >
-                <option value="Masculino">Masculino</option>
-                <option value="Femenino">Femenino</option>
-            </Input>
-            <Input
-                type="select"
-                required={true}
-                label={"Año escolar"}
-                bind:value={$form.course_id}
-                error={$form.errors?.course_id}
-                disabled={submitStatus == "Editar"}
-            >
-                {#each data.courses as course}
-                    <option value={course.id}>{course.name}</option>
-                {/each}
-            </Input>
-            <Input
-                type="select"
-                required={true}
-                label={"Sección"}
-                bind:value={$form.section_id}
-                error={$form.errors?.section_id}
-            >
-                {#each data.course_sections?.data?.[`course_${$form.course_id}`] as section}
-                    <option value={section.id}>{section.name}</option>
-                {/each}
-            </Input>
+                <legend class="text-center px-5 font-bold rounded-sm bg"
+                    >DATOS DEL ESTUDIANTE</legend
+                >
+                <Input
+                    type="text"
+                    required={true}
+                    label={"Nombres"}
+                    bind:value={$form.student_name}
+                    error={$form.errors?.student_name}
+                />
+                <Input
+                    type="text"
+                    required={true}
+                    label={"Apellidos"}
+                    bind:value={$form.student_last_name}
+                    error={$form.errors?.student_last_name}
+                />
+                <Input
+                    type="date"
+                    required={true}
+                    label={"Fecha de nacimiento"}
+                    bind:value={$form.student_date_birth}
+                    error={$form.errors?.student_date_birth}
+                />
+                <Input
+                    type="email"
+                    label="Correo"
+                    bind:value={$form.student_email}
+                    error={$form.errors?.student_email}
+                />
+                <Input
+                    type="number"
+                    required={true}
+                    label={"Cédula"}
+                    bind:value={$form.student_ci}
+                    error={$form.errors?.student_ci}
+                />
+                <Input
+                    type="tel"
+                    label={"Teléfono"}
+                    bind:value={$form.student_phone_number}
+                    error={$form.errors?.student_phone_number}
+                />
+                <Input
+                    type="select"
+                    label={"Sexo"}
+                    bind:value={$form.student_sex}
+                    error={$form.errors?.student_sex}
+                >
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                </Input>
+                <Input
+                    type="select"
+                    required={true}
+                    label={"Año escolar"}
+                    bind:value={$form.course_id}
+                    error={$form.errors?.course_id}
+                    disabled={submitStatus == "Editar"}
+                >
+                    {#each data.courses as course}
+                        <option value={course.id}>{course.name}</option>
+                    {/each}
+                </Input>
+                <Input
+                    type="select"
+                    required={true}
+                    label={"Sección"}
+                    bind:value={$form.section_id}
+                    error={$form.errors?.section_id}
+                >
+                    {#each data.course_sections?.data?.[`course_${$form.course_id}`] as section}
+                        <option value={section.id}>{section.name}</option>
+                    {/each}
+                </Input>
 
-            <Input
-                type="textarea"
-                label={"Colegio de procedencia"}
-                bind:value={$form.student_previous_school}
-                error={$form.errors?.student_previous_school}
-            />
-        </fieldset>
+                <Input
+                    type="textarea"
+                    label={"Colegio de procedencia"}
+                    bind:value={$form.student_previous_school}
+                    error={$form.errors?.student_previous_school}
+                />
+            </fieldset>
+            <fieldset
+                class=" border-3 medium-shadow border-black pb-9 px-5 mt-9 bg-gray-50 grid grid-cols-2 gap-x-10 h-fit md:px-9 md:pt-2"
+            >
+                <legend class="text-center px-5 font-bold rounded-sm bg"
+                    >EXONERACIÓN</legend
+                >
+
+                <div class="col-span-2 flex items-center gap-3 mt-4">
+                    <input
+                        type="checkbox"
+                        id="is_exempt"
+                        bind:checked={$form.is_exempt}
+                        class="w-5 h-5 border-3 border-black cursor-pointer"
+                    />
+                    <label
+                        for="is_exempt"
+                        class="font-semibold text-sm cursor-pointer select-none"
+                    >
+                        Exonerado de pago
+                    </label>
+                </div>
+
+                {#if $form.is_exempt}
+                    <div class="col-span-2 grid grid-cols-2 gap-x-10">
+                        <Input
+                            type="number"
+                            label="Porcentaje de exoneración (%)"
+                            bind:value={$form.exemption_percentage}
+                            error={$form.errors?.exemption_percentage}
+                            min="0"
+                            max="100"
+                        />
+                        <Input
+                            type="textarea"
+                            label="Observación (opcional)"
+                            bind:value={$form.exemption_observations}
+                            error={$form.errors?.exemption_observations}
+                        />
+                    </div>
+                {/if}
+            </fieldset>
+        </div>
 
         <div>
             <fieldset
@@ -723,7 +772,9 @@
                 idKey="student_id"
                 {selectedRow}
                 activeClass="bg-yellow bg-opacity-10 brightness-110"
-                on:select={(e) => { selectedRow = e.detail; }}
+                on:select={(e) => {
+                    selectedRow = e.detail;
+                }}
             >
                 <td>{i + 1}</td>
                 <td>{row.student_name}</td>

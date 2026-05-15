@@ -3,10 +3,16 @@
     import Search from "../../components/Search.svelte";
     import Table from "../../components/Table.svelte";
     import html2canvas from "html2canvas";
+    import { page } from "@inertiajs/svelte";
 
     export let data = [];
-    console.log(data.students.data);
-    console.table(data);
+
+    $: tableData = {
+        ...data?.students.data,
+        filters: {
+            debt_filter: new URLSearchParams($page.url.split("?")[1] || "").get("debt_filter") || "",
+        },
+    };
 
     async function sendToWhatsApp(student) {
         const element = document.getElementById(`balance-bar-${student.id}`);
@@ -15,7 +21,7 @@
                 scale: 2,
                 backgroundColor: "#ffffff",
                 logging: false,
-                useCORS: true
+                useCORS: true,
             });
             canvas.toBlob(async (blob) => {
                 try {
@@ -49,7 +55,10 @@
         phoneNumber = phoneNumber.replace("+", "");
 
         const text = `Hola ${student.representative.user.name} ${student.representative.user.last_name}, Le escribimos para recordarle que el balance de su representado ${student.name} ${student.last_name} está vencido. Por favor, póngase al día con los pagos para evitar inconvenientes. Gracias!`;
-        window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, "_blank");
+        window.open(
+            `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`,
+            "_blank",
+        );
     }
 </script>
 
@@ -59,7 +68,16 @@
 
 <Search placeholder="Buscar estudiante..." class="mb-4" />
 <!-- svelte-ignore missing-declaration -->
-<Table serverSideData={data?.students.data} pagination={true}>
+<Table serverSideData={tableData} pagination={true} filtersOptions={{
+    debt_filter: [
+        { id: "", name: "Todos" },
+        { id: "debtors", name: "Deudores" },
+        { id: "current_period", name: "Deudores del periodo actual" },
+        { id: "previous_period", name: "Deudores del periodo anterior" },
+        { id: "exempted", name: "Solo exonerados" },
+        { id: "up_to_date", name: "Al día" },
+    ]
+}}>
     <thead slot="thead">
         <tr>
             <th>Estudiante</th>
@@ -85,6 +103,7 @@
                 </td>
                 <td>
                     <BalanceBar
+                        id={`balance-bar-${student.id}`}
                         balances={student.balances.map((b) => ({
                             ...b,
                             ...b.months,
@@ -106,15 +125,6 @@
                             height="14"
                         ></iconify-icon>
                     </button>
-                </td>
-                <td>
-                    <BalanceBar
-                        id={`balance-bar-${student.id}`}
-                        balances={student.balances.map((b) => ({
-                            ...b,
-                            ...b.months,
-                        }))}
-                    />
                 </td>
             </tr>
         {/each}
