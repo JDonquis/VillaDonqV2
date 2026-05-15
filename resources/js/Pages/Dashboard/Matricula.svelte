@@ -461,6 +461,9 @@
                         class="font-semibold text-sm cursor-pointer select-none"
                     >
                         Exonerado de pago
+                        <span class="text-purple">
+                            <iconify-icon icon="mdi:shield-check" class="" />
+                        </span>
                     </label>
                 </div>
 

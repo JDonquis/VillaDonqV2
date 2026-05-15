@@ -106,6 +106,7 @@
     export let balances;
     export let amountToPay = 0;
     export let classes = "";
+    export let is_exempt = 30;
     let tooltipVisible = false;
     let tooltipPayments = [];
     let tooltipStyle = "";
@@ -138,7 +139,7 @@
         payingBalances = new Array(balances.length).fill({});
 
         while (amountToPay > 0) {
-            if (endYearIndex > balances.length ) {
+            if (endYearIndex > balances.length -1 ) {
                 break;
             }
 
@@ -210,8 +211,15 @@
 </script>
 
 <div {id} class={`bg-white p-4 rounded-lg ${classes}`}>
+
+    {#if is_exempt}
+        <div class="flex items-center gap-2 text-xs mb-2 font-bold bg-purple w-fit px-2 py-1 ">
+            <p>Exonerado: {is_exempt}%</p>
+            <iconify-icon icon="mdi:shield-check" class="" />
+        </div>
+    {/if}
     {#each balances as balance, indexYear}
-        <div class="flex gap-4 items-center mt-4 mb-2">
+        <div class="flex gap-4 items-center mt-2 mb-2">
             <!-- <button>
                 <iconify-icon
                     class="rotate-180 relative top-1"
@@ -293,7 +301,7 @@
                             endPointToPay.endYearIndex == +indexYear) || (indexMonth == 11) ) && (
                             endPointToPay.partialToPay > 0)
                                 ? `width: ${(endPointToPay.partialToPay / Math.abs(balance[month])) * 100}%`
-                                : "width: 100%"}
+                                : ""}
                         ></div>
                     </div>
                 {/each}
