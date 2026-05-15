@@ -42,10 +42,9 @@ class UpdateUserRequest extends FormRequest
             'name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
             'email' => 'nullable|string|max:100|email',
-            'password' => 'nullable|string|max:100',
             'phone_number' => 'nullable|string|max:30',
             'address' => 'nullable|string|max:100',
-            'photo' => 'nullable|string|max:100',
+            // 'photo' => 'nullable|string|max:100',
             'email_verified_status' => 'nullable|boolean',
             'is_admin' => ['required', 'boolean'],
         ];
