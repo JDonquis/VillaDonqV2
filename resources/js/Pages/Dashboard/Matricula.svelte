@@ -474,7 +474,7 @@
                             label="Porcentaje de exoneración (%)"
                             bind:value={$form.exemption_percentage}
                             error={$form.errors?.exemption_percentage}
-                            min="0"
+                            min="1"
                             max="100"
                         />
                         <Input
@@ -780,7 +780,22 @@
                 }}
             >
                 <td>{i + 1}</td>
-                <td>{row.student_name}</td>
+                <td>
+                    <div class="flex">
+                        {#if row.is_exempt}
+                            <div class="text-purple font-bold">
+                                {row.exemption_percentage}%
+                                <iconify-icon
+                                    icon="mdi:shield-check"
+                                    class="text-purple mr-1"
+                                />
+                            </div>
+                        {/if}
+                        <span>
+                            {row.student_name}
+                        </span>
+                    </div>
+                </td>
                 <td>{row.student_last_name}</td>
                 <td>{row.student_ci}</td>
                 <td>{row.student_sex}</td>

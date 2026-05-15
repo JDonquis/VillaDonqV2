@@ -109,6 +109,7 @@
                             ...b.months,
                         }))}
                         classes="py-0 px-0"
+                        is_exempt={student.is_exempt ? student.exemption_percentage : false}
                     />
                 </td>
                 <td class="group"

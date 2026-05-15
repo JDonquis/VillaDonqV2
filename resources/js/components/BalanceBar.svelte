@@ -106,7 +106,7 @@
     export let balances;
     export let amountToPay = 0;
     export let classes = "";
-    export let is_exempt = 30;
+    export let is_exempt = false;
     let tooltipVisible = false;
     let tooltipPayments = [];
     let tooltipStyle = "";
@@ -128,7 +128,6 @@
 
     let endPointToPay = {};
 
-
     function getLastPaymentMonth(amountToPay) {
         let lastPaymentMonth = null;
         let endMonthIndex = firstUnpaidMonth;
@@ -139,7 +138,7 @@
         payingBalances = new Array(balances.length).fill({});
 
         while (amountToPay > 0) {
-            if (endYearIndex > balances.length -1 ) {
+            if (endYearIndex > balances.length - 1) {
                 break;
             }
 
@@ -207,17 +206,9 @@
 
     // Reactive statement: run getLastPaymentMonth whenever amountToPay changes
     $: endPointToPay = getLastPaymentMonth(amountToPay);
-
 </script>
 
 <div {id} class={`bg-white p-4 rounded-lg ${classes}`}>
-
-    {#if is_exempt}
-        <div class="flex items-center gap-2 text-xs mb-2 font-bold bg-purple w-fit px-2 py-1 ">
-            <p>Exonerado: {is_exempt}%</p>
-            <iconify-icon icon="mdi:shield-check" class="" />
-        </div>
-    {/if}
     {#each balances as balance, indexYear}
         <div class="flex gap-4 items-center mt-2 mb-2">
             <!-- <button>
@@ -235,7 +226,8 @@
                 )}
             </p>
 
-            <div class="flex items-center gap-2 text-xs">
+            <div class="flex items-center gap-1 text-xs">
+                
                 <p>Deuda:</p>
                 <b>
                     ${Math.abs(
@@ -251,6 +243,14 @@
                         }, 0),
                     ) + Math.abs(balance.inscription)}
                 </b>
+                {#if is_exempt}
+                    <div
+                        class="flex ml-2 items-center gap-2 text-xs mb-2 font-bold bg-purple w-fit px-2 py-1"
+                    >
+                        <p>Exonerado: {is_exempt}%</p>
+                        <iconify-icon icon="mdi:shield-check" class="" />
+                    </div>
+                {/if}
             </div>
             <!-- <button>
                 <iconify-icon
@@ -266,8 +266,12 @@
                 class={` hover:brightness-110  relative col-span-1 z-10  text-xs capitalize  text-center font-bold ${balance.inscription < 0 ? "bg-red" : "bg-green"} text-black  p-1`}
             >
                 <span> Inscr. </span>
-                
-                <p>{Math.abs(balance.inscription) > 0 ? "$"+Math.abs(balance.inscription) : ""}</p>
+
+                <p>
+                    {Math.abs(balance.inscription) > 0
+                        ? "$" + Math.abs(balance.inscription)
+                        : ""}
+                </p>
 
                 <div
                     class={`absolute top-0.5 left-0  h-[95%] z-40 ${payingBalances[indexYear]?.balanceInscription > 0 ? "bg-purple/30 border-y-4 border-black/50 border" : ""}`}
@@ -280,7 +284,13 @@
                 {#each Object.entries(months) as [spanishLabel, month], indexMonth}
                     <div
                         class={`group/month hover:brightness-110 border-l-2 border-l-gray-200 relative col-span-1  text-xs capitalize  text-center font-bold ${balance[month + "_status"] == "debt" ? "bg-red" : balance[month + "_status"] == "paid" ? "bg-green" : balance[month + "_status"] == "partially_paid" ? "bg-yellow" : "bg-gray-50 "} text-black  p-1`}
-                        on:mouseenter={(e) => balance.balance_payments[month] ? showBalancePaymentsTooltip(e, balance.balance_payments[month]) : null}
+                        on:mouseenter={(e) =>
+                            balance.balance_payments[month]
+                                ? showBalancePaymentsTooltip(
+                                      e,
+                                      balance.balance_payments[month],
+                                  )
+                                : null}
                         on:mouseleave={scheduleTooltipHide}
                     >
                         <div class="z-40">
@@ -297,9 +307,10 @@
                             ${indexMonth === endPointToPay.endMonthIndex - 1 && endPointToPay.endYearIndex == +indexYear && amountToPay > 0 ? "border-r-4 border-black/50" : ""}
                             ${startPointToPay.school_lapse_index <= indexYear && payingBalances[indexYear]?.startMonth <= indexMonth && indexMonth <= payingBalances[indexYear]?.endMonthIndex ? "bg-purple/30 border-y-4 border-black/50" : ""}`}
                             style={((indexMonth ==
-                                endPointToPay.endMonthIndex-1 && 
-                            endPointToPay.endYearIndex == +indexYear) || (indexMonth == 11) ) && (
-                            endPointToPay.partialToPay > 0)
+                                endPointToPay.endMonthIndex - 1 &&
+                                endPointToPay.endYearIndex == +indexYear) ||
+                                indexMonth == 11) &&
+                            endPointToPay.partialToPay > 0
                                 ? `width: ${(endPointToPay.partialToPay / Math.abs(balance[month])) * 100}%`
                                 : ""}
                         ></div>
@@ -311,16 +322,17 @@
 
     {#if tooltipVisible}
         <div
-            class="min-h-[100px] w-fit bg-white text-dark p-2  shadow-lg border border-black"
+            class="min-h-[100px] w-fit bg-white text-dark p-2 shadow-lg border border-black"
             style={tooltipStyle}
             on:mouseenter={() => clearTimeout(tooltipHideTimeout)}
             on:mouseleave={scheduleTooltipHide}
         >
             {#each tooltipPayments as payment}
-                <div class="flex flex-col gap-1 items-center mb-2  p-1">
+                <div class="flex flex-col gap-1 items-center mb-2 p-1">
                     <p class="text-xs">{payment.payment.date}</p>
                     <div class="flex items-center gap-1">
-                        <b class="text-sm">${payment.payment.total_in_dolars}</b>
+                        <b class="text-sm">${payment.payment.total_in_dolars}</b
+                        >
                         <p class="text-xs">Ref: {payment.payment.reference}</p>
                     </div>
                 </div>
