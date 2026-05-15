@@ -36,15 +36,15 @@ class StudentService
             ->where('course_id', $courseId)
             ->where('section_id', $sectionId)
             ->when($request->input('search'), function ($query, $search) {
-                $query->where('search', 'like', '%' . $search . '%');
-                $query->orWhere('ci', 'like', '%' . $search . '%')
-                    ->orWhere('name', 'like', '%' . $search . '%')
-                    ->orWhere('last_name', 'like', '%' . $search . '%')
-                    ->orWhereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%']);
+                $query->where('search', 'like', '%'.$search.'%');
+                $query->orWhere('ci', 'like', '%'.$search.'%')
+                    ->orWhere('name', 'like', '%'.$search.'%')
+                    ->orWhere('last_name', 'like', '%'.$search.'%')
+                    ->orWhereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%'.$search.'%']);
                 $query->orWhereHas('representative.user', function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('last_name', 'like', '%' . $search . '%')
-                        ->orWhere('ci', 'like', '%' . $search . '%');
+                    $q->where('name', 'like', '%'.$search.'%')
+                        ->orWhere('last_name', 'like', '%'.$search.'%')
+                        ->orWhere('ci', 'like', '%'.$search.'%');
                 });
             })
 
@@ -181,6 +181,9 @@ class StudentService
             'phone_number' => $data['student_phone_number'] ?? null,
             'sex' => $data['student_sex'] ?? null,
             'previous_school' => $data['student_previous_school'] ?? null,
+            'is_exempt' => $data['is_exempt'] ?? false,
+            'exemption_percentage' => $data['exemption_percentage'] ?? null,
+            'exemption_observations' => $data['exemption_observations'] ?? null,
         ]);
 
         $student->load('representative.user', 'course', 'section');
@@ -249,6 +252,9 @@ class StudentService
             'sex' => $data['student_sex'] ?? null,
             'previous_school' => $data['student_previous_school'] ?? null,
             'photo' => 'guest.webp',
+            'is_exempt' => $data['is_exempt'] ?? false,
+            'exemption_percentage' => $data['exemption_percentage'] ?? null,
+            'exemption_observations' => $data['exemption_observations'] ?? null,
         ]);
 
         $newStudent->load('representative.user', 'course', 'section');
@@ -288,17 +294,17 @@ class StudentService
         }
 
         $students = Student::where(function ($query) use ($search) {
-            $query->where('ci', 'LIKE', '%' . $search . '%')
-                ->orWhere('name', 'LIKE', '%' . $search . '%')
-                ->orWhere('last_name', 'LIKE', '%' . $search . '%')
-                ->orWhereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%']);
+            $query->where('ci', 'LIKE', '%'.$search.'%')
+                ->orWhere('name', 'LIKE', '%'.$search.'%')
+                ->orWhere('last_name', 'LIKE', '%'.$search.'%')
+                ->orWhereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%'.$search.'%']);
         })
             ->orWhereHas('representative.user', function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('name', 'LIKE', '%' . $search . '%')
-                        ->orWhere('last_name', 'LIKE', '%' . $search . '%')
-                        ->orWhere('ci', 'LIKE', '%' . $search . '%')
-                        ->orWhereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%']);
+                    $q->where('name', 'LIKE', '%'.$search.'%')
+                        ->orWhere('last_name', 'LIKE', '%'.$search.'%')
+                        ->orWhere('ci', 'LIKE', '%'.$search.'%')
+                        ->orWhereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%'.$search.'%']);
                 });
             })
             ->with([
@@ -388,9 +394,9 @@ class StudentService
     public function searchRepresentative($search)
     {
         $user = User::where('type_user_id', 2)
-            ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%'])
-            ->orWhereRaw('LOWER(last_name) LIKE ?', ['%' . strtolower($search) . '%'])
-            ->orWhereRaw('LOWER(ci) LIKE ?', ['%' . strtolower($search) . '%'])
+            ->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($search).'%'])
+            ->orWhereRaw('LOWER(last_name) LIKE ?', ['%'.strtolower($search).'%'])
+            ->orWhereRaw('LOWER(ci) LIKE ?', ['%'.strtolower($search).'%'])
             ->with('representative')
             ->get();
 
@@ -417,9 +423,9 @@ class StudentService
         $courseName = $student->course?->name ?? '';
         $sectionName = $student->section?->name ?? '';
 
-        return trim($repName . ' ' . $repLastName . ' ' . $courseName . ' ' . $sectionName . ' '
-            . $student->name . ' ' . $student->last_name . ' ' . $student->date_birth . ' '
-            . $student->email . ' ' . $student->ci . ' ' . $student->phone_number . ' '
-            . $student->sex . ' ' . $student->previous_school);
+        return trim($repName.' '.$repLastName.' '.$courseName.' '.$sectionName.' '
+            .$student->name.' '.$student->last_name.' '.$student->date_birth.' '
+            .$student->email.' '.$student->ci.' '.$student->phone_number.' '
+            .$student->sex.' '.$student->previous_school);
     }
 }

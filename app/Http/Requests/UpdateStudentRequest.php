@@ -42,6 +42,9 @@ class UpdateStudentRequest extends FormRequest
             'second_rep_email',
             'second_rep_profession',
             'second_rep_workplace',
+            'is_exempt',
+            'exemption_percentage',
+            'exemption_observations',
         ];
 
         $data = $this->all();
@@ -86,6 +89,12 @@ class UpdateStudentRequest extends FormRequest
             'second_rep_email' => ['nullable'],
             'second_rep_profession' => ['nullable'],
             'second_rep_workplace' => ['nullable'],
+            'is_exempt' => ['nullable', 'boolean'],
+            'exemption_percentage' => [
+                'nullable', 'integer', 'min:1', 'max:100',
+                \Illuminate\Validation\Rule::requiredIf(fn () => (bool) $this->input('is_exempt')),
+            ],
+            'exemption_observations' => ['nullable', 'string'],
         ];
     }
 }
