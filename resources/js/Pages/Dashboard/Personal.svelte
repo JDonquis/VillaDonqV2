@@ -22,6 +22,7 @@
         phone_number: "",
         address: "",
         is_admin: false,
+        email_verified_status: false,
     };
 
     let form = useForm({
@@ -117,6 +118,8 @@
         $form.email = personal.email;
         $form.phone_number = personal.phone_number;
         $form.address = personal.address;
+        $form.is_admin = personal.is_admin || false;
+        $form.email_verified_status = personal.email_verified_status || false;
     }
 
     function handleDelete() {
@@ -260,7 +263,7 @@
             bind:value={$form.address}
             error={$form.errors.address}
         />
-        
+
         <div class="col-span-2 flex items-center gap-2 mt-2">
             <input
                 id="is_admin"

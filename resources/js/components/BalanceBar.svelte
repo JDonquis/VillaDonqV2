@@ -138,13 +138,13 @@
         payingBalances = new Array(balances.length).fill({});
 
         while (amountToPay > 0) {
-            if (endYearIndex > balances.length) {
+            if (endYearIndex > balances.length ) {
                 break;
             }
 
             if (
-                !payingBalances[endYearIndex].balanceInscription &&
-                balances[endYearIndex].inscription < 0
+                !payingBalances[endYearIndex]?.balanceInscription &&
+                balances[endYearIndex]?.inscription < 0
             ) {
                 payingBalances[endYearIndex].balanceInscription = amountToPay;
                 amountToPay -= Math.abs(balances[endYearIndex].inscription);
