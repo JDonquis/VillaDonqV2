@@ -32,10 +32,10 @@ class AccountStatementService
                     return;
                 }
                 $search = $params['search'];
-                $query->where('ci', 'LIKE', '%' . $search . '%')
-                    ->orWhere('name', 'LIKE', '%' . $search . '%')
-                    ->orWhere('last_name', 'LIKE', '%' . $search . '%')
-                    ->orWhereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%']);
+                $query->where('ci', 'LIKE', '%'.$search.'%')
+                    ->orWhere('name', 'LIKE', '%'.$search.'%')
+                    ->orWhere('last_name', 'LIKE', '%'.$search.'%')
+                    ->orWhereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%'.$search.'%']);
             })
             ->orWhereHas('representative.user', function ($query) use ($params) {
                 if (! isset($params['search'])) {
@@ -43,10 +43,10 @@ class AccountStatementService
                 }
                 $search = $params['search'];
                 $query->where(function ($q) use ($search) {
-                    $q->where('name', 'LIKE', '%' . $search . '%')
-                        ->orWhere('last_name', 'LIKE', '%' . $search . '%')
-                        ->orWhere('ci', 'LIKE', '%' . $search . '%')
-                        ->orWhereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%']);
+                    $q->where('name', 'LIKE', '%'.$search.'%')
+                        ->orWhere('last_name', 'LIKE', '%'.$search.'%')
+                        ->orWhere('ci', 'LIKE', '%'.$search.'%')
+                        ->orWhereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%'.$search.'%']);
                 });
             })
             ->with(['course', 'section', 'representative.user'])
@@ -106,13 +106,13 @@ class AccountStatementService
                     'inscription' => $balance->inscription,
                     'inscription_status' => $balance->inscription_status,
                     'months' => collect(self::MONTHS)->mapWithKeys(function ($month) use ($balance) {
-                        return [$month => $balance->$month, $month . '_status' => $balance->{$month . '_status'}];
+                        return [$month => $balance->$month, $month.'_status' => $balance->{$month.'_status'}];
                     }),
                     'total_debt' => $balanceDebt,
                     'total_income' => $balanceIncome,
                     'balance_payments' => $balance->balancePayments
-                        ->groupBy(fn($bp) => $bp->is_inscription ? 'inscription' : $bp->month)
-                        ->map(fn($bps) => $bps->map(fn($bp) => [
+                        ->groupBy(fn ($bp) => $bp->is_inscription ? 'inscription' : $bp->month)
+                        ->map(fn ($bps) => $bps->map(fn ($bp) => [
                             'id' => $bp->id,
                             'amount' => $bp->amount,
                             'payment' => $bp->payment ? [
@@ -152,11 +152,52 @@ class AccountStatementService
             ];
         });
 
-        if (isset($params['debt_status'])) {
-            if ($params['debt_status'] === 'debt') {
-                $students = $students->filter(fn($s) => $s['total_debt'] > 0);
-            } elseif ($params['debt_status'] === 'no_debt') {
-                $students = $students->filter(fn($s) => $s['total_debt'] == 0);
+        $debtFilter = $params['debt_filter'] ?? null;
+
+        if ($debtFilter && $debtFilter !== '') {
+            switch ($debtFilter) {
+                case 'debtors':
+                    $students = $students->filter(fn ($s) => $s['total_debt'] > 0);
+                    break;
+
+                case 'current_period':
+                    $currentLapse = SchoolLapse::where('status', 1)->first();
+                    if ($currentLapse) {
+                        $students = $students->filter(function ($s) use ($currentLapse) {
+                            return collect($s['balances'])->contains(function ($b) use ($currentLapse) {
+                                return $b['school_lapse']
+                                    && $b['school_lapse']->id === $currentLapse->id
+                                    && $b['total_debt'] > 0;
+                            });
+                        });
+                    }
+                    break;
+
+                case 'previous_period':
+                    $currentLapse = SchoolLapse::where('status', 1)->first();
+                    if ($currentLapse) {
+                        $previousLapse = SchoolLapse::where('start', '<', $currentLapse->start)
+                            ->orderBy('start', 'desc')
+                            ->first();
+                        if ($previousLapse) {
+                            $students = $students->filter(function ($s) use ($previousLapse) {
+                                return collect($s['balances'])->contains(function ($b) use ($previousLapse) {
+                                    return $b['school_lapse']
+                                        && $b['school_lapse']->id === $previousLapse->id
+                                        && $b['total_debt'] > 0;
+                                });
+                            });
+                        }
+                    }
+                    break;
+
+                case 'exempted':
+                    $students = $students->filter(fn ($s) => $s['is_exempt']);
+                    break;
+
+                case 'up_to_date':
+                    $students = $students->filter(fn ($s) => $s['total_debt'] == 0);
+                    break;
             }
         }
 
@@ -174,11 +215,11 @@ class AccountStatementService
                 ? $students->sortByDesc('last_name')
                 : $students->sortBy('last_name'),
             'course' => $sortDirection === 'desc'
-                ? $students->sortByDesc(fn($s) => optional($s['course'])->name ?? '')
-                : $students->sortBy(fn($s) => optional($s['course'])->name ?? ''),
+                ? $students->sortByDesc(fn ($s) => optional($s['course'])->name ?? '')
+                : $students->sortBy(fn ($s) => optional($s['course'])->name ?? ''),
             'section' => $sortDirection === 'desc'
-                ? $students->sortByDesc(fn($s) => optional($s['section'])->name ?? '')
-                : $students->sortBy(fn($s) => optional($s['section'])->name ?? ''),
+                ? $students->sortByDesc(fn ($s) => optional($s['section'])->name ?? '')
+                : $students->sortBy(fn ($s) => optional($s['section'])->name ?? ''),
             default => $students,
         };
 
