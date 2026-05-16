@@ -46,6 +46,7 @@ class StudentResource extends JsonResource
                 'is_exempt' => $this->is_exempt,
                 'exemption_percentage' => $this->exemption_percentage,
                 'exemption_observations' => $this->exemption_observations,
+                'apply_to_past_debts' => $this->apply_to_past_debts,
 
             ];
     }

@@ -74,7 +74,7 @@ class PaymentController extends Controller
         } catch (Exception $e) {
             Log::error('Error al eliminar pago ID '.$id.': '.$e->getMessage());
 
-            return redirect('/dashboard/pagos')->withErrors(['message' => 'Ha ocurrido un error al eliminar el pago. Por favor, intente más tarde.']);
+            return redirect('/dashboard/pagos')->withErrors(['data' => $e->getMessage()]);
         }
     }
 
@@ -98,7 +98,7 @@ class PaymentController extends Controller
 
             Log::error('Error al actualizar pago ID '.$id.': '.$e->getMessage());
 
-            return redirect('/dashboard/pagos')->withErrors(['message' => 'Ha ocurrido un error al actualizar el pago. Por favor, intente más tarde.']);
+            return redirect('/dashboard/pagos')->withErrors(['data' => $e->getMessage()]);
         }
     }
 }

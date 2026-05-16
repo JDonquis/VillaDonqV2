@@ -28,6 +28,7 @@ class Student extends Model
         'is_exempt',
         'exemption_percentage',
         'exemption_observations',
+        'apply_to_past_debts',
     ];
 
     public $timestamps = false;

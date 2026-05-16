@@ -42,6 +42,15 @@ class GenerateBalance
         $configData = MainConfig::select('new_inscription_price', 'monthly_payment')->first();
         $schoolLapseActive = SchoolLapse::where('status', 1)->first();
 
+        $effectiveMonthlyPayment = (float) $configData->monthly_payment;
+        $effectiveInscriptionPrice = (float) $configData->new_inscription_price;
+
+        if ($student->is_exempt && $student->exemption_percentage) {
+            $multiplier = 1 - ($student->exemption_percentage / 100);
+            $effectiveMonthlyPayment *= $multiplier;
+            $effectiveInscriptionPrice *= $multiplier;
+        }
+
         $currentDate = Carbon::now();
         $currentMonthName = strtolower($currentDate->englishMonth);
         $setValue = false;
@@ -50,10 +59,10 @@ class GenerateBalance
             if ($monthName == $currentMonthName) {
                 $setValue = true;
                 $this->monthStatuses[$monthName] = BalanceStudentStatusEnum::Debt->value;
-                $this->months[$monthName] = $this->months[$monthName] - $configData->monthly_payment;
+                $this->months[$monthName] = $this->months[$monthName] - $effectiveMonthlyPayment;
             } elseif ($setValue) {
                 $this->monthStatuses[$monthName] = BalanceStudentStatusEnum::Pending->value;
-                $this->months[$monthName] = $this->months[$monthName] - $configData->monthly_payment;
+                $this->months[$monthName] = $this->months[$monthName] - $effectiveMonthlyPayment;
             } else {
                 $this->monthStatuses[$monthName] = BalanceStudentStatusEnum::Paid->value;
             }
@@ -63,7 +72,7 @@ class GenerateBalance
             [
                 'student_id' => $student->id,
                 'school_lapse_id' => $schoolLapseActive->id,
-                'inscription' => -$configData->new_inscription_price,
+                'inscription' => -$effectiveInscriptionPrice,
                 'august' => $this->months['august'],
                 'august_status' => $this->monthStatuses['august'],
                 'september' => $this->months['september'],

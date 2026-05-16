@@ -45,6 +45,7 @@ class UpdateStudentRequest extends FormRequest
             'is_exempt',
             'exemption_percentage',
             'exemption_observations',
+            'apply_to_past_debts',
         ];
 
         $data = $this->all();
@@ -95,6 +96,7 @@ class UpdateStudentRequest extends FormRequest
                 \Illuminate\Validation\Rule::requiredIf(fn () => (bool) $this->input('is_exempt')),
             ],
             'exemption_observations' => ['nullable', 'string'],
+            'apply_to_past_debts' => ['nullable', 'boolean'],
         ];
     }
 }

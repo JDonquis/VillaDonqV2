@@ -15,20 +15,20 @@ class PaymentService
             ->when(isset($params['search']), function ($q) use ($params) {
                 $search = $params['search'];
                 $q->where(function ($query) use ($search) {
-                    $query->where('reference', 'like', '%' . $search . '%')
-                        ->orWhere('observations', 'like', '%' . $search . '%')
+                    $query->where('reference', 'like', '%'.$search.'%')
+                        ->orWhere('observations', 'like', '%'.$search.'%')
                         ->orWhereHas('user', function ($q) use ($search) {
-                            $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%'])
-                                ->orWhere('name', 'like', '%' . $search . '%')
-                                ->orWhere('last_name', 'like', '%' . $search . '%');
+                            $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%'.$search.'%'])
+                                ->orWhere('name', 'like', '%'.$search.'%')
+                                ->orWhere('last_name', 'like', '%'.$search.'%');
                         })
                         ->orWhereHas('accountPayment.method', function ($q) use ($search) {
-                            $q->where('name', 'like', '%' . $search . '%');
+                            $q->where('name', 'like', '%'.$search.'%');
                         })
                         ->orWhereHas('students', function ($q) use ($search) {
-                            $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%'])
-                                ->orWhere('name', 'like', '%' . $search . '%')
-                                ->orWhere('last_name', 'like', '%' . $search . '%');
+                            $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%'.$search.'%'])
+                                ->orWhere('name', 'like', '%'.$search.'%')
+                                ->orWhere('last_name', 'like', '%'.$search.'%');
                         });
                 });
             })
@@ -107,6 +107,10 @@ class PaymentService
     {
         $payment = Payment::findOrFail($id);
 
+        if ((int) $payment->status === 0) {
+            throw new \Exception('Este pago ya ha sido eliminado anteriormente.');
+        }
+
         $balanceService = new BalanceService;
 
         foreach ($payment->students as $student) {
@@ -122,6 +126,10 @@ class PaymentService
     {
         $balanceService = new BalanceService;
         $existingPayment = Payment::findOrFail($id);
+
+        if ((int) $existingPayment->status === 0) {
+            throw new \Exception('No se puede editar un pago que ya fue eliminado.');
+        }
 
         foreach ($existingPayment->students as $student) {
             $balanceService->revertStudentBalance($existingPayment, $student);

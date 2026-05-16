@@ -5,8 +5,10 @@ namespace App\Services;
 use App\Enums\BalanceStudentStatusEnum;
 use App\Models\BalancePayment;
 use App\Models\BalanceStudent;
+use App\Models\MainConfig;
 use App\Models\Payment;
 use App\Models\Student;
+use Carbon\Carbon;
 use Exception;
 
 class BalanceService
@@ -85,11 +87,7 @@ class BalanceService
                     $balance->$month += $paymentToMonth;
 
                     $monthValue = $balance->$month;
-                    $balance->{$month.'_status'} = match (true) {
-                        $monthValue == 0 => BalanceStudentStatusEnum::Paid->value,
-                        $monthValue < 0 => BalanceStudentStatusEnum::Debt->value,
-                        default => BalanceStudentStatusEnum::PartiallyPaid->value,
-                    };
+                    $balance->{$month.'_status'} = $this->determineMonthStatus($monthValue, $month);
 
                     BalancePayment::create([
                         'payment_id' => $payment->id,
@@ -145,9 +143,61 @@ class BalanceService
 
             foreach (self::MONTH_ORDER as $month) {
                 $monthValue = $balance->$month;
-                $balance->{$month.'_status'} = match (true) {
-                    $monthValue == 0 => BalanceStudentStatusEnum::Paid->value,
-                    $monthValue < 0 => BalanceStudentStatusEnum::Debt->value,
+                $balance->{$month.'_status'} = $this->determineMonthStatus($monthValue, $month);
+            }
+
+            $this->updateGeneralStatus($balance);
+            $balance->save();
+        }
+    }
+
+    public function recalculateBalanceForExemption(Student $student, float $exemptionPercentage, bool $applyToPastDebts): void
+    {
+        $multiplier = 1 - ($exemptionPercentage / 100);
+
+        $currentMonthName = strtolower(Carbon::now()->englishMonth);
+        $monthOrder = array_flip(self::MONTH_ORDER);
+        $currentMonthIndex = $monthOrder[$currentMonthName] ?? -1;
+
+        $balances = BalanceStudent::where('student_id', $student->id)->get();
+
+        foreach ($balances as $balance) {
+            $balancePayments = BalancePayment::where('balance_student_id', $balance->id)->get();
+            $paymentsByMonth = $balancePayments->groupBy('month');
+            $totalPaidInscription = $balancePayments->where('is_inscription', true)->sum('amount');
+
+            foreach (self::MONTH_ORDER as $month) {
+                $totalPaid = (float) (($paymentsByMonth->get($month, collect()))->sum('amount'));
+                $currentValue = (float) $balance->$month;
+
+                $originalCharge = $currentValue - $totalPaid;
+
+                if ($originalCharge >= 0) {
+                    continue;
+                }
+
+                if (! $applyToPastDebts) {
+                    $monthIndex = $monthOrder[$month] ?? -1;
+                    if ($monthIndex < $currentMonthIndex) {
+                        continue;
+                    }
+                }
+
+                $newCharge = $originalCharge * $multiplier;
+                $balance->$month = $newCharge + $totalPaid;
+                $balance->{$month.'_status'} = $this->determineMonthStatus((float) $balance->$month, $month);
+            }
+
+            $currentInscription = (float) $balance->inscription;
+            $originalInscriptionCharge = $currentInscription - $totalPaidInscription;
+
+            if ($originalInscriptionCharge < 0) {
+                $newInscriptionCharge = $originalInscriptionCharge * $multiplier;
+                $balance->inscription = $newInscriptionCharge + $totalPaidInscription;
+                $inscriptionValue = (float) $balance->inscription;
+                $balance->inscription_status = match (true) {
+                    $inscriptionValue == 0 => BalanceStudentStatusEnum::Paid->value,
+                    $inscriptionValue < 0 => BalanceStudentStatusEnum::Debt->value,
                     default => BalanceStudentStatusEnum::PartiallyPaid->value,
                 };
             }
@@ -155,6 +205,37 @@ class BalanceService
             $this->updateGeneralStatus($balance);
             $balance->save();
         }
+    }
+
+    private function determineMonthStatus(float $monthValue, string $monthName): string
+    {
+        if ($monthValue == 0) {
+            return BalanceStudentStatusEnum::Paid->value;
+        }
+
+        if ($monthValue > 0) {
+            return BalanceStudentStatusEnum::PartiallyPaid->value;
+        }
+
+        $currentMonthName = strtolower(Carbon::now()->englishMonth);
+        $monthOrder = array_flip(self::MONTH_ORDER);
+        $currentMonthIndex = $monthOrder[$currentMonthName] ?? -1;
+        $monthIndex = $monthOrder[$monthName] ?? -1;
+
+        if ($monthIndex > $currentMonthIndex) {
+            return BalanceStudentStatusEnum::Pending->value;
+        }
+
+        if ($monthIndex < $currentMonthIndex) {
+            return BalanceStudentStatusEnum::Debt->value;
+        }
+
+        $config = MainConfig::select('day_of_monthly_payment')->first();
+        $dayOfMonthlyPayment = $config->day_of_monthly_payment ?? 1;
+
+        return Carbon::now()->day >= $dayOfMonthlyPayment
+            ? BalanceStudentStatusEnum::Debt->value
+            : BalanceStudentStatusEnum::Pending->value;
     }
 
     private function updateGeneralStatus(BalanceStudent $balance): void
@@ -174,8 +255,28 @@ class BalanceService
             fn ($status) => $status === BalanceStudentStatusEnum::Paid->value
         );
 
-        $balance->status = $allPaid
-            ? BalanceStudentStatusEnum::Paid->value
-            : BalanceStudentStatusEnum::Debt->value;
+        if ($allPaid) {
+            $balance->status = BalanceStudentStatusEnum::Paid->value;
+
+            return;
+        }
+
+        $hasDebt = collect($statuses)->contains(
+            fn ($status) => $status === BalanceStudentStatusEnum::Debt->value
+        );
+
+        if ($hasDebt) {
+            $balance->status = BalanceStudentStatusEnum::Debt->value;
+
+            return;
+        }
+
+        $hasPartial = collect($statuses)->contains(
+            fn ($status) => $status === BalanceStudentStatusEnum::PartiallyPaid->value
+        );
+
+        $balance->status = $hasPartial
+            ? BalanceStudentStatusEnum::PartiallyPaid->value
+            : BalanceStudentStatusEnum::Pending->value;
     }
 }
