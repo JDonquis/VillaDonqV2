@@ -186,6 +186,7 @@
                     <th>Correo electrónico</th>
                     <th>Número de teléfono</th>
                     <th class="max-w-[200px]">Dirección</th>
+                    <th class="max-w-[200px]">Es administrador</th>
                 </tr>
             </thead>
             <tbody slot="tbody">
@@ -207,6 +208,19 @@
                         <td class="max-w-[200px] truncate" title={user.address}
                             >{user.address}</td
                         >
+                        <td class="max-w-[200px]">
+                            {#if user.is_admin}
+                                <iconify-icon
+                                    icon="eos-icons/admin"
+                                    class="text-green"
+                                />
+                            {:else}
+                                <iconify-icon
+                                    icon="mdi:account"
+                                    class="text-gray"
+                                />
+                            {/if}
+                        </td>
                     </SelectableRow>
                 {/each}
             </tbody>

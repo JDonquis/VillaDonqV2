@@ -69,7 +69,7 @@
             selectedRow = { status: false, data: null };
         }
     });
-    console.log(data);
+    $: console.log($form);
     function handleSubmit(event) {
         event.preventDefault();
         $form.clearErrors();
@@ -297,6 +297,7 @@
                                                 student.representative.user
                                                     .last_name,
                                             balances: student.balances,
+                                            is_exempt: student.is_exempt,
                                         },
                                     ];
                                 }
@@ -463,6 +464,7 @@
                                 <BalanceBar
                                     balances={student.balances}
                                     amountToPay={student.amount_in_dolars}
+                                    is_exempt={student.is_exempt ? student.exemption_percentage : false}
                                 />
                             </td>
                         </tr>

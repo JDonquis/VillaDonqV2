@@ -261,6 +261,8 @@
                 ></iconify-icon>
             </button> -->
         </div>
+
+        {#if is_exempt < 100}
         <div class="grid p-0 grid-cols-12 border-2 border-black">
             <div
                 class={` hover:brightness-110  relative col-span-1 z-10  text-xs capitalize  text-center font-bold ${balance.inscription < 0 ? "bg-red" : "bg-green"} text-black  p-1`}
@@ -318,6 +320,7 @@
                 {/each}
             </div>
         </div>
+        {/if}
     {/each}
 
     {#if tooltipVisible}
