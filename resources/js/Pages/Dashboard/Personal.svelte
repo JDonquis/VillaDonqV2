@@ -210,15 +210,9 @@
                         >
                         <td class="max-w-[200px]">
                             {#if user.is_admin}
-                                <iconify-icon
-                                    icon="eos-icons/admin"
-                                    class="text-green"
-                                />
+                                Si
                             {:else}
-                                <iconify-icon
-                                    icon="mdi:account"
-                                    class="text-gray"
-                                />
+                                No
                             {/if}
                         </td>
                     </SelectableRow>
