@@ -16,7 +16,6 @@ export function toggleMenu(objParams) {
             localStorage.setItem('navStatus', JSON.stringify(newNav));
         }
 
-        console.log({ current: newNav });
         return newNav;
     });
 }

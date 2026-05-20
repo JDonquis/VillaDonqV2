@@ -6,6 +6,7 @@
     export let placeholder = "";
     export let type = "text";
     export let classes = "";
+    export let labelClass = "";
     export let theme = "ligtht";
     export let min = "";
     export let readonly = false;
@@ -19,8 +20,8 @@
 
 <div class={`text-left w-full mt-5 ${classes} `}>
     <label
-        for={label}
-        class={`form__label w-full text-sm font-semibold`}
+        for={"nombre"}
+        class={`form__label w-full text-sm font-semibold ${labelClass}`}
         {placeholder}>{label} {required ? "*" : ""}</label
     >
     <div class="relative w-full parent_div">

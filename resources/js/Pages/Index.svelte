@@ -25,168 +25,103 @@
             },
         });
     }
+
+    setTimeout(() => {
+        document.querySelector("input[name='ci']").focus();
+    }, 200);
 </script>
 
 <Alert />
-<section class="bg-background min-h-screen">
-    <header class="flex justify-between px-1 mx-4 md:mx-12 py-3 lg:mx-20">
-        <img src="file:///C:/Users/Juan/Downloads/logo_colegio_negro%20(1).png" alt="">
-        <button
-            class="btn_create inline-block"
-            on:click={(e) => {
-                e.preventDefault();
-                showModal = true;
-                setTimeout(() => {
-                    document.querySelector("input[name='ci']").focus();
-                }, 200);
-            }}>Login</button
+
+<div
+    class="relative min-h-screen w-full overflow-hidden bg-[#490A75] flex items-center justify-center font-sans select-none"
+>
+    <div class="absolute inset-0 w-full h-full pointer-events-none">
+        <div
+            class="absolute -top-[25%] left-[14%] md:left-[40%] w-[120px] h-[960px] bg-white z-10 rotate-[60deg] transform origin-top shadow-xl"
+        ></div>
+        <div
+            class="absolute -top-[17%] left-[25%] md:left-[2%] w-[3000px] h-[120px] bg-white  rotate-[60deg] transform origin-left shadow-xl"
+        ></div>
+
+        <div
+            class="absolute -bottom-20 left-0 w-full  h-[25vh] md:h-[30vh] -rotate-6 bg-[#008f11] clip-diagonal shadow-inner"
+        ></div>
+    </div>
+
+    <div
+        class="relative z-10 container mx-auto px-6 flex flex-col lg:flex-row items-center justify-end gap-12 lg:gap-24 w-full"
+    >
+        <div
+            class="flex flex-col items-center justify-center text-center animate-fade-in"
         >
-    </header>
-    <Modal bind:showModal>
-        <legend slot="header" class="text-center opacity-70"
-            >INICIAR SESIÓN</legend
-        >
-        <form on:submit={handleSubmit} class="min-w-[270px] px-5    ">
-            <div>
-                <Input
-                    type="text"
-                    name="ci"
-                    required={true}
-                    label={"Cédula"}
-                    bind:value={$form.ci}
-                    error={$form.errors?.ci}
+            <div
+                class="w-64 md:w-96  rounded-full overflow-hidden   p-1 transition-transform duration-300 hover:scale-105"
+            >
+                <img
+                    src="/img/colegio_logo.png"
+                    alt="U.E. Instituto Jesús El Nazareno"
+                    class="w-full h-full object-contain"
                 />
-                <!-- {#if $form.errors.ci}
+            </div>
+        </div>
+
+        <div
+            class="w-full max-w-sm bg-[#490A75]/40 backdrop-blur-md p-8 rounded-2xl border border-white/10 shadow-2xl animate-slide-up"
+        >
+            <h2
+                class="text-white text-xl font-bold text-center mb-6 tracking-wide uppercase"
+            >
+                Control de Estudios
+            </h2>
+            <form on:submit={handleSubmit} class="min-w-[270px] px-5">
+                <div>
+                    <Input
+                        type="text"
+                        labelClass="text-white"
+                        name="ci"
+                        required={true}
+                        label={"Cédula"}
+                        bind:value={$form.ci}
+                        error={$form.errors?.ci}
+                    />
+                    <!-- {#if $form.errors.ci}
             <div class="text-white bg-opacity-30 bg-red pt-1">
                 
                 <span >{$form.errors.ci}</span>
             </div>
             {/if} -->
 
-                <Input
-                    type="password"
-                    required={true}
-                    name="password"
-                    label={"Contraseña"}
-                    bind:value={$form.password}
+                    <Input
+                        labelClass="text-white"
+                        type="password"
+                        required={true}
+                        name="password"
+                        label={"Contraseña"}
+                        bind:value={$form.password}
+                    />
+                </div>
+                <!-- <button type="submit">Iniciar sesión</button> -->
+
+                <input
+                    type="submit"
+                    disabled={$form.processing}
+                    value={$form.processing ? "Cargando..." : "ENTRAR"}
+                    class="btn w-full mt-6"
                 />
-            </div>
-            <!-- <button type="submit">Iniciar sesión</button> -->
 
-            <input
-                type="submit"
-                disabled={$form.processing}
-                value={$form.processing ? "Cargando..." : "ENTRAR"}
-                class="btn w-full mt-6"
-            />
-            
-            <div class="mt-4 text-center">
-                <a href="/olvidar-contrasena" class="text-sm text-gray-400 hover:text-color2">
-                    ¿Olvidaste tu contraseña?
-                </a>
-            </div>
-        </form>
-    </Modal>
-
-    <main
-        class="bg-background px-1 mx-4 md:py-9 md:mx-12 lg:mx-20 justify-between md:grid grid-flow-col md:gap-x-10 lg:gap-x-24 xl:gap-32 items-center"
-    >
-        <div class="md:min-w-[600px]">
-            <h1 class="md:text-5xl text-color1">
-                Colegio
-                <br />
-                Jesús el Nazareno
-            </h1>
-            <h2 class="text-xl">
-                Formando mentes brillantes para un mañana prometedor
-            </h2>
-
-            <div class="flex justify-between mt-4 md:mt-14 text-color1">
-                <div>
-                    <span class="flex items-center gap-2 mb-2 lg:mb-3">
-                        <div class="bg-color1 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"><iconify-icon class="text-color4 text-4xl" icon="pajamas:check-xs"></iconify-icon></div>
-                        <b>Prescolar</b>
-                    </span>
-                    <ul class="grid grid-cols-2 gap-x-3">
-                        <li>1er nivel</li>
-                        <li>2do nivel</li>
-                        <li>3er nivel</li>
-                    </ul>
+                <div class="mt-4 text-center">
+                    <a
+                        href="/olvidar-contrasena"
+                        class="text-sm text-gray-400 hover:text-color2"
+                    >
+                        ¿Olvidaste tu contraseña?
+                    </a>
                 </div>
-                <div>
-                    <span class="flex items-center gap-2 mb-2 lg:mb-3">
-                        <div class="bg-color1 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"><iconify-icon class="text-color4 text-4xl" icon="pajamas:check-xs"></iconify-icon></div>
-                        <b>Primaria</b>
-                    </span>
-                    <ul class="grid grid-cols-2 gap-x-3">
-                        <li>1er grado</li>
-                        <li>2do grado</li>
-                        <li>3er grado</li>
-                        <li>4to grado</li>
-                        <li>5to grado</li>
-                        <li>6to grado</li>
-                    </ul>
-                </div>
-                <div>
-                    <span class="flex items-center gap-2 mb-2 lg:mb-3">
-                        <div class="bg-color1 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"><iconify-icon class="text-color4 text-4xl" icon="pajamas:check-xs"></iconify-icon></div>
-                        <b>Secundaria</b>
-                    </span>
-                    <ul class="grid grid-cols-2 gap-x-3">
-                        <li>1er año</li>
-                        <li>2do año</li>
-                        <li>3er año</li>
-                        <li>4to año</li>
-                        <li>5to año</li>
-                    </ul>
-                </div>
-            </div>
-
-
-            <div class="flex justify-between  mt-4 md:mt-16 md:gap-10  text-color1">
-
-                <div class="flex divide-x divide-dark ">
-                    <span class="pr-3 text-4xl">33</span>
-                    <p class="pl-3 col-span-2 leading-5 font-semibold">
-                        AÑOS DE
-                        <br>
-                        FORMACIÓN
-                    </p>
-                </div>
-
-                <div class="flex divide-x divide-dark ">
-                    <span class="pr-3 text-4xl">32</span>
-                    <p class="pl-3 col-span-2 leading-5 font-semibold">
-                        PROMOCIONES 
-                        <br>
-                        GRADUADAS
-                    </p>
-                </div>
-
-                <div class="flex divide-x divide-dark ">
-                    <span class="pr-3 text-4xl">400</span>
-                    <p class="pl-3 col-span-2 leading-5 font-semibold">
-                        ESTUDIANTES
-                        <br>
-                        ACTIVOS
-                    </p>
-                </div>
-            </div>
-
-
-
+            </form>
         </div>
-
-        <div class="pl-5 relative pr-2 max-w-[500px]">
-            <img class="absolute w-full" src="https://cdn.discordapp.com/attachments/1238903237218930802/1244452251028688906/Iconos.png?ex=6655d2b9&is=66548139&hm=13ffaaa80051f10b14f4ac464ba1edc1a2b82a9546f069c85de0dfde2da6309a&" alt="" >
-            <img    
-                class="rounded-full aspect-square border-4 object-cover border-color1   "
-                src="https://notifalcon.com/wp-content/uploads/2023/11/WhatsApp-Image-2023-11-08-at-10.21.36-AM.jpeg"
-                alt=""
-            />
-        </div>
-    </main>
-</section>
+    </div>
+</div>
 
 <style>
     * {

@@ -48,10 +48,12 @@
     </button>
     <a
         href=""
-        class="logo text-lg  md:block p-4 text-center w-full  flex"
+        class=" text-lg  md:block p-4 text-center w-full  flex"
         >
         <img src="/img/Isotipo-villadonq-blanco.png" alt="Villadonq" class="w-10 h-10 object-contain inline" />
-        VILLADONQ
+        <span class="logo">
+            VILLADONQ
+        </span>
         </a
     >
     <ul
