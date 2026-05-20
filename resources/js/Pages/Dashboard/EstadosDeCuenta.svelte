@@ -6,7 +6,7 @@
     import { page } from "@inertiajs/svelte";
 
     export let data = [];
-
+    let showTotalDebt = false;
     $: tableData = {
         ...data?.students.data,
         filters: {
@@ -67,6 +67,31 @@
 </svelte:head>
 
 <Search placeholder="Buscar estudiante..." class="mb-4" />
+
+{#if data.total_debt}
+    <div class="w-max mb-5 flex flex-wrap items-center gap-2">
+        <span class="font-semibold">Deuda:</span>
+        <b
+            class={`text-sm ${showTotalDebt ? "opacity-100" : "opacity-0 blur-sm"} text-red transition-all duration-200`}
+        >
+            {showTotalDebt ? `$${data.total_income}` : "•••"}
+        </b>
+        <button
+            type="button"
+            class="inline-flex items-center justify-center bg-white/10 p-2 text-gray-700 transition hover:bg-red/10 focus:outline-none"
+            on:click={() => {
+                showTotalDebt = !showTotalDebt;
+            }}
+            aria-label={showTotalDebt ? "Ocultar total" : "Mostrar total"}
+        >
+            <iconify-icon
+                icon={showTotalDebt ? "formkit:eyeclosed" : "mdi:eye-outline"}
+                width="24"
+                height="24"
+            ></iconify-icon>
+        </button>
+    </div>
+{/if}
 <!-- svelte-ignore missing-declaration -->
 <Table serverSideData={tableData} pagination={true} filtersOptions={{
     debt_filter: [

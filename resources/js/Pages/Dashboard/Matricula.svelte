@@ -69,6 +69,7 @@
         is_exempt: false,
         exemption_percentage: "",
         exemption_observations: "",
+        apply_to_past_debts: false,
     });
 
     let formReinscribe = useForm({
@@ -195,6 +196,7 @@
         $form.is_exempt = student.is_exempt ?? false;
         $form.exemption_percentage = student.exemption_percentage ?? "";
         $form.exemption_observations = student.exemption_observations ?? "";
+        $form.apply_to_past_debts = student.apply_to_past_debts ?? false;
     }
 
     function handleInscribeClick() {
@@ -483,6 +485,21 @@
                             bind:value={$form.exemption_observations}
                             error={$form.errors?.exemption_observations}
                         />
+                    </div>
+
+                    <div class="col-span-2 flex items-center gap-3 mt-2">
+                        <input
+                            type="checkbox"
+                            id="apply_to_past_debts"
+                            bind:checked={$form.apply_to_past_debts}
+                            class="w-5 h-5 border-3 border-black cursor-pointer"
+                        />
+                        <label
+                            for="apply_to_past_debts"
+                            class="font-semibold text-sm cursor-pointer select-none"
+                        >
+                            Aplicar a deudas anteriores
+                        </label>
                     </div>
                 {/if}
             </fieldset>

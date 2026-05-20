@@ -38,14 +38,14 @@
 >
     <div class="absolute inset-0 w-full h-full pointer-events-none">
         <div
-            class="absolute -top-[25%] left-[14%] md:left-[40%] w-[120px] h-[960px] bg-white z-10 rotate-[60deg] transform origin-top shadow-xl"
+            class="absolute -top-[25%] left-[14%] md:left-[40%] w-[120px] h-[960px] bg-white rotate-[60deg] transform origin-top"
         ></div>
         <div
-            class="absolute -top-[17%] left-[25%] md:left-[2%] w-[3000px] h-[120px] bg-white  rotate-[60deg] transform origin-left shadow-xl"
+            class="absolute -top-[17%] left-[25%] md:left-[2%] w-[3000px] h-[120px] bg-white rotate-[60deg] transform origin-left"
         ></div>
 
         <div
-            class="absolute -bottom-20 left-0 w-full  h-[25vh] md:h-[30vh] -rotate-6 bg-[#008f11] clip-diagonal shadow-inner"
+            class="absolute -bottom-20 left-0 w-[2400px] h-[25vh] md:h-[30vh] -rotate-6 bg-[#008f11] clip-diagonal shadow-inner"
         ></div>
     </div>
 
@@ -56,7 +56,7 @@
             class="flex flex-col items-center justify-center text-center animate-fade-in"
         >
             <div
-                class="w-64 md:w-96  rounded-full overflow-hidden   p-1 transition-transform duration-300 hover:scale-105"
+                class="w-64 md:w-96 rounded-full overflow-hidden p-1 transition-transform duration-300 hover:scale-105"
             >
                 <img
                     src="/img/colegio_logo.png"
@@ -72,7 +72,11 @@
             <h2
                 class="text-white text-xl font-bold text-center mb-6 tracking-wide uppercase"
             >
-                Control de Estudios
+                <img
+                    src="/img/Isotipo-villadonq-blanco.png"
+                    alt="Villadonq"
+                    class="w-10 h-10 object-contain inline"
+                />
             </h2>
             <form on:submit={handleSubmit} class="min-w-[270px] px-5">
                 <div>
