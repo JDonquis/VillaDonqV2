@@ -699,13 +699,15 @@
         <Input
             id="filterYear"
             type="select"
+            value={selectedCourseId}
             on:change={(e) => {
                 console.log("Cambiando año a:", e.target.value);
+                changeYear(e.target.value);
             }}
         >
-            {#each data.schoolLapses as lapse}
-                <option class="bg-gray-50" value={lapse.id.toString()}
-                    >{lapse.start}-{lapse.end}</option
+            {#each data.courses as course}
+                <option class="bg-gray-50" value={course.id.toString()}
+                    >{course.name}</option
                 >
             {/each}
         </Input>
