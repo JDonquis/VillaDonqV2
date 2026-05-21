@@ -33,7 +33,7 @@ Route::post('/establecer-contrasena', [AuthController::class, 'setupPassword']);
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AppController::class, 'dashboard'])->name('dashboard');
-    Route::get('/dashboard/graficos/annual-vs-monthly-flow/{schoolLapse}', [AppController::class, 'annualVsMonthlyFlow']);
+    Route::get('/dashboard/graficos/annual-vs-monthly-flow/{schoolLapse?}', [AppController::class, 'annualVsMonthlyFlow']);
 
     Route::get('/dashboard/personal', [UserController::class, 'index'])->name('personal.index');
     Route::post('/dashboard/personal', [UserController::class, 'store'])->name('personal.store');
