@@ -24,7 +24,7 @@ class AppController
         ]);
     }
 
-    public function annualVsMonthlyFlow($schoolLapse)
+    public function annualVsMonthlyFlow($schoolLapse = null)
     {
 
         if (!$schoolLapse) {
