@@ -10,7 +10,6 @@ use Carbon\Carbon;
 class ChartService
 {
     private const MONTHS = [
-        'august',
         'september',
         'october',
         'november',
@@ -21,7 +20,9 @@ class ChartService
         'april',
         'may',
         'june',
-        'july'
+        'july',
+        'august',
+
     ];
 
     public function annualVsMonthlyFlow($schoolLapse)
