@@ -1,6 +1,6 @@
 # Session Context — VillaDonq V2
 
-**Fecha:** 2026-05-06
+**Fecha:** 2026-05-16
 **Stack:** Laravel 10 + Inertia.js + Svelte 4 + Vite + Tailwind CSS
 **DB:** MySQL (SQLite para tests)
 
@@ -31,7 +31,13 @@
 #### `app/Services/AccountStatementService.php` (nuevo)
 - **`getAll($params)`:** Query de estudiantes activos con balances filtrados
 - Calcula `total_debt` (suma de valores absolutos de campos negativos: inscription + 12 meses) y `total_income` (suma de `balance_payments.amount`)
-- Filtros: `debt_status`, `school_lapse_year`, `start_date`, `end_date`, `section_id`
+- Filtros: `school_lapse_year`, `start_date`, `end_date`, `section_id`
+- **`debt_filter`** (reemplaza `debt_status`): Mapea los valores del frontend:
+  - `debtors` → `total_debt > 0`
+  - `current_period` → balance en `SchoolLapse::where('status', 1)` con `total_debt > 0`
+  - `previous_period` → balance en el `SchoolLapse` anterior cronológicamente al activo con `total_debt > 0`
+  - `exempted` → `is_exempt == true`
+  - `up_to_date` → `total_debt == 0`
 - Ordenamiento: `debt`, `name`, `last_name`, `course`, `section` (asc/desc)
 - Paginación manual con `LengthAwarePaginator` (calcula deuda de TODOS los estudiantes primero, luego ordena y pagina — Opción A)
 
@@ -65,13 +71,12 @@
 ---
 
 ## LSP warnings conocidos (no bloqueantes)
-- `PaymentService.php:57` — `withQueryString()` undefined (es método de Laravel Paginator, funciona correctamente)
-- `Student.php:63,66` — `Storage` y `Str` imports (pre-existent)
+- `PaymentService.php` — `withQueryString()` undefined (es método de Laravel Paginator, funciona correctamente)
+- `Student.php` — `Storage` y `Str` imports (pre-existent)
 
 ---
 
 ## Pendientes / Próximos pasos
-- Frontend `Dashboard/EstadosCuenta.svelte` (aún no existe)
 - Frontend `Pagos.svelte` necesita fix en rutas de delete y edit (no se tocó)
 - Tests del módulo de pagos (eliminar/actualizar)
 - Tests del módulo de estados de cuenta
