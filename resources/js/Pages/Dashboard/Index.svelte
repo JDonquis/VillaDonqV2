@@ -196,14 +196,14 @@
 
     async function getAnnualVsMonthlyFlowData(year_id) {
         try {
-            const response = await axios.get(`/dashboard/annual-vs-monthly-flow-data/${year_id}`);
+            const response = await axios.get(`/dashboard/graficos/annual-vs-monthly-flow-data/${year_id}`);
             const data = response.data;
             // Aquí deberías actualizar tus arrays con los datos reales que recibes
             // pagadoMensual = data.pagadoMensual;
             // esperadoMensual = data.esperadoMensual;
             // ingresoRealAcumulado = data.ingresoRealAcumulado;
             // metaEsperadaAcumulada = data.metaEsperadaAcumulada;
-            
+
         } catch (error) {
             console.error("Error al obtener datos:", error);
         }
