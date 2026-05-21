@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\SchoolLapse;
-use Inertia\Response;
+use App\Services\ChartService;
 use Illuminate\Support\Facades\Request;
+use Inertia\Response;
 
 class AppController
 {
@@ -23,20 +24,19 @@ class AppController
         ]);
     }
 
-    public function annualVsMonthlyFlow(Request $request)
+    public function annualVsMonthlyFlow($schoolLapse)
     {
-        $schoolLapse = null;
 
-        if (!$request->has('schoolId')) {
+        if (!$schoolLapse) {
             $schoolLapse = SchoolLapse::where('status', 1)->first();
         } else {
-            $schoolLapse = SchoolLapse::where('id', $request->input('schoolId'))->first();
+            $schoolLapse = SchoolLapse::where('id', $schoolLapse)->first();
         }
 
-        return response()->json([
-            'annualFlow' => [1000, 1500, 1200, 1800, 2000, 2200, 2500, 2700, 3000, 3200, 3500, 4000],
-            'monthlyFlow' => [200, 250, 220, 300, 350, 400, 450, 500, 550, 600, 650, 700],
-        ]);
+        $chartService = new ChartService;
+        $data = $chartService->annualVsMonthlyFlow($schoolLapse);
+
+        return response()->json($data);
     }
 
     public function maquinas(): Response
