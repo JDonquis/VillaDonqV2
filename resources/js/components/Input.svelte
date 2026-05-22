@@ -13,12 +13,12 @@
 
     export let max = "";
     export let name = "";
-
+    export let style = "";
     export let error = false;
     export let disabled = false
 </script>
 
-<div class={`text-left w-full mt-5 ${classes} `}>
+<div class={`text-left w-full mt-5 ${classes} `} style={style}>
     <label
         for={"nombre"}
         class={`form__label w-full text-sm font-semibold ${labelClass}`}

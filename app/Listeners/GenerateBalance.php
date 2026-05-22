@@ -73,8 +73,6 @@ class GenerateBalance
                 'student_id' => $student->id,
                 'school_lapse_id' => $schoolLapseActive->id,
                 'inscription' => -$effectiveInscriptionPrice,
-                'august' => $this->months['august'],
-                'august_status' => $this->monthStatuses['august'],
                 'september' => $this->months['september'],
                 'september_status' => $this->monthStatuses['september'],
                 'october' => $this->months['october'],
@@ -97,6 +95,8 @@ class GenerateBalance
                 'june_status' => $this->monthStatuses['june'],
                 'july' => $this->months['july'],
                 'july_status' => $this->monthStatuses['july'],
+                'august' => $this->months['august'],
+                'august_status' => $this->monthStatuses['august'],
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
 

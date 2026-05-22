@@ -245,7 +245,8 @@
                         getAnnualVsMonthlyFlowData(e.target.value);
                     }}
                     bind:value={annual_vs_monthly_flow_year_id}
-                    classes=" max-w-[170px] mt-0"
+                    classes={"max-w-[170px] mt-0 "}
+                    style={"marginTop: 0"}
                 >
                     {#each schoolLapses as lapse}
                         <option class="bg-gray-50" value={lapse.id.toString()}

@@ -28,10 +28,12 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $dataUser = ['ci' => $request->ci, 'password' => $request->password];
+        $dataUser = ['email' => $request->email, 'password' => $request->password];
         if (! $this->loginService->tryLoginOrFail($dataUser)) {
             return redirect('/')->withErrors(['data' => 'Datos incorrectos, intente nuevamente']);
         }
+
+        $dataUser = User::where('email', $request->email)->first()->toArray();
 
         $token = $this->loginService->generateToken($dataUser);
         $user = auth()->user();
