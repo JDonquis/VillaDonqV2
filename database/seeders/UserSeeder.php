@@ -21,6 +21,7 @@ class UserSeeder extends Seeder
             'phone_number' => '',
             'address' => '',
             'photo' => '',
+            'is_admin' => true,
         ]);
 
         User::create([
@@ -33,6 +34,7 @@ class UserSeeder extends Seeder
             'phone_number' => '04125551234',
             'address' => '',
             'photo' => '',
+            'is_admin' => false,
         ]);
     }
 }
