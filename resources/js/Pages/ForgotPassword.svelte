@@ -34,6 +34,14 @@
 <Alert />
 <section class="bg-background min-h-screen flex items-center justify-center">
     <div class="bg-purple p-8  border-4 border-black medium-shadow  shadow-lg w-full max-w-md">
+     <div class="flex justify-center mb-2">
+        <img
+             src="/img/Isotipo-villadonq-blanco.png"
+             alt="Villadonq"
+             class="w-10 mx-auto   text-center h-10 object-contain inline"
+         />
+
+    </div>
         {#if sent}
             <div class="text-center">
                 <h1 class="text-2xl font-bold text-black mb-4">Correo Enviado</h1>
@@ -48,6 +56,7 @@
                 </button>
             </div>
         {:else}
+
             <h1 class="text-2xl font-bold text-white text-center mb-2">¿Olvidaste tu Contraseña?</h1>
             <p class="text-black text-center mb-6">
                 Ingresa el correo electrónico de tu cuenta y te enviaremos un enlace para restablecer tu contraseña.
