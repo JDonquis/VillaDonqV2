@@ -204,16 +204,13 @@
                 : `/dashboard/graficos/annual-vs-monthly-flow`; // <-- Ajusta esta URL a tu ruta base si es distinta
 
             const response = await axios.get(url);
-            const data = response.data;
+            const data = response.data.data;
             console.log("Datos recibidos del backend:", data);
-       
-            annual_vs_monthly_flow_data = response.data
-            // 2. Sincronizamos el Select de Svelte con el año real que calculó el backend
-            // Suponiendo que tu backend te devuelve el id como 'data.year_id' o 'data.current_year_id'
-            if (data.year_id) {
-                annual_vs_monthly_flow_year_id = data.year_id.toString();
-            }
+            console.log(response)
 
+            annual_vs_monthly_flow_year_id = response.data.schoolLapseID.toLocaleString();
+            annual_vs_monthly_flow_data = data
+           
         } catch (error) {
             console.error("Error al obtener datos:", error);
         } finally {
@@ -246,7 +243,7 @@
                     }}
                     bind:value={annual_vs_monthly_flow_year_id}
                     classes={"max-w-[170px] mt-0 "}
-                    style={"marginTop: 0"}
+                    style={"margin-top: 0"}
                 >
                     {#each schoolLapses as lapse}
                         <option class="bg-gray-50" value={lapse.id.toString()}

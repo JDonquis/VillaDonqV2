@@ -254,6 +254,10 @@
                 on:input={(e) => {
                     search_student(e.target.value);
                 }}
+                on:click={(e) => {
+                    e.stopPropagation();
+                    isSearchTableOpen = true;
+                }}
             />
 
             <table
@@ -302,7 +306,6 @@
                                     ];
                                 }
                                 isSearchTableOpen = false;
-                                searched_students = [];
                             }}
                         >
                             <td>{student.name} {student.last_name}</td>
@@ -559,6 +562,7 @@
         on:click={(e) => {
             e.preventDefault();
             showModal = true;
+            searchInputRef.focus();
         }}
     >
         Registrar pago

@@ -8,7 +8,7 @@
     export let errors = {};
 
     let form = useForm({
-        ci: null,
+        email: null,
     });
 
     function handleSubmit(event) {
@@ -19,8 +19,8 @@
                 sent = true;
             },
             onError: (err) => {
-                if (err.ci) {
-                    displayAlert({ type: "error", message: err.ci });
+                if (err.email) {
+                    displayAlert({ type: "error", message: err.email });
                 }
             },
         });
@@ -33,11 +33,11 @@
 
 <Alert />
 <section class="bg-background min-h-screen flex items-center justify-center">
-    <div class="bg-color1 p-8 rounded-lg shadow-lg w-full max-w-md">
+    <div class="bg-purple p-8  border-4 border-black medium-shadow  shadow-lg w-full max-w-md">
         {#if sent}
             <div class="text-center">
-                <h1 class="text-2xl font-bold text-white mb-4">Correo Enviado</h1>
-                <p class="text-gray-300 mb-6">
+                <h1 class="text-2xl font-bold text-black mb-4">Correo Enviado</h1>
+                <p class="text-black mb-6">
                     Si el correo electrónico está registrado en nuestro sistema, recibirás un mensaje con instrucciones para restablecer tu contraseña.
                 </p>
                 <p class="text-gray-400 text-sm mb-6">
@@ -49,7 +49,7 @@
             </div>
         {:else}
             <h1 class="text-2xl font-bold text-white text-center mb-2">¿Olvidaste tu Contraseña?</h1>
-            <p class="text-gray-300 text-center mb-6">
+            <p class="text-black text-center mb-6">
                 Ingresa tu número de Cédula de Identidad y te enviaremos un enlace para restablecer tu contraseña.
             </p>
             
@@ -57,11 +57,11 @@
                 <div>
                     <Input
                         type="text"
-                        name="ci"
+                        name="email"
                         label="Cédula de Identidad"
                         required={true}
-                        bind:value={$form.ci}
-                        error={$form.errors?.ci}
+                        bind:value={$form.email}
+                        error={$form.errors?.email}
                     />
                 </div>
                 
@@ -76,7 +76,7 @@
                 <button
                     type="button"
                     on:click={goBack}
-                    class="text-gray-400 hover:text-white text-sm w-full mt-2"
+                    class="text-white hover:text-yellow text-sm w-full mt-2"
                 >
                     ← Volver al Login
                 </button>
