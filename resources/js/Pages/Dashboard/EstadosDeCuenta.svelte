@@ -10,7 +10,10 @@
     $: tableData = {
         ...data?.students.data,
         filters: {
-            debt_filter: new URLSearchParams($page.url.split("?")[1] || "").get("debt_filter") || "",
+            debt_filter:
+                new URLSearchParams($page.url.split("?")[1] || "").get(
+                    "debt_filter",
+                ) || "",
         },
     };
 
@@ -31,15 +34,15 @@
                         "Imagen del balance copiada al portapapeles. ¡Pégala en el chat de WhatsApp!",
                     );
                 } catch (err) {
-                    console.error("Error al copiar al portapapeles:", err);
-                    // Fallback: download the image if clipboard fails
-                    const link = document.createElement("a");
-                    link.download = `balance-${student.name}-${student.last_name}.png`;
-                    link.href = canvas.toDataURL();
-                    link.click();
-                    alert(
-                        "No se pudo copiar al portapapeles automáticamente. La imagen se ha descargado. ¡Adjúntala en WhatsApp!",
-                    );
+                    // console.error("Error al copiar al portapapeles:", err);
+                    // // Fallback: download the image if clipboard fails
+                    // const link = document.createElement("a");
+                    // link.download = `balance-${student.name}-${student.last_name}.png`;
+                    // link.href = canvas.toDataURL();
+                    // link.click();
+                    // alert(
+                    //     "No se pudo copiar al portapapeles automáticamente. La imagen se ha descargado. ¡Adjúntala en WhatsApp!",
+                    // );
                 }
             });
         }
@@ -54,7 +57,11 @@
         }
         phoneNumber = phoneNumber.replace("+", "");
 
-        const text = `Hola ${student.representative.user.name} ${student.representative.user.last_name}, Le escribimos para recordarle que el balance de su representado ${student.name} ${student.last_name} está vencido. Por favor, póngase al día con los pagos para evitar inconvenientes. Gracias!`;
+        const text = `Hola ${student.representative.user.name} ${student.representative.user.last_name}, esperamos que se encuentre muy bien.
+
+Le contactamos para informarle que el pago mensual de ${student.name} ${student.last_name} se encuentra vencido. Le agradeceríamos ponerse al día cuando le sea posible para mantener su cuenta al día y evitar inconvenientes.
+
+Gracias por su atención y apoyo continuo.`;
         window.open(
             `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`,
             "_blank",
@@ -93,16 +100,20 @@
     </div>
 {/if}
 <!-- svelte-ignore missing-declaration -->
-<Table serverSideData={tableData} pagination={true} filtersOptions={{
-    debt_filter: [
-        { id: "", name: "Todos" },
-        { id: "debtors", name: "Deudores" },
-        { id: "current_period", name: "Deudores del periodo actual" },
-        { id: "previous_period", name: "Deudores del periodo anterior" },
-        { id: "exempted", name: "Solo exonerados" },
-        { id: "up_to_date", name: "Al día" },
-    ]
-}}>
+<Table
+    serverSideData={tableData}
+    pagination={true}
+    filtersOptions={{
+        debt_filter: [
+            { id: "", name: "Todos" },
+            { id: "debtors", name: "Deudores" },
+            { id: "current_period", name: "Deudores del periodo actual" },
+            { id: "previous_period", name: "Deudores del periodo anterior" },
+            { id: "exempted", name: "Solo exonerados" },
+            { id: "up_to_date", name: "Al día" },
+        ],
+    }}
+>
     <thead slot="thead">
         <tr>
             <th>Estudiante</th>
@@ -134,7 +145,9 @@
                             ...b.months,
                         }))}
                         classes="py-0 px-0"
-                        is_exempt={student.is_exempt ? student.exemption_percentage : false}
+                        is_exempt={student.is_exempt
+                            ? student.exemption_percentage
+                            : false}
                     />
                 </td>
                 <td class="group"
