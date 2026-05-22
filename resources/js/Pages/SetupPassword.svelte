@@ -33,7 +33,7 @@
 
 <Alert />
 <section class="bg-background min-h-screen flex items-center justify-center">
-    <div class="bg-white text-dark p-8 rounded-lg shadow-lg w-full max-w-md">
+    <div class="bg-purple text-dark p-8 border-4 border-black medium-shadow w-full max-w-md">
         <h1 class="text-2xl font-bold text-white text-center mb-6">Establecer Contraseña</h1>
         <p class=" text-center mb-6">Ingresa tu nueva contraseña para acceder al sistema.</p>
         
@@ -64,7 +64,7 @@
             
             <button
                 type="submit"
-                class="btn_create w-full mt-4"
+                class="btn w-full mt-4"
                 disabled={$form.processing}
             >
                 {$form.processing ? 'Guardando...' : 'Establecer Contraseña'}
@@ -72,3 +72,15 @@
         </form>
     </div>
 </section>
+
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+    button[type="submit"] {
+        background-color: #490A75;
+        color: white;
+    }
+    
+</style>

@@ -40,7 +40,7 @@
                 <p class="text-black mb-6">
                     Si el correo electrónico está registrado en nuestro sistema, recibirás un mensaje con instrucciones para restablecer tu contraseña.
                 </p>
-                <p class="text-gray-400 text-sm mb-6">
+                <p class="text-yellow text-sm mb-6">
                     No compartas este enlace con nadie.
                 </p>
                 <button on:click={goBack} class="btn_create w-full">
