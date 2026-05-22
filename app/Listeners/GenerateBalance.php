@@ -52,6 +52,7 @@ class GenerateBalance
         }
 
         $currentDate = Carbon::now();
+        // $currentDate->month(9);
         $currentMonthName = strtolower($currentDate->englishMonth);
         $setValue = false;
 
