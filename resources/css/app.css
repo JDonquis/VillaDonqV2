@@ -279,7 +279,19 @@ progress::-webkit-progress-value {
         opacity: 1;
     }
 }
-
+.slide-up {
+    animation: slideUp 0.3s ease;
+}
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 .bg-paper {
     background-color: #fffdf5;
     background-image: url("https://www.transparenttextures.com/patterns/rice-paper-2.png");

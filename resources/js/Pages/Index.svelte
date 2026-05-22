@@ -1,7 +1,7 @@
 <script>
     import { useForm } from "@inertiajs/svelte";
 
-    // import secretariaLogo from '$lib/images/logo_secretaria-circle-main.png';
+    // import secretariaLogo from '$lib/images/logo_secretaria-emailrcle-main.png';
     import Input from "../components/Input.svelte";
     import Modal from "../components/Modal.svelte";
 
@@ -10,7 +10,7 @@
     let showModal = false;
 
     let form = useForm({
-        ci: null,
+        email: null,
         password: null,
     });
 
@@ -27,7 +27,7 @@
     }
 
     setTimeout(() => {
-        document.querySelector("input[name='ci']").focus();
+        document.querySelector("input[name='email']").focus();
     }, 200);
 </script>
 
@@ -81,18 +81,18 @@
             <form on:submit={handleSubmit} class="min-w-[270px] px-5">
                 <div>
                     <Input
-                        type="text"
+                        type="email"
                         labelClass="text-white"
-                        name="ci"
+                        name="email"
                         required={true}
-                        label={"Cédula"}
-                        bind:value={$form.ci}
-                        error={$form.errors?.ci}
+                        label={"Correo"}
+                        bind:value={$form.email}
+                        error={$form.errors?.email}
                     />
-                    <!-- {#if $form.errors.ci}
-            <div class="text-white bg-opacity-30 bg-red pt-1">
+                    <!-- {#if $form.errors.email}
+            <div class="text-white bg-opaemailty-30 bg-red pt-1">
                 
-                <span >{$form.errors.ci}</span>
+                <span >{$form.errors.email}</span>
             </div>
             {/if} -->
 
@@ -105,7 +105,7 @@
                         bind:value={$form.password}
                     />
                 </div>
-                <!-- <button type="submit">Iniciar sesión</button> -->
+                <!-- <button type="submit">Iniemailar sesión</button> -->
 
                 <input
                     type="submit"

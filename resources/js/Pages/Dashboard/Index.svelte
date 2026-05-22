@@ -1,296 +1,264 @@
-<!-- <script>
-    import { useForm } from "@inertiajs/svelte";
+<script>
+    import { onMount, onDestroy } from "svelte";
+    import * as echarts from "echarts";
+    import Input from "../../components/Input.svelte";
+    import axios from "axios";  
+    export let schoolLapses;
 
-    // import secretariaLogo from '$lib/images/logo_secretaria-circle-main.png';
-    // import Input from "../../components/Input.svelte";
-    import Modal from "../../components/Modal.svelte";
 
-    import Alert from "../../components/Alert.svelte";
-    import { displayAlert } from "../../stores/alertStore";
-    let showModal = false;
-    const data = useForm({
-        name: "Jesús el Nazareno",
-        active_students: "400",
-        promotions: "33",
-        years: "34",
-        slogan: "Formando mentes brillantes para un mañana prometedor",
-        courses: [1, 2, 3],
+    let annual_vs_monthly_flow_year_id;
+    let chartContainer;
+    let myChart;
+
+    // 1. SUPONGAMOS QUE ESTOS SON LOS DATOS CRUDOS QUE LLEGAN DE TU ENDPOINT
+    // (Convertimos strings a números y "" a null para que la matemática no falle)
+    
+    let annual_vs_monthly_flow_data = {
+        pagado_mensual: [
+       
+        ],
+        esperado_mensual: [
+        ],
+        real_acumulado: [
+        ],
+        meta_acumulada: [
+        ],
+    };
+   
+
+    // 2. FUNCIÓN MATEMÁTICA PARA CALCULAR EL TOPE PERFECTO (Múltiplo de 5 para los saltos del eje)
+    function calcularTopeEje(arraysCombinados) {
+        // Filtramos nulls, vacíos o cosas que no sean números y buscamos el valor más alto
+        const maxValor = Math.max(
+            ...arraysCombinados
+                .flat()
+                .map((v) => Number(v))
+                .filter((v) => !isNaN(v)),
+        );
+
+        if (maxValor <= 0) return 5000; // Valor por defecto si no hay datos
+
+        // Añadimos un 10% de margen superior para que las barras/líneas no toquen el techo del gráfico
+        const valorConMargen = maxValor * 1.1;
+
+        // Buscamos el próximo número más alto que sea divisible exactamente entre 5
+        // Esto garantiza que al dividir el eje en 5 tramos (interval), den números enteros limpios
+        return Math.ceil(valorConMargen / 5) * 5;
+    }
+
+    // 3. CÁLCULO REACTIVO DE LOS TOPES
+    // Evaluamos tanto lo real como lo esperado para asegurar que nada se desborde
+    $: maxMensual = calcularTopeEje([annual_vs_monthly_flow_data.pagado_mensual, annual_vs_monthly_flow_data.esperado_mensual]);
+    $: maxAcumulado = calcularTopeEje([
+        annual_vs_monthly_flow_data.real_acumulado,
+        annual_vs_monthly_flow_data.meta_acumulada,
+    ]);
+
+    // 4. EL OBJETO OPTION SE CONFIGURA DINÁMICAMENTE
+    // Usamos una declaración reactiva ($:) para que si los datos cambian, el gráfico se entere
+    $: option = {
+        color: ["#88d498", "#dddddd", "#1f4287", "#ff6b6b"],
+        tooltip: {
+            trigger: "axis",
+            axisPointer: { type: "cross", crossStyle: { color: "#999" } },
+        },
+        toolbox: {
+            feature: {
+                dataView: { show: true, readOnly: true, title: "Ver Datos" },
+            },
+        },
+        legend: {
+            data: [
+                "Pagado",
+                "Esperado",
+                "Ingreso Real Acumulado",
+                "Meta Esperada Acumulada",
+            ],
+            bottom: 0,
+        },
+        xAxis: [
+            {
+                type: "category",
+                data: [
+                    "Sep",
+                    "Oct",
+                    "Nov",
+                    "Dic",
+                    "Ene",
+                    "Feb",
+                    "Mar",
+                    "Abr",
+                    "May",
+                    "Jun",
+                    "Jul",
+                    "Ago"
+                ],
+                axisPointer: { type: "shadow" },
+            },
+        ],
+        yAxis: [
+            {
+                type: "value",
+                name: "Flujo Mensual",
+                min: 0,
+                max: maxMensual,
+                interval: maxMensual / 5, // División perfecta en 5 partes
+                axisLabel: { formatter: "${value}" },
+            },
+            {
+                type: "value",
+                name: "Histórico Anual",
+                min: 0,
+                max: maxAcumulado,
+                interval: maxAcumulado / 5, // División perfecta en 5 partes
+                axisLabel: { formatter: "${value}" },
+                splitLine: { show: false },
+            },
+        ],
+        series: [
+            {
+                name: "Pagado",
+                type: "bar",
+                tooltip: {
+                    valueFormatter: (value) =>
+                        "$" + (value ? value.toLocaleString() : 0),
+                },
+                data: annual_vs_monthly_flow_data.pagado_mensual,
+            },
+            {
+                name: "Esperado",
+                type: "bar",
+                tooltip: {
+                    valueFormatter: (value) => "$" + value.toLocaleString(),
+                },
+                data: annual_vs_monthly_flow_data.esperado_mensual,
+            },
+            {
+                name: "Ingreso Real Acumulado",
+                type: "line",
+                yAxisIndex: 1,
+                smooth: true,
+                tooltip: {
+                    valueFormatter: (value) =>
+                        "$" + (value ? value.toLocaleString() : 0),
+                },
+                data: annual_vs_monthly_flow_data.real_acumulado,
+            },
+            {
+                name: "Meta Esperada Acumulada",
+                type: "line",
+                yAxisIndex: 1,
+                smooth: true,
+                lineStyle: { type: "dashed", width: 2 },
+                tooltip: {
+                    valueFormatter: (value) => "$" + value.toLocaleString(),
+                },
+                data: annual_vs_monthly_flow_data.meta_acumulada,
+            },
+        ],
+    };
+
+    // 5. OBSERVAR CAMBIOS EN OPTION PARA ACTUALIZAR EL GRÁFICO
+    // Si los datos llegan después de que el componente montó (frecuente con fetch), esto redibuja automáticamente
+    $: if (myChart && option) {
+        myChart.setOption(option);
+    }
+
+    function handleResize() {
+        if (myChart) myChart.resize();
+    }
+
+    
+    
+    onMount(() => {
+        myChart = echarts.init(chartContainer);
+        myChart.setOption(option);
+        window.addEventListener("resize", handleResize);
     });
-    $: console.log(data);
 
-    // function resizeInput(event) {
-    //     event.target.style.width = event.target.value.length + "ch";
-    // }
+   onMount(async () => {
+        // Inicializamos ECharts con la estructura base vacía
+        myChart = echarts.init(chartContainer);
+        myChart.setOption(option);
+        window.addEventListener("resize", handleResize);
+
+        // Llamamos a la función SIN parámetros la primera vez.
+        // Tu backend entenderá que es la carga inicial y buscará el último año.
+        await getAnnualVsMonthlyFlowData();
+    });
+
+    onDestroy(() => {
+        if (myChart) myChart.dispose();
+        window.removeEventListener("resize", handleResize);
+    });
+
+    // 7. FUNCIÓN ASÍNCRONA MODIFICADA
+    // Hacemos que el 'year_id' sea opcional (por defecto undefined)
+    async function getAnnualVsMonthlyFlowData(year_id = undefined) {
+        try {
+            if (myChart) myChart.showLoading();
+
+            // Si hay year_id construimos la ruta con el ID, si no, llamamos a la ruta base de carga inicial
+            const url = year_id 
+                ? `/dashboard/graficos/annual-vs-monthly-flow/${year_id}`
+                : `/dashboard/graficos/annual-vs-monthly-flow`; // <-- Ajusta esta URL a tu ruta base si es distinta
+
+            const response = await axios.get(url);
+            const data = response.data;
+            console.log("Datos recibidos del backend:", data);
+       
+            annual_vs_monthly_flow_data = response.data
+            // 2. Sincronizamos el Select de Svelte con el año real que calculó el backend
+            // Suponiendo que tu backend te devuelve el id como 'data.year_id' o 'data.current_year_id'
+            if (data.year_id) {
+                annual_vs_monthly_flow_year_id = data.year_id.toString();
+            }
+
+        } catch (error) {
+            console.error("Error al obtener datos:", error);
+        } finally {
+            if (myChart) myChart.hideLoading();
+        }
+    }
+
+    onDestroy(() => {
+        if (myChart) myChart.dispose();
+        window.removeEventListener("resize", handleResize);
+    });
+
 </script>
 
-<Alert />
-<section class="bg-background">
-    <div class="py-5"></div>
-
-    <h2>Configuración del perfil</h2>
-
-    <form
-        class="bg-background px-1 mx-4 md:py-9 md:grid justify-between grid-flow-col md:gap-x-10 lg:gap-x-24 items-center"
-    >
-        <div class="md:min-w-[600px] max-w-[690px]">
-            <span class="md:text-5xl text-color1 font-bold">
-                Colegio
-                <br />
-                <input
-                    class="md:text-5xl bg-transparent"
-                    type="text"
-                    bind:value={$data.name}
-                    style={`width:${$data.name.length - 3}ch`}
-                />
-            </span>
-            <textarea
-                class="block w-full bg-transparent md:text-xl"
-                type="text"
-                bind:value={$data.slogan}
-            />
-
-            <div class="flex justify-between mt-4 md:mt-14 text-color1">
-                <div>
-                    <label
-                        class="flex items-center gap-2 mb-2 lg:mb-3 cursor-pointer"
-                    >
-                        <input
-                            type="checkbox"
-                            bind:group={$data.courses}
-                            value={1}
-                            class="hidden"
-                        />
-
-                        {#if $data.courses.includes(1)}
-                            <div
-                                class="bg-color1 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"
-                            >
-                                <iconify-icon
-                                    class="text-color4 text-4xl"
-                                    icon="pajamas:check-xs"
-                                ></iconify-icon>
-                            </div>
-                            <b>Prescolar</b>
-                        {:else}
-                            <div
-                                class="bg-gray-400 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"
-                            >
-                                <iconify-icon
-                                    icon="octicon:no-entry-16"
-                                    class="text-gray-300"
-                                ></iconify-icon>
-                            </div>
-                            <b class="text-gray-400">Prescolar</b>
-                        {/if}
-                    </label>
-                    <ul class="grid grid-cols-2 gap-x-3">
-                        <li>1er nivel</li>
-                        <li>2do nivel</li>
-                        <li>3er nivel</li>
-                    </ul>
-                </div>
-                <div>
-                    <label
-                        class="flex items-center gap-2 mb-2 lg:mb-3 cursor-pointer"
-                    >
-                        <input
-                            type="checkbox"
-                            bind:group={$data.courses}
-                            value={2}
-                            class="hidden"
-                        />
-                        {#if $data.courses.includes(2)}
-                            <div
-                                class="bg-color1 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"
-                            >
-                                <iconify-icon
-                                    class="text-color4 text-4xl"
-                                    icon="pajamas:check-xs"
-                                ></iconify-icon>
-                            </div>
-                            <b>Primaria</b>
-                        {:else}
-                            <div
-                                class="bg-gray-400 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"
-                            >
-                                <iconify-icon
-                                    icon="octicon:no-entry-16"
-                                    class="text-gray-300"
-                                ></iconify-icon>
-                            </div>
-                            <b class="text-gray-400">Primaria</b>
-                        {/if}
-                    </label>
-                    <ul class="grid grid-cols-2 gap-x-3">
-                        <li>1er grado</li>
-                        <li>2do grado</li>
-                        <li>3er grado</li>
-                        <li>4to grado</li>
-                        <li>5to grado</li>
-                        <li>6to grado</li>
-                    </ul>
-                </div>
-                <div>
-                    <label
-                        class="flex items-center gap-2 mb-2 lg:mb-3 cursor-pointer"
-                    >
-                        <input
-                            type="checkbox"
-                            bind:group={$data.courses}
-                            value={3}
-                            class="hidden"
-                        />
-
-                        {#if $data.courses.includes(3)}
-                            <div
-                                class="bg-color1 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"
-                            >
-                                <iconify-icon
-                                    class="text-color4 text-4xl"
-                                    icon="pajamas:check-xs"
-                                ></iconify-icon>
-                            </div>
-                            <b>Secundaria</b>
-                        {:else}
-                            <div
-                                class="bg-gray-400 w-6 md:w-8 aspect-square rounded-full overflow-hidden flex items-center justify-center"
-                            >
-                                <iconify-icon
-                                    icon="octicon:no-entry-16"
-                                    class="text-gray-300"
-                                ></iconify-icon>
-                            </div>
-                            <b class="text-gray-400">Secundaria</b>
-                        {/if}
-                    </label>
-                    <ul class="grid grid-cols-2 gap-x-3">
-                        <li>1er año</li>
-                        <li>2do año</li>
-                        <li>3er año</li>
-                        <li>4to año</li>
-                        <li>5to año</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div
-                class="flex justify-between w-full mt-4 md:mt-16 md:gap-10 text-color1"
-            >
-                <div class="flex divide-x divide-dark">
-                    <input
-                        class="px-1 text-4xl bg-transparent"
-                        bind:value={$data.years}
-                        style={`width:${$data.years.length}ch`}
-                    />
-                    <p class="pl-3 col-span-2 leading-5 font-semibold">
-                        AÑOS DE
-                        <br />
-                        FORMACIÓN
-                    </p>
-                </div>
-
-                <div class="flex divide-x divide-dark">
-                    <input
-                        class="px-1 text-4xl bg-transparent"
-                        bind:value={$data.promotions}
-                        style={`width:${$data.promotions.length + 0.5}ch`}
-                    />
-                    <p class="pl-3 col-span-2 leading-5 font-semibold">
-                        PROMOCIONES
-                        <br />
-                        GRADUADAS
-                    </p>
-                </div>
-
-                <div class="flex divide-x divide-dark">
-                    <input
-                        class="px-1 text-4xl bg-transparent"
-                        bind:value={$data.active_students}
-                        style={`width:${$data.active_students.length + 0.5}ch`}
-                    />
-                    <p class="pl-3 col-span-2 leading-5 font-semibold">
-                        ESTUDIANTES
-                        <br />
-                        ACTIVOS
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <label
-            class="pl-5 relative pr-2 max-w-[500px] flex items-center justify-center rounded-full big_picture_label cursor-pointer"
-        >
-            <img
-                class="absolute w-full"
-                src="https://cdn.discordapp.com/attachments/1238903237218930802/1244452251028688906/Iconos.png?ex=6655d2b9&is=66548139&hm=13ffaaa80051f10b14f4ac464ba1edc1a2b82a9546f069c85de0dfde2da6309a&"
-                alt=""
-            />
-
-            
-            <img
-                class="rounded-full aspect-square border-4 object-cover border-color1 bg-blend-overlay hover:bg-blend-darken"
-                src="http://127.0.0.1:8000/storage/institution/institution.jpeg"
-                alt=""
-            />
-
-            <iconify-icon
-                icon="line-md:edit"
-                class="text-dark text-6xl bg-white bg-opacity-40 p-20 md:p-32 xl:p-48 hidden absolute rounded-full mx-auto"
-            ></iconify-icon>
-            <input type="file" name="" id="" class="hidden" />
-        </label>
-        {#if $data.isDirty}
-            <button class="shadow-xl  fixed flex items-center right-20 px-10 py-4 rounded bottom-10 bg-color1 gap-3 text-color4"
-                >GUARDAR 
-                <iconify-icon icon="material-symbols:save" class="text-3xl"></iconify-icon>
-                
-                </button
-            >
-        {/if}
-    </form>
-
-    <div class="Configuracion_tarifas">
-        <h2>Configuración de tarifas</h2>
-
-        <div class="#">
-            <label>
-                <input
-                type="number"
-                required={true}
-                class={"z-50 mx-auto p-2 mt-6 md:w-60 bg-color6 text-black border rounded-md"}>  
-            </label>
-
-            <label>
-                <input
-                type="number"
-                required={true}
-                class={"z-50 mx-auto p-2 mt-6 md:w-60 bg-color6 text-black border rounded-md"}>  
-            </label>
-
-            <label>
-                <input
-                type="number"
-                required={true}
-                class={"z-50 mx-auto p-2 mt-6 md:w-60 bg-color6 text-black border rounded-md"}>  
-            </label>   
+<div
+    class="w-full bg-white p-6 border-4 large-shadow border-black max-w-[1200px] flex flex-col gap-4"
+>
+    <div>
+        <div class="flex gap-10 items-start">
+            <h3 class="text-lg font-bold text-gray-800 tracking-tight">
+                Recaudación Anual vs. Flujo Mensual
+            </h3>
+            {#if schoolLapses}
+                <Input
+                    id="filterYear"
+                    type="select"
+                    on:change={(e) => {
+                        console.log("Cambiando año a:", e.target.value);
+                        getAnnualVsMonthlyFlowData(e.target.value);
+                    }}
+                    bind:value={annual_vs_monthly_flow_year_id}
+                    classes=" max-w-[170px] mt-0"
+                >
+                    {#each schoolLapses as lapse}
+                        <option class="bg-gray-50" value={lapse.id.toString()}
+                            >{lapse.start.slice(0, 4)} - {lapse.end.slice(
+                                0,
+                                4,
+                            )}</option
+                        >
+                    {/each}
+                </Input>
+            {/if}
         </div>
     </div>
 
-    <div class="#">
-        <h2>Configuracion de metodos de pago</h2>
-
-    </div>
-
-</section>
-
-<style>
-    * {
-        box-sizing: border-box;
-    }
-    textarea {
-        resize: none;
-    }
-    .big_picture_label:hover iconify-icon {
-        display: block;
-    }
-</style> -->
+    <div bind:this={chartContainer} class="w-full h-[400px]"></div>
+</div>
