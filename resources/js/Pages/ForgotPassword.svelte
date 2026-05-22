@@ -50,7 +50,7 @@
         {:else}
             <h1 class="text-2xl font-bold text-white text-center mb-2">¿Olvidaste tu Contraseña?</h1>
             <p class="text-black text-center mb-6">
-                Ingresa tu número de Cédula de Identidad y te enviaremos un enlace para restablecer tu contraseña.
+                Ingresa el correo electrónico de tu cuenta y te enviaremos un enlace para restablecer tu contraseña.
             </p>
             
             <form on:submit={handleSubmit} class="space-y-4">
@@ -58,7 +58,7 @@
                     <Input
                         type="text"
                         name="email"
-                        label="Cédula de Identidad"
+                        label="Correo"
                         required={true}
                         bind:value={$form.email}
                         error={$form.errors?.email}
@@ -67,7 +67,7 @@
                 
                 <button
                     type="submit"
-                    class="btn_create w-full mt-4"
+                    class="btn w-full mt-4"
                     disabled={$form.processing}
                 >
                     {$form.processing ? 'Enviando...' : 'Enviar Enlace de Recuperación'}
@@ -84,3 +84,14 @@
         {/if}
     </div>
 </section>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+    button[type="submit"] {
+        background-color: #490A75;
+        color: white;
+    }
+    
+</style>
