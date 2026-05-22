@@ -12,36 +12,19 @@
 
     // 1. SUPONGAMOS QUE ESTOS SON LOS DATOS CRUDOS QUE LLEGAN DE TU ENDPOINT
     // (Convertimos strings a números y "" a null para que la matemática no falle)
-    const pagadoMensual = [
-        4500,
-        4500,
-        4000,
-        2000,
-        6500,
-        4800,
-        null,
-        null,
-        null,
-        null,
-    ];
-    const esperadoMensual = [
-        5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000,
-    ];
-    const ingresoRealAcumulado = [
-        4500,
-        9000,
-        13000,
-        15000,
-        21500,
-        26300,
-        null,
-        null,
-        null,
-        null,
-    ];
-    const metaEsperadaAcumulada = [
-        5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000,
-    ];
+    
+    let annual_vs_monthly_flow_data = {
+        pagado_mensual: [
+       
+        ],
+        esperado_mensual: [
+        ],
+        real_acumulado: [
+        ],
+        meta_acumulada: [
+        ],
+    };
+   
 
     // 2. FUNCIÓN MATEMÁTICA PARA CALCULAR EL TOPE PERFECTO (Múltiplo de 5 para los saltos del eje)
     function calcularTopeEje(arraysCombinados) {
@@ -65,10 +48,10 @@
 
     // 3. CÁLCULO REACTIVO DE LOS TOPES
     // Evaluamos tanto lo real como lo esperado para asegurar que nada se desborde
-    $: maxMensual = calcularTopeEje([pagadoMensual, esperadoMensual]);
+    $: maxMensual = calcularTopeEje([annual_vs_monthly_flow_data.pagado_mensual, annual_vs_monthly_flow_data.esperado_mensual]);
     $: maxAcumulado = calcularTopeEje([
-        ingresoRealAcumulado,
-        metaEsperadaAcumulada,
+        annual_vs_monthly_flow_data.real_acumulado,
+        annual_vs_monthly_flow_data.meta_acumulada,
     ]);
 
     // 4. EL OBJETO OPTION SE CONFIGURA DINÁMICAMENTE
@@ -86,8 +69,8 @@
         },
         legend: {
             data: [
-                "Pagado Mensual",
-                "Esperado Mensual",
+                "Pagado",
+                "Esperado",
                 "Ingreso Real Acumulado",
                 "Meta Esperada Acumulada",
             ],
@@ -107,6 +90,8 @@
                     "Abr",
                     "May",
                     "Jun",
+                    "Jul",
+                    "Ago"
                 ],
                 axisPointer: { type: "shadow" },
             },
@@ -132,21 +117,21 @@
         ],
         series: [
             {
-                name: "Pagado Mensual",
+                name: "Pagado",
                 type: "bar",
                 tooltip: {
                     valueFormatter: (value) =>
                         "$" + (value ? value.toLocaleString() : 0),
                 },
-                data: pagadoMensual,
+                data: annual_vs_monthly_flow_data.pagado_mensual,
             },
             {
-                name: "Esperado Mensual",
+                name: "Esperado",
                 type: "bar",
                 tooltip: {
                     valueFormatter: (value) => "$" + value.toLocaleString(),
                 },
-                data: esperadoMensual,
+                data: annual_vs_monthly_flow_data.esperado_mensual,
             },
             {
                 name: "Ingreso Real Acumulado",
@@ -157,7 +142,7 @@
                     valueFormatter: (value) =>
                         "$" + (value ? value.toLocaleString() : 0),
                 },
-                data: ingresoRealAcumulado,
+                data: annual_vs_monthly_flow_data.real_acumulado,
             },
             {
                 name: "Meta Esperada Acumulada",
@@ -168,7 +153,7 @@
                 tooltip: {
                     valueFormatter: (value) => "$" + value.toLocaleString(),
                 },
-                data: metaEsperadaAcumulada,
+                data: annual_vs_monthly_flow_data.meta_acumulada,
             },
         ],
     };
@@ -183,10 +168,23 @@
         if (myChart) myChart.resize();
     }
 
+    
+    
     onMount(() => {
         myChart = echarts.init(chartContainer);
         myChart.setOption(option);
         window.addEventListener("resize", handleResize);
+    });
+
+   onMount(async () => {
+        // Inicializamos ECharts con la estructura base vacía
+        myChart = echarts.init(chartContainer);
+        myChart.setOption(option);
+        window.addEventListener("resize", handleResize);
+
+        // Llamamos a la función SIN parámetros la primera vez.
+        // Tu backend entenderá que es la carga inicial y buscará el último año.
+        await getAnnualVsMonthlyFlowData();
     });
 
     onDestroy(() => {
@@ -194,22 +192,39 @@
         window.removeEventListener("resize", handleResize);
     });
 
-    async function getAnnualVsMonthlyFlowData(year_id) {
+    // 7. FUNCIÓN ASÍNCRONA MODIFICADA
+    // Hacemos que el 'year_id' sea opcional (por defecto undefined)
+    async function getAnnualVsMonthlyFlowData(year_id = undefined) {
         try {
-            const response = await axios.get(`/dashboard/graficos/annual-vs-monthly-flow/${year_id}`);
+            if (myChart) myChart.showLoading();
+
+            // Si hay year_id construimos la ruta con el ID, si no, llamamos a la ruta base de carga inicial
+            const url = year_id 
+                ? `/dashboard/graficos/annual-vs-monthly-flow/${year_id}`
+                : `/dashboard/graficos/annual-vs-monthly-flow`; // <-- Ajusta esta URL a tu ruta base si es distinta
+
+            const response = await axios.get(url);
             const data = response.data;
-            // Aquí deberías actualizar tus arrays con los datos reales que recibes
-            // pagadoMensual = data.pagadoMensual;
-            // esperadoMensual = data.esperadoMensual;
-            // ingresoRealAcumulado = data.ingresoRealAcumulado;
-            // metaEsperadaAcumulada = data.metaEsperadaAcumulada;
+            console.log("Datos recibidos del backend:", data);
+       
+            annual_vs_monthly_flow_data = response.data
+            // 2. Sincronizamos el Select de Svelte con el año real que calculó el backend
+            // Suponiendo que tu backend te devuelve el id como 'data.year_id' o 'data.current_year_id'
+            if (data.year_id) {
+                annual_vs_monthly_flow_year_id = data.year_id.toString();
+            }
 
         } catch (error) {
             console.error("Error al obtener datos:", error);
+        } finally {
+            if (myChart) myChart.hideLoading();
         }
     }
 
-    
+    onDestroy(() => {
+        if (myChart) myChart.dispose();
+        window.removeEventListener("resize", handleResize);
+    });
 
 </script>
 
@@ -230,7 +245,8 @@
                         getAnnualVsMonthlyFlowData(e.target.value);
                     }}
                     bind:value={annual_vs_monthly_flow_year_id}
-                    classes=" max-w-[170px] mt-0"
+                    classes={"max-w-[170px] mt-0 "}
+                    style={"marginTop: 0"}
                 >
                     {#each schoolLapses as lapse}
                         <option class="bg-gray-50" value={lapse.id.toString()}
