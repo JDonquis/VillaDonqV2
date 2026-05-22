@@ -7,7 +7,8 @@
     import Alert from "../../components/Alert.svelte";
     import { displayAlert } from "../../stores/alertStore";
     import SelectableRow from "../../components/SelectableRow.svelte";
-
+    import { page } from "@inertiajs/svelte";
+    console.log($page)
     export let types = [];
     export let data = [];
     let submitStatus = "Crear";
@@ -106,6 +107,13 @@
     }
 
     function handleEdit() {
+        if (!$page.props.auth.is_admin) {
+            displayAlert({
+                type: "error",
+                message: "No tienes permisos para editar personal",
+            });
+            return;
+        }
         showModal = true;
         editingUser = selectedRow.data;
         submitStatus = "Editar";
@@ -157,6 +165,14 @@
         <button
             class="btn inline-block"
             on:click={(e) => {
+                if (!$page.props.auth.is_admin) {
+                    displayAlert({
+                        type: "error",
+                        message: "No tienes permisos para crear personal",
+                    });
+                    return;
+                    
+                }
                 if (submitStatus === "Editar") {
                     $form.reset();
                     editingUser = null;
@@ -174,7 +190,16 @@
             filtersOptions={{}}
             serverSideData={{ filters: {} }}
             pagination={false}
-            on:fillFormToEdit={handleEdit}
+            on:fillFormToEdit={() => {
+                if (!$page.props.auth.is_admin) {
+                    displayAlert({
+                        type: "error",
+                        message: "No tienes permisos para editar personal",
+                    });
+                    return;
+                }
+                handleEdit();
+            }}
             on:clickDeleteIcon={handleDelete}
         >
             <thead slot="thead" class="sticky top-0 z-50">
@@ -197,7 +222,9 @@
                         {selectedRow}
                         activeClass="bg-gray-200"
                         inactiveClass="hover:bg-gray-100"
-                        on:select={(e) => { selectedRow = e.detail; }}
+                        on:select={(e) => {
+                            selectedRow = e.detail;
+                        }}
                     >
                         <td>{user.id}</td>
                         <td>{user.name}</td>

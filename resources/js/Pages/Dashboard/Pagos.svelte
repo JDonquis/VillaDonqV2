@@ -13,6 +13,7 @@
     import Search from "../../components/Search.svelte";
     import SelectableRow from "../../components/SelectableRow.svelte";
     import { onMount, onDestroy } from "svelte";
+    import { page } from "@inertiajs/svelte";
 
     export let data = { students: { data: [] }, accounts: { data: [] } };
 
@@ -630,6 +631,13 @@
     {selectedRow}
     serverSideData={data?.payments}
     on:clickDeleteIcon={() => {
+        if (!$page.props.auth.is_admin) {
+            displayAlert({
+                type: "error",
+                message: "No tienes permisos para eliminar pagos",
+            });
+            return;
+        }
         handleDelete(selectedRow.data?.id);
     }}
     edit={false}
