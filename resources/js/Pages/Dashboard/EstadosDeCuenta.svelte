@@ -18,43 +18,38 @@
     };
 
     async function sendToWhatsApp(student) {
-        const element = document.getElementById(`balance-bar-${student.id}`);
-        if (element) {
-            const canvas = await html2canvas(element, {
-                scale: 2,
-                backgroundColor: "#ffffff",
-                logging: false,
-                useCORS: true,
-            });
-            canvas.toBlob(async (blob) => {
-                try {
-                    const item = new ClipboardItem({ "image/png": blob });
-                    await navigator.clipboard.write([item]);
-                    alert(
-                        "Imagen del balance copiada al portapapeles. ¡Pégala en el chat de WhatsApp!",
-                    );
-                } catch (err) {
-                    // console.error("Error al copiar al portapapeles:", err);
-                    // // Fallback: download the image if clipboard fails
-                    // const link = document.createElement("a");
-                    // link.download = `balance-${student.name}-${student.last_name}.png`;
-                    // link.href = canvas.toDataURL();
-                    // link.click();
-                    // alert(
-                    //     "No se pudo copiar al portapapeles automáticamente. La imagen se ha descargado. ¡Adjúntala en WhatsApp!",
-                    // );
-                }
-            });
-        }
+    const element = document.getElementById(`balance-bar-${student.id}`);
+
+    if (!element) return;
+
+    try {
+        const canvas = await html2canvas(element, {
+            scale: 2,
+            backgroundColor: "#ffffff",
+            logging: false,
+            useCORS: true,
+        });
+
+        // Convert canvas to blob
+        const blob = await new Promise((resolve) =>
+            canvas.toBlob(resolve, "image/png"),
+        );
+
+        // Copy image FIRST
+        const item = new ClipboardItem({ "image/png": blob });
+        await navigator.clipboard.write([item]);
 
         let phoneNumber = student.representative.user.phone_number.replace(
             /[ -]/g,
             "",
         );
+
         if (!phoneNumber || phoneNumber.length < 9) return;
+
         if (!phoneNumber.startsWith("+") && !phoneNumber.startsWith("58")) {
             phoneNumber = "58" + phoneNumber;
         }
+
         phoneNumber = phoneNumber.replace("+", "");
 
         const text = `Hola ${student.representative.user.name} ${student.representative.user.last_name}, esperamos que se encuentre muy bien.
@@ -62,11 +57,35 @@
 Le contactamos para informarle que el pago mensual de ${student.name} ${student.last_name} se encuentra vencido. Le agradeceríamos ponerse al día cuando le sea posible para mantener su cuenta al día y evitar inconvenientes.
 
 Gracias por su atención y apoyo continuo.`;
+
+        // OPEN WHATSAPP AFTER clipboard succeeds
         window.open(
             `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`,
             "_blank",
         );
+
+        // alert(
+        //     "Imagen copiada al portapapeles. Solo pega la imagen en WhatsApp.",
+        // );
+        displayInfoAlert(
+            "Imagen copiada al portapapeles. Solo pega la imagen en WhatsApp.",
+        );
+    } catch (err) {
+        console.error("Error al copiar al portapapeles:", err);
+
+        // Fallback download
+        // const canvas = await html2canvas(element);
+
+        // const link = document.createElement("a");
+        // link.download = `balance-${student.name}-${student.last_name}.png`;
+        // link.href = canvas.toDataURL();
+        // link.click();
+
+        // alert(
+        //     "No se pudo copiar automáticamente. La imagen se descargó para adjuntarla manualmente.",
+        // );
     }
+}
 </script>
 
 <svelte:head>
