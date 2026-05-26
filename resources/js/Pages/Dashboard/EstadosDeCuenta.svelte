@@ -18,74 +18,83 @@
     };
 
     async function sendToWhatsApp(student) {
-    const element = document.getElementById(`balance-bar-${student.id}`);
+        const element = document.getElementById(`balance-bar-${student.id}`);
 
-    if (!element) return;
+        if (!element) return;
 
-    try {
-        const canvas = await html2canvas(element, {
-            scale: 2,
-            backgroundColor: "#ffffff",
-            logging: false,
-            useCORS: true,
-        });
+        try {
+            const canvas = await html2canvas(element, {
+                scale: 2,
+                backgroundColor: "#ffffff",
+                logging: false,
+                useCORS: true,
+            });
 
-        // Convert canvas to blob
-        const blob = await new Promise((resolve) =>
-            canvas.toBlob(resolve, "image/png"),
-        );
+            // Convert canvas to blob
+            const blob = await new Promise((resolve) =>
+                canvas.toBlob(resolve, "image/png"),
+            );
 
-        // Copy image FIRST
-        const item = new ClipboardItem({ "image/png": blob });
-        await navigator.clipboard.write([item]);
+            // Copy image FIRST
+            const item = new ClipboardItem({ "image/png": blob });
+            await navigator.clipboard.write([item]);
 
-        let phoneNumber = student.representative.user.phone_number.replace(
-            /[ -]/g,
-            "",
-        );
+            let phoneNumber = student.representative.user.phone_number.replace(
+                /[ -]/g,
+                "",
+            );
 
-        if (!phoneNumber || phoneNumber.length < 9) return;
+            if (!phoneNumber || phoneNumber.length < 9) return;
 
-        if (!phoneNumber.startsWith("+") && !phoneNumber.startsWith("58")) {
-            phoneNumber = "58" + phoneNumber;
-        }
+            if (!phoneNumber.startsWith("+") && !phoneNumber.startsWith("58")) {
+                phoneNumber = "58" + phoneNumber;
+            }
 
-        phoneNumber = phoneNumber.replace("+", "");
+            phoneNumber = phoneNumber.replace("+", "");
 
-        const text = `Hola ${student.representative.user.name} ${student.representative.user.last_name}, esperamos que se encuentre muy bien.
+            const text = `Hola ${student.representative.user.name} ${student.representative.user.last_name}, esperamos que se encuentre muy bien.
 
 Le contactamos para informarle que el pago mensual de ${student.name} ${student.last_name} se encuentra vencido. Le agradeceríamos ponerse al día cuando le sea posible para mantener su cuenta al día y evitar inconvenientes.
 
 Gracias por su atención y apoyo continuo.`;
 
-        // OPEN WHATSAPP AFTER clipboard succeeds
-        window.open(
-            `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`,
-            "_blank",
-        );
+            // OPEN WHATSAPP AFTER clipboard succeeds
+            window.open(
+                `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`,
+                "_blank",
+            );
 
-        // alert(
-        //     "Imagen copiada al portapapeles. Solo pega la imagen en WhatsApp.",
-        // );
-        displayInfoAlert(
-            "Imagen copiada al portapapeles. Solo pega la imagen en WhatsApp.",
-        );
-    } catch (err) {
-        console.error("Error al copiar al portapapeles:", err);
+            // alert(
+            //     "Imagen copiada al portapapeles. Solo pega la imagen en WhatsApp.",
+            // );
+            displayAlert({
+                type: "info",
+                message:
+                    "Imagen copiada al portapapeles. Solo pega la imagen en WhatsApp.",
+            });
+        } catch (err) {
+            console.error("Error al copiar al portapapeles:", err);
 
-        // Fallback download
-        // const canvas = await html2canvas(element);
+            // Fallback download
+            const canvas = await html2canvas(element);
 
-        // const link = document.createElement("a");
-        // link.download = `balance-${student.name}-${student.last_name}.png`;
-        // link.href = canvas.toDataURL();
-        // link.click();
+            const link = document.createElement("a");
+            link.download = `balance-${student.name}-${student.last_name}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
 
-        // alert(
-        //     "No se pudo copiar automáticamente. La imagen se descargó para adjuntarla manualmente.",
-        // );
+            // displayInfoAlert(
+            //     "No se pudo copiar al portapapeles. Se ha descargado la imagen, por favor envíala manualmente por WhatsApp.",
+            // );
+            displayAlert({
+                type: "info",
+                message:
+                    "No se pudo copiar al portapapeles. Se ha descargado la imagen, por favor envíala manualmente por WhatsApp.",
+            });
+
+
+        }
     }
-}
 </script>
 
 <svelte:head>

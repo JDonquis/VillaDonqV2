@@ -188,6 +188,7 @@
 
         clearTimeout(tooltipHideTimeout);
         tooltipPayments = payments;
+        console.log(tooltipPayments)
         const rect = event.currentTarget.getBoundingClientRect();
         tooltipStyle = `position: fixed; top: ${rect.bottom}px; left: ${rect.left + rect.width / 2}px; transform: translateX(-50%); z-index: 9999;`;
         tooltipVisible = true;
@@ -265,7 +266,15 @@
         {#if is_exempt < 100}
         <div class="grid p-0 grid-cols-12 border-2 border-black">
             <div
-                class={` hover:brightness-110  relative col-span-1 z-10  text-xs capitalize  text-center font-bold ${balance.inscription < 0 ? "bg-red" : "bg-green"} text-black  p-1`}
+                class={` hover:brightness-125  relative col-span-1 z-10  text-xs capitalize  text-center font-bold ${balance.inscription < 0 ? "bg-red" : "bg-green"} text-black  p-1`}
+                 on:mouseenter={(e) =>
+                            balance.balance_payments.inscription
+                                ? showBalancePaymentsTooltip(
+                                      e,
+                                      balance.balance_payments.inscription,
+                                  )
+                                : null}
+                        on:mouseleave={scheduleTooltipHide}
             >
                 <span> Inscr. </span>
 
@@ -325,19 +334,21 @@
 
     {#if tooltipVisible}
         <div
-            class="min-h-[100px] w-fit bg-white text-dark p-2 shadow-lg border border-black"
+            class="min-h-[100px] w-fit bg-white text-dark p-2 shadow-lg border border-black z-20"
             style={tooltipStyle}
             on:mouseenter={() => clearTimeout(tooltipHideTimeout)}
             on:mouseleave={scheduleTooltipHide}
         >
+            <iconify-icon icon="teenyicons:up-solid" width="14" height="14" class="text-dark  absolute -top-2 z-10 inset-x-0 mx-auto w-max " />
             {#each tooltipPayments as payment}
-                <div class="flex flex-col gap-1 items-center mb-2 p-1">
+                <div class="flex flex-col gap-0.5 items-center mb-2 p-1 relative">
                     <p class="text-xs">{payment.payment.date}</p>
                     <div class="flex items-center gap-1">
-                        <b class="text-sm">${payment.payment.total_in_dolars}</b
+                        <p class="text-sm">Total: ${payment.payment.total_in_dolars}</p
                         >
                         <p class="text-xs">Ref: {payment.payment.reference}</p>
                     </div>
+                    <p class="text-sm font-bold">Abonado: ${payment.amount}</p>
                 </div>
             {/each}
         </div>

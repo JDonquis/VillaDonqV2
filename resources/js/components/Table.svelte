@@ -237,7 +237,7 @@
                     <button
                     on:click={selectedButton.onClick}
                     class={` cursor-pointer text-2xl hover:-translate-x-0.5 hover:-translate-y-0.5 hover:medium-shadow border-3 border-black small-shadow px-4 py-1 ${selectedButton.classes}` }
-                    title="Editar"
+                    title="{selectedButton.label}"
                 >
                    <iconify-icon icon={selectedButton.icon} class="relative top-1" width="24" height="24"></iconify-icon>
                 </button>

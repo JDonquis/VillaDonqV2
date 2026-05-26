@@ -37,6 +37,7 @@
 
     const emptyDataForm = {
         date: currentDateString,
+        reported_date: currentDateString,
         students: [],
         account_payment_id: "",
         total_in_dolars: "1",
@@ -47,6 +48,7 @@
 
     let form = useForm({
         date: currentDateString,
+        reported_date: currentDateString,
         students: [],
         account_payment_id: "",
         total_in_dolars: "1",
@@ -72,6 +74,10 @@
     });
     $: console.log($form);
     function handleSubmit(event) {
+
+        if (submitStatus === "Solo lectura") {
+            return;
+         }
         event.preventDefault();
         $form.clearErrors();
  
@@ -154,30 +160,30 @@
 
     async function fillFormToEdit() {
         showModal = true;
-        submitStatus = "Editar";
+        submitStatus = "Solo lectura";
         const selectedData = selectedRow.data;
         console.log({ selectedData });
 
-        const studentsWithBalances = await Promise.all(
-            selectedData.students.map(async (s) => {
-                const response_student = await getBalanceByStudentId(s.id);
-                const studentData = Array.isArray(response_student)
-                    ? response_student[0]
-                    : response_student;
+        // const studentsWithBalances = await Promise.all(
+        //     selectedData.students.map(async (s) => {
+        //         const response_student = await getBalanceByStudentId(s.id);
+        //         const studentData = Array.isArray(response_student)
+        //             ? response_student[0]
+        //             : response_student;
 
-                return {
-                    ...s,
-                    balances:
-                        studentData?.balances?.length > 0
-                            ? studentData.balances
-                            : s.balances || [],
-                };
-            }),
-        );
+        //         return {
+        //             ...s,
+        //             balances:
+        //                 studentData?.balances?.length > 0
+        //                     ? studentData.balances
+        //                     : s.balances || [],
+        //         };
+        //     }),
+        // );
 
         $form.id = selectedData.id;
-        console.log({ studentsWithBalances });
-        $form.students = studentsWithBalances.map((s) => ({
+        // console.log({ studentsWithBalances });
+        $form.students = selectedData.students.map((s) => ({
             id: s.id,
             name: s.name,
             last_name: s.last_name,
@@ -188,11 +194,12 @@
                 s.representative?.user?.name +
                 " " +
                 s.representative?.user?.last_name,
-            balances: s.balances || [],
+            // balances: s.balances || [],
             amount_in_dolars: s.pivot?.amount_in_dolars,
             amount_in_bs: s.pivot?.amount_in_bs,
         }));
         $form.date =  new Date(selectedData.date).toISOString().split("T")[0];
+        // $form.reported_date = new Date(selectedData?.reported_date)?.toISOString().split("T")[0] || null;
         $form.account_payment_id = selectedData.account_payment_id;
         $form.total_in_dolars = selectedData.total_in_dolars;
         $form.reference = selectedData.reference;
@@ -352,7 +359,7 @@
                                         min="0"
                                         placeholder="Dólares"
                                         step="0.01"
-                                        class="w-28 border-3 py-2 px-3 border- small-shadow focus:outline-0"
+                                        class="w-20  border-3 py-2 px-2 border- small-shadow focus:outline-0"
                                         value={student.amount_in_dolars || ""}
                                         on:input={(e) => {
                                             $form.students[i] = {
@@ -389,7 +396,7 @@
                                         type="number"
                                         min="0"
                                         step="0.01"
-                                        class=" w-32 border-3 py-2 px-3 border-3 border-black small-shadow focus:outline-0"
+                                        class=" w-24 border-3 py-2 px-2 border-3 border-black small-shadow focus:outline-0"
                                         value={student.amount_in_bs || ""}
                                         placeholder="Bolívares"
                                         on:input={(e) => {
@@ -432,7 +439,7 @@
                             </td>
                             <td>C.I:{student.ci}</td>
                             <td>
-                                {student.course_name} - {student.section_name}
+                                {student.course_name}-{student.section_name}
                             </td>
                             <td
                                 ><div class="flex items-center">
@@ -465,11 +472,13 @@
                         </tr>
                         <tr class=" ">
                             <td colspan="7" class="px-3 pb-10">
+                            {#if submitStatus !== "Solo lectura"}
                                 <BalanceBar
                                     balances={student.balances}
                                     amountToPay={student.amount_in_dolars}
                                     is_exempt={student.is_exempt ? student.exemption_percentage : false}
                                 />
+                                {/if}
                             </td>
                         </tr>
                     {/each}
@@ -481,10 +490,20 @@
             <Input
                 type="date"
                 required={true}
-                label={"Fecha del pago"}
+                label={"Fecha de la transacción"}
                 bind:value={$form.date}
                 error={$form.errors?.date}
                 max={currentDateString}
+                readonly={submitStatus === "Solo lectura"}
+            />
+            <Input
+                type="date"
+                required={true}
+                label={"Fecha de reporte"}
+                bind:value={$form.reported_date}
+                error={$form.errors?.reported_date}
+                max={currentDateString}
+                readonly={submitStatus === "Solo lectura"}
             />
             <Input
                 type="select"
@@ -492,6 +511,7 @@
                 bind:value={$form.account_payment_id}
                 error={$form.errors?.account_payment_id}
                 required={true}
+                readonly={submitStatus === "Solo lectura"}
             >
                 {#each data.accounts.data as account}
                     <option
@@ -526,34 +546,41 @@
                 required={true}
                 bind:value={$form.reference}
                 error={$form.errors?.reference}
+                readonly={submitStatus === "Solo lectura"}
             />
             <Input
                 type="textarea"
                 label={"Observaciones"}
+                classes={"col-span-2"}
                 bind:value={$form.observations}
                 error={$form.errors?.observations}
+                readonly={submitStatus === "Solo lectura"}
             />
         </div>
-        <div class="flex justify-end col-span-12">
-            <button
-                type="submit"
-                class="w-[420px] btn btn-green mt-7 flex items-center justify-center gap-3"
-                disabled={$form.processing}
-            >
-                {#if $form.processing}
-                    Cargando...
-                {:else}
-                    <iconify-icon
-                        icon="material-symbols:save-sharp"
-                        width="24"
-                        height="24"
-                    />
-                    <span>
-                        {submitStatus}
-                    </span>
-                {/if}
-            </button>
-        </div>
+
+        {#if submitStatus !== "Solo lectura"}
+            <div class="flex justify-end col-span-12">
+                <button
+                    type="submit"
+                    class="w-[420px] btn btn-green mt-7 flex items-center justify-center gap-3"
+                    disabled={$form.processing}
+                >
+                    {#if $form.processing}
+                        Cargando...
+                    {:else}
+                        <iconify-icon
+                            icon="material-symbols:save-sharp"
+                            width="24"
+                            height="24"
+                        />
+                        <span>
+                            {submitStatus}
+                        </span>
+                    {/if}
+                </button>
+            </div>
+        
+         {/if}
     </form>
 </Modal>
 
@@ -581,7 +608,7 @@
     filtersOptions={{
         date: {
             type: "date",
-            label: "Fecha de ingreso",
+            label: "Fecha de la transacción",
         },
         account_payment_id: {
             type: "select",
@@ -640,13 +667,21 @@
         }
         handleDelete(selectedRow.data?.id);
     }}
+     otherSelectOptions={[
+        {
+            label: "Ver detalles",
+            icon: "mdi:eye",
+            classes: "bg-blue",
+            onClick: fillFormToEdit,
+        },
+    ]}
     edit={false}
     pagination={true}
 >
     <thead slot="thead" class="sticky top-0 z-50">
         <tr>
             <th>id</th>
-            <th>Fecha del pago</th>
+            <th>Fecha de la transacción</th>
             <th>Estudiante/s</th>
             <th>Total USD$</th>
             <th>Total Bs</th>
