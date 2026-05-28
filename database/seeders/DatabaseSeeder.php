@@ -48,19 +48,19 @@ class DatabaseSeeder extends Seeder
             MainConfigSeeder::class,
             SchoolLapseSeeder::class,
             QuotaSeeder::class,
-            StudentSeeder::class,
+            // StudentSeeder::class,
 
         ]);
 
-        SchoolLapse::where('status', 1)->update(['status' => 0]);
+        // SchoolLapse::where('status', 1)->update(['status' => 0]);
 
-        SchoolLapse::create([
-            'start' => '2027-09-01',
-            'end' => '2028-08-31',
-            'status' => 1,
-        ]);
+        // SchoolLapse::create([
+        //     'start' => '2027-09-01',
+        //     'end' => '2028-08-31',
+        //     'status' => 1,
+        // ]);
 
-        $this->call([QuotaSeeder::class]);
+        // $this->call([QuotaSeeder::class]);
     }
 
     protected function truncateTable(array $tables)

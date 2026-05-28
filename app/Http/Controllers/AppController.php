@@ -36,7 +36,7 @@ class AppController
         $chartService = new ChartService;
         $data = $chartService->annualVsMonthlyFlow($schoolLapse);
 
-        return response()->json($data);
+        return response()->json(['data' => $data, 'schoolLapseID' => $schoolLapse->id]);
     }
 
     public function maquinas(): Response

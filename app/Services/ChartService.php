@@ -10,7 +10,6 @@ use Carbon\Carbon;
 class ChartService
 {
     private const MONTHS = [
-        'august',
         'september',
         'october',
         'november',
@@ -21,7 +20,8 @@ class ChartService
         'april',
         'may',
         'june',
-        'july'
+        'july',
+        'august',
     ];
 
     public function annualVsMonthlyFlow($schoolLapse)
@@ -46,9 +46,26 @@ class ChartService
         }
 
         $lapseId = $lapse->id;
+        $lapseStart = Carbon::parse($lapse->start)->format('Y-m-d');
 
-        // Sum of payments assigned to each month
-        $paidByMonth = BalancePayment::whereHas('balanceStudent', function ($q) use ($lapseId) {
+        // 1. Pagado real: Agrupado por la fecha en que se realizó el pago (incluye inscripciones y mensualidades)
+        $paidByCalendarMonth = BalancePayment::whereHas('balanceStudent', function ($q) use ($lapseId) {
+            $q->where('school_lapse_id', $lapseId);
+        })
+            ->join('payments', 'balance_payments.payment_id', '=', 'payments.id')
+            ->selectRaw("
+                CASE
+                    WHEN TIMESTAMPDIFF(MONTH, '$lapseStart', payments.date) < 0 THEN 0
+                    WHEN TIMESTAMPDIFF(MONTH, '$lapseStart', payments.date) > 11 THEN 11
+                    ELSE TIMESTAMPDIFF(MONTH, '$lapseStart', payments.date)
+                END as month_index,
+                SUM(balance_payments.amount) as total
+            ")
+            ->groupBy('month_index')
+            ->pluck('total', 'month_index');
+
+        // 2. Esperado mensual: Basado en el mes de la cuota + inscripciones en Septiembre
+        $paidForQuotaMonth = BalancePayment::whereHas('balanceStudent', function ($q) use ($lapseId) {
             $q->where('school_lapse_id', $lapseId);
         })
             ->whereNotNull('month')
@@ -56,19 +73,45 @@ class ChartService
             ->groupBy('month')
             ->pluck('total', 'month');
 
-        // Sum of remaining debts to calculate the "expected" (total original debt)
+        $paidForInscriptions = (float) BalancePayment::whereHas('balanceStudent', function ($q) use ($lapseId) {
+            $q->where('school_lapse_id', $lapseId);
+        })
+            ->where('is_inscription', true)
+            ->sum('amount');
+
+        // Sumar deudas restantes
         $rawSelect = "";
         foreach (self::MONTHS as $month) {
             $rawSelect .= "SUM($month) as sum_$month, ";
         }
-        $rawSelect = rtrim($rawSelect, ", ");
+        $rawSelect .= "SUM(inscription) as sum_inscription";
 
         $balancesSum = BalanceStudent::where('school_lapse_id', $lapseId)
             ->selectRaw($rawSelect)
             ->first();
 
-        $pagado_mensual = [];
+        $totalExpectedInscriptions = $paidForInscriptions + abs((float) ($balancesSum->sum_inscription ?? 0));
+
+        $pagado_mensual_raw = array_fill(0, 12, 0.0);
+        foreach ($paidByCalendarMonth as $index => $total) {
+            $pagado_mensual_raw[$index] = (float) $total;
+        }
+
         $esperado_mensual = [];
+        foreach (self::MONTHS as $monthName) {
+            $paid = (float) ($paidForQuotaMonth[$monthName] ?? 0);
+            $remaining = abs((float) ($balancesSum->{"sum_$monthName"} ?? 0));
+            $expected = $paid + $remaining;
+
+            // Agregar el esperado de inscripciones a Septiembre (índice 1)
+            if ($monthName === 'september') {
+                $expected += $totalExpectedInscriptions;
+            }
+
+            $esperado_mensual[] = $expected;
+        }
+
+        $pagado_mensual = [];
         $real_acumulado = [];
         $meta_acumulada = [];
 
@@ -76,19 +119,16 @@ class ChartService
         $meta_sum = 0;
 
         $now = Carbon::now();
-        $startOfMonth = Carbon::parse($lapse->start)->startOfMonth();
+        $startOfLapse = Carbon::parse($lapse->start)->startOfMonth();
         $isLapseActive = $lapse->status == 1;
 
-        foreach (self::MONTHS as $index => $month) {
-            $paid = (float) ($paidByMonth[$month] ?? 0);
-            $remaining = abs((float) ($balancesSum->{"sum_$month"} ?? 0));
-            $expected = $paid + $remaining;
+        foreach (self::MONTHS as $index => $monthName) {
+            $paid = $pagado_mensual_raw[$index];
+            $expected = $esperado_mensual[$index];
 
-            $targetDate = $startOfMonth->copy()->addMonths($index);
-            // Consider a month "future" if we haven't reached its start yet
+            $targetDate = $startOfLapse->copy()->addMonths($index);
             $isFuture = $isLapseActive && $targetDate->gt($now->startOfMonth());
 
-            $esperado_mensual[] = $expected;
             $meta_sum += $expected;
             $meta_acumulada[] = $meta_sum;
 

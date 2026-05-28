@@ -17,7 +17,10 @@
         $form.clearErrors();
         $form.post("/establecer-contrasena", {
             onSuccess: () => {
-                displayAlert({ type: "success", message: "Contraseña establecida exitosamente" });
+                displayAlert({
+                    type: "success",
+                    message: "Contraseña establecida exitosamente",
+                });
                 setTimeout(() => {
                     window.location.href = "/";
                 }, 2000);
@@ -32,14 +35,32 @@
 </script>
 
 <Alert />
+
+
+
 <section class="bg-background min-h-screen flex items-center justify-center">
-    <div class="bg-white text-dark p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 class="text-2xl font-bold text-white text-center mb-6">Establecer Contraseña</h1>
-        <p class=" text-center mb-6">Ingresa tu nueva contraseña para acceder al sistema.</p>
-        
+
+    <div
+        class="bg-purple text-dark p-8 border-4 border-black medium-shadow w-full max-w-md"
+    >
+    <div class="flex justify-center mb-2">
+        <img
+             src="/img/Isotipo-villadonq-blanco.png"
+             alt="Villadonq"
+             class="w-10 mx-auto   text-center h-10 object-contain inline"
+         />
+
+    </div>
+        <h1 class="text-2xl font-bold text-white text-center mb-6">
+            Establecer Contraseña
+        </h1>
+        <p class=" text-center mb-6">
+            Ingresa tu nueva contraseña para acceder al sistema.
+        </p>
+
         <form on:submit={handleSubmit} class="space-y-4">
             <input type="hidden" bind:value={$form.token} />
-            
+
             <div>
                 <Input
                     type="password"
@@ -50,7 +71,7 @@
                     error={$form.errors?.password}
                 />
             </div>
-            
+
             <div>
                 <Input
                     type="password"
@@ -61,14 +82,24 @@
                     error={$form.errors?.password_confirmation}
                 />
             </div>
-            
+
             <button
                 type="submit"
-                class="btn_create w-full mt-4"
+                class="btn w-full mt-6"
                 disabled={$form.processing}
             >
-                {$form.processing ? 'Guardando...' : 'Establecer Contraseña'}
+                {$form.processing ? "Guardando..." : "Establecer Contraseña"}
             </button>
         </form>
     </div>
 </section>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+    button[type="submit"] {
+        background-color: #490a75;
+        color: white;
+    }
+</style>

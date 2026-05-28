@@ -91,8 +91,8 @@ class AuthController extends Controller
 
     public function requestResetPassword(ForgotPasswordRequest $request)
     {
-        $ci = $request->ci;
-        $user = User::where('ci', $ci)->first();
+        $email = $request->email;
+        $user = User::where('email', $email)->first();
 
         if ($user && $user->email) {
             $this->userService->sendPasswordResetEmail($user);

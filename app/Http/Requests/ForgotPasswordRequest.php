@@ -14,7 +14,7 @@ class ForgotPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'ci' => 'required|string|max:30',
+            'email' => 'required|string|email|max:100',
         ];
     }
 }

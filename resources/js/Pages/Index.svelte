@@ -34,7 +34,7 @@
 <Alert />
 
 <div
-    class="relative min-h-screen w-full overflow-hidden bg-[#490A75] flex items-center justify-center font-sans select-none"
+    class="relative min-h-screen w-full overflow-hidden bg-purple flex items-center justify-center font-sans select-none"
 >
     <div class="absolute inset-0 w-full h-full pointer-events-none">
         <div
@@ -45,7 +45,7 @@
         ></div>
 
         <div
-            class="absolute -bottom-20 left-0 w-[2400px] h-[25vh] md:h-[30vh] -rotate-6 bg-[#008f11] clip-diagonal shadow-inner"
+            class="absolute -bottom-16 left-0 w-[2400px] h-[25vh] md:h-[30vh] -rotate-6 bg-green clip-diagonal shadow-inner"
         ></div>
     </div>
 
@@ -67,7 +67,7 @@
         </div>
 
         <div
-            class="w-full max-w-sm bg-[#490A75]/40 backdrop-blur-md p-8 rounded-2xl border border-white/10 shadow-2xl animate-slide-up"
+            class="w-full max-w-sm bg-purple/5 backdrop-blur-md p-8 rounded-2xl border border-white/10 shadow-2xl animate-slide-up"
         >
             <h2
                 class="text-white text-xl font-bold text-center mb-6 tracking-wide uppercase"
@@ -82,7 +82,7 @@
                 <div>
                     <Input
                         type="email"
-                        labelClass="text-white"
+                        labelClass="text-black"
                         name="email"
                         required={true}
                         label={"Correo"}
@@ -90,14 +90,14 @@
                         error={$form.errors?.email}
                     />
                     <!-- {#if $form.errors.email}
-            <div class="text-white bg-opaemailty-30 bg-red pt-1">
+            <div class="text-black bg-opaemailty-30 bg-red pt-1">
                 
                 <span >{$form.errors.email}</span>
             </div>
             {/if} -->
 
                     <Input
-                        labelClass="text-white"
+                        labelClass="text-black"
                         type="password"
                         required={true}
                         name="password"
@@ -111,13 +111,13 @@
                     type="submit"
                     disabled={$form.processing}
                     value={$form.processing ? "Cargando..." : "ENTRAR"}
-                    class="btn w-full mt-6"
+                    class=" bg-[#490A75] btn w-full mt-6 "
                 />
 
                 <div class="mt-4 text-center">
                     <a
                         href="/olvidar-contrasena"
-                        class="text-sm text-gray-400 hover:text-color2"
+                        class="text-sm text-black hover:text-color2"
                     >
                         ¿Olvidaste tu contraseña?
                     </a>
@@ -131,4 +131,9 @@
     * {
         box-sizing: border-box;
     }
+    input[type="submit"] {
+        background-color: #490A75;
+        color: white;
+    }
+    
 </style>

@@ -10,55 +10,90 @@
     $: tableData = {
         ...data?.students.data,
         filters: {
-            debt_filter: new URLSearchParams($page.url.split("?")[1] || "").get("debt_filter") || "",
+            debt_filter:
+                new URLSearchParams($page.url.split("?")[1] || "").get(
+                    "debt_filter",
+                ) || "",
         },
     };
 
     async function sendToWhatsApp(student) {
         const element = document.getElementById(`balance-bar-${student.id}`);
-        if (element) {
+
+        if (!element) return;
+
+        try {
             const canvas = await html2canvas(element, {
                 scale: 2,
                 backgroundColor: "#ffffff",
                 logging: false,
                 useCORS: true,
             });
-            canvas.toBlob(async (blob) => {
-                try {
-                    const item = new ClipboardItem({ "image/png": blob });
-                    await navigator.clipboard.write([item]);
-                    alert(
-                        "Imagen del balance copiada al portapapeles. ¡Pégala en el chat de WhatsApp!",
-                    );
-                } catch (err) {
-                    console.error("Error al copiar al portapapeles:", err);
-                    // Fallback: download the image if clipboard fails
-                    const link = document.createElement("a");
-                    link.download = `balance-${student.name}-${student.last_name}.png`;
-                    link.href = canvas.toDataURL();
-                    link.click();
-                    alert(
-                        "No se pudo copiar al portapapeles automáticamente. La imagen se ha descargado. ¡Adjúntala en WhatsApp!",
-                    );
-                }
+
+            // Convert canvas to blob
+            const blob = await new Promise((resolve) =>
+                canvas.toBlob(resolve, "image/png"),
+            );
+
+            // Copy image FIRST
+            const item = new ClipboardItem({ "image/png": blob });
+            await navigator.clipboard.write([item]);
+
+            let phoneNumber = student.representative.user.phone_number.replace(
+                /[ -]/g,
+                "",
+            );
+
+            if (!phoneNumber || phoneNumber.length < 9) return;
+
+            if (!phoneNumber.startsWith("+") && !phoneNumber.startsWith("58")) {
+                phoneNumber = "58" + phoneNumber;
+            }
+
+            phoneNumber = phoneNumber.replace("+", "");
+
+            const text = `Hola ${student.representative.user.name} ${student.representative.user.last_name}, esperamos que se encuentre muy bien.
+
+Le contactamos para informarle que el pago mensual de ${student.name} ${student.last_name} se encuentra vencido. Le agradeceríamos ponerse al día cuando le sea posible para mantener su cuenta al día y evitar inconvenientes.
+
+Gracias por su atención y apoyo continuo.`;
+
+            // OPEN WHATSAPP AFTER clipboard succeeds
+            window.open(
+                `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`,
+                "_blank",
+            );
+
+            // alert(
+            //     "Imagen copiada al portapapeles. Solo pega la imagen en WhatsApp.",
+            // );
+            displayAlert({
+                type: "info",
+                message:
+                    "Imagen copiada al portapapeles. Solo pega la imagen en WhatsApp.",
             });
-        }
+        } catch (err) {
+            console.error("Error al copiar al portapapeles:", err);
 
-        let phoneNumber = student.representative.user.phone_number.replace(
-            /[ -]/g,
-            "",
-        );
-        if (!phoneNumber || phoneNumber.length < 9) return;
-        if (!phoneNumber.startsWith("+") && !phoneNumber.startsWith("58")) {
-            phoneNumber = "58" + phoneNumber;
-        }
-        phoneNumber = phoneNumber.replace("+", "");
+            // Fallback download
+            const canvas = await html2canvas(element);
 
-        const text = `Hola ${student.representative.user.name} ${student.representative.user.last_name}, Le escribimos para recordarle que el balance de su representado ${student.name} ${student.last_name} está vencido. Por favor, póngase al día con los pagos para evitar inconvenientes. Gracias!`;
-        window.open(
-            `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`,
-            "_blank",
-        );
+            const link = document.createElement("a");
+            link.download = `balance-${student.name}-${student.last_name}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+
+            // displayInfoAlert(
+            //     "No se pudo copiar al portapapeles. Se ha descargado la imagen, por favor envíala manualmente por WhatsApp.",
+            // );
+            displayAlert({
+                type: "info",
+                message:
+                    "No se pudo copiar al portapapeles. Se ha descargado la imagen, por favor envíala manualmente por WhatsApp.",
+            });
+
+
+        }
     }
 </script>
 
@@ -93,16 +128,20 @@
     </div>
 {/if}
 <!-- svelte-ignore missing-declaration -->
-<Table serverSideData={tableData} pagination={true} filtersOptions={{
-    debt_filter: [
-        { id: "", name: "Todos" },
-        { id: "debtors", name: "Deudores" },
-        { id: "current_period", name: "Deudores del periodo actual" },
-        { id: "previous_period", name: "Deudores del periodo anterior" },
-        { id: "exempted", name: "Solo exonerados" },
-        { id: "up_to_date", name: "Al día" },
-    ]
-}}>
+<Table
+    serverSideData={tableData}
+    pagination={true}
+    filtersOptions={{
+        debt_filter: [
+            { id: "", name: "Todos" },
+            { id: "debtors", name: "Deudores" },
+            { id: "current_period", name: "Deudores del periodo actual" },
+            { id: "previous_period", name: "Deudores del periodo anterior" },
+            { id: "exempted", name: "Solo exonerados" },
+            { id: "up_to_date", name: "Al día" },
+        ],
+    }}
+>
     <thead slot="thead">
         <tr>
             <th>Estudiante</th>
@@ -134,7 +173,9 @@
                             ...b.months,
                         }))}
                         classes="py-0 px-0"
-                        is_exempt={student.is_exempt ? student.exemption_percentage : false}
+                        is_exempt={student.is_exempt
+                            ? student.exemption_percentage
+                            : false}
                     />
                 </td>
                 <td class="group"
