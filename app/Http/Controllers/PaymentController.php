@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePaymentRequest;
+use App\Models\MainConfig;
 use App\Services\MainConfigService;
 use App\Services\PaymentService;
 use Exception;
@@ -28,12 +29,14 @@ class PaymentController extends Controller
         $prices = $this->mainConfigService->getPrices();
         $accounts = $this->mainConfigService->getAccounts();
         $result = $this->paymentService->getAll($request->all());
+        $config = MainConfig::select('day_of_monthly_payment', 'grace_period')->first();
 
         return inertia('Dashboard/Pagos', ['data' => [
             'accounts' => $accounts,
             'payments' => $result['payments'],
             'prices' => $prices,
             'total_income' => $result['total_income'],
+            'config' => $config,
         ]]);
     }
 
@@ -55,7 +58,7 @@ class PaymentController extends Controller
 
             DB::rollback();
 
-            Log::error('Error al crear pago: '.$e->getMessage());
+            Log::error('Error al crear pago: ' . $e->getMessage());
 
             return redirect('/dashboard/pagos')->withErrors(['message' => $e->getMessage() ?? 'Ha ocurrido un error al crear el pago. Por favor, intente más tarde.']);
         }
@@ -72,7 +75,7 @@ class PaymentController extends Controller
 
             return redirect('/dashboard/pagos');
         } catch (Exception $e) {
-            Log::error('Error al eliminar pago ID '.$id.': '.$e->getMessage());
+            Log::error('Error al eliminar pago ID ' . $id . ': ' . $e->getMessage());
 
             return redirect('/dashboard/pagos')->withErrors(['data' => $e->getMessage()]);
         }
@@ -96,7 +99,7 @@ class PaymentController extends Controller
 
             DB::rollback();
 
-            Log::error('Error al actualizar pago ID '.$id.': '.$e->getMessage());
+            Log::error('Error al actualizar pago ID ' . $id . ': ' . $e->getMessage());
 
             return redirect('/dashboard/pagos')->withErrors(['data' => $e->getMessage()]);
         }

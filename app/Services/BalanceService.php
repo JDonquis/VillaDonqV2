@@ -41,6 +41,17 @@ class BalanceService
 
         $remainingAmount = $amount;
 
+        $config = MainConfig::select('monthly_payment', 'day_of_monthly_payment')->first();
+        $basePrice = (float) ($config->monthly_payment ?? 0);
+        $dayOfMonthlyPayment = $config->day_of_monthly_payment ?? 1;
+        
+        $multiplier = $student->is_exempt ? (1 - (($student->exemption_percentage ?? 0) / 100)) : 1;
+        $effectivePrice = $basePrice * $multiplier;
+
+        $currentMonthName = strtolower(Carbon::now()->englishMonth);
+        $monthOrder = array_flip(self::MONTH_ORDER);
+        $currentMonthIndex = $monthOrder[$currentMonthName] ?? -1;
+
         foreach ($sortedBalances as $balanceData) {
             if ($remainingAmount <= 0) {
                 break;
@@ -75,7 +86,7 @@ class BalanceService
                 $remainingAmount -= $inscriptionDebt;
             }
 
-            foreach (self::MONTH_ORDER as $month) {
+            foreach (self::MONTH_ORDER as $index => $month) {
                 if ($remainingAmount <= 0) {
                     break;
                 }
@@ -87,7 +98,13 @@ class BalanceService
                     $balance->$month += $paymentToMonth;
 
                     $monthValue = $balance->$month;
-                    $balance->{$month . '_status'} = $this->determineMonthStatus($monthValue, $month);
+                    $balance->{$month . '_status'} = $this->determineMonthStatus(
+                        $monthValue, 
+                        $effectivePrice, 
+                        $index, 
+                        $currentMonthIndex, 
+                        $dayOfMonthlyPayment
+                    );
 
                     BalancePayment::create([
                         'payment_id' => $payment->id,
@@ -116,6 +133,17 @@ class BalanceService
 
         $groupedByBalance = $balancePayments->groupBy('balance_student_id');
 
+        $config = MainConfig::select('monthly_payment', 'day_of_monthly_payment')->first();
+        $basePrice = (float) ($config->monthly_payment ?? 0);
+        $dayOfMonthlyPayment = $config->day_of_monthly_payment ?? 1;
+        
+        $multiplier = $student->is_exempt ? (1 - (($student->exemption_percentage ?? 0) / 100)) : 1;
+        $effectivePrice = $basePrice * $multiplier;
+
+        $currentMonthName = strtolower(Carbon::now()->englishMonth);
+        $monthOrder = array_flip(self::MONTH_ORDER);
+        $currentMonthIndex = $monthOrder[$currentMonthName] ?? -1;
+
         foreach ($groupedByBalance as $balanceId => $bps) {
             $balance = BalanceStudent::find($balanceId);
             if (! $balance) {
@@ -141,9 +169,15 @@ class BalanceService
                 default => BalanceStudentStatusEnum::PartiallyPaid->value,
             };
 
-            foreach (self::MONTH_ORDER as $month) {
+            foreach (self::MONTH_ORDER as $index => $month) {
                 $monthValue = $balance->$month;
-                $balance->{$month . '_status'} = $this->determineMonthStatus($monthValue, $month);
+                $balance->{$month . '_status'} = $this->determineMonthStatus(
+                    $monthValue, 
+                    $effectivePrice, 
+                    $index, 
+                    $currentMonthIndex, 
+                    $dayOfMonthlyPayment
+                );
             }
 
             $this->updateGeneralStatus($balance);
@@ -154,6 +188,14 @@ class BalanceService
     public function recalculateBalanceForExemption(Student $student, float $exemptionPercentage, bool $applyToPastDebts): void
     {
         $multiplier = 1 - ($exemptionPercentage / 100);
+        $config = MainConfig::select('monthly_payment', 'new_inscription_price', 'day_of_monthly_payment')->first();
+        
+        $baseMonthlyPayment = (float) ($config->monthly_payment ?? 0);
+        $baseInscriptionPrice = (float) ($config->new_inscription_price ?? 0);
+        $dayOfMonthlyPayment = $config->day_of_monthly_payment ?? 1;
+
+        $newEffectiveMonthlyPrice = $baseMonthlyPayment * $multiplier;
+        $newEffectiveInscriptionPrice = $baseInscriptionPrice * $multiplier;
 
         $currentMonthName = strtolower(Carbon::now()->englishMonth);
         $monthOrder = array_flip(self::MONTH_ORDER);
@@ -166,39 +208,35 @@ class BalanceService
             $paymentsByMonth = $balancePayments->groupBy('month');
             $totalPaidInscription = $balancePayments->where('is_inscription', true)->sum('amount');
 
-            foreach (self::MONTH_ORDER as $month) {
-                $totalPaid = (float) (($paymentsByMonth->get($month, collect()))->sum('amount'));
-                $currentValue = (float) $balance->$month;
-
-                $originalCharge = $currentValue - $totalPaid;
-
-                if ($originalCharge >= 0) {
-                    continue;
-                }
-
+            foreach (self::MONTH_ORDER as $index => $month) {
                 if (! $applyToPastDebts) {
-                    $monthIndex = $monthOrder[$month] ?? -1;
-                    if ($monthIndex < $currentMonthIndex) {
+                    if ($index < $currentMonthIndex && $currentMonthIndex !== -1) {
                         continue;
                     }
                 }
 
-                $newCharge = $originalCharge * $multiplier;
-                $balance->$month = $newCharge + $totalPaid;
-                $balance->{$month . '_status'} = $this->determineMonthStatus((float) $balance->$month, $month);
+                $totalPaid = (float) (($paymentsByMonth->get($month, collect()))->sum('amount'));
+                
+                // Recalcular balance basado en el nuevo precio efectivo
+                $balance->$month = $totalPaid - $newEffectiveMonthlyPrice;
+                $balance->{$month . '_status'} = $this->determineMonthStatus(
+                    (float) $balance->$month, 
+                    $newEffectiveMonthlyPrice,
+                    $index,
+                    $currentMonthIndex,
+                    $dayOfMonthlyPayment
+                );
             }
 
-            $currentInscription = (float) $balance->inscription;
-            $originalInscriptionCharge = $currentInscription - $totalPaidInscription;
-
-            if ($originalInscriptionCharge < 0) {
-                $newInscriptionCharge = $originalInscriptionCharge * $multiplier;
-                $balance->inscription = $newInscriptionCharge + $totalPaidInscription;
+            // Inscripción (solo si aplica a deudas pasadas o si aún no está pagada totalmente y queremos ajustarla)
+            // Normalmente la inscripción es al inicio, pero si applyToPastDebts es true, la ajustamos.
+            if ($applyToPastDebts) {
+                $balance->inscription = $totalPaidInscription - $newEffectiveInscriptionPrice;
                 $inscriptionValue = (float) $balance->inscription;
                 $balance->inscription_status = match (true) {
-                    $inscriptionValue == 0 => BalanceStudentStatusEnum::Paid->value,
-                    $inscriptionValue < 0 => BalanceStudentStatusEnum::Debt->value,
-                    default => BalanceStudentStatusEnum::PartiallyPaid->value,
+                    $inscriptionValue >= 0 => BalanceStudentStatusEnum::Paid->value,
+                    $inscriptionValue > ($newEffectiveInscriptionPrice * -1) => BalanceStudentStatusEnum::PartiallyPaid->value,
+                    default => BalanceStudentStatusEnum::Debt->value,
                 };
             }
 
@@ -207,24 +245,17 @@ class BalanceService
         }
     }
 
-    private function determineMonthStatus(float $monthValue, string $monthName): string
+    private function determineMonthStatus(float $monthValue, float $effectivePrice, int $monthIndex, int $currentMonthIndex, int $dayOfMonthlyPayment): string
     {
-
-        $config = MainConfig::select('day_of_monthly_payment', 'monthly_payment')->first();
-        $fullDebtAmount = ($config->monthly_payment ?? 50) * -1;
-
         if ($monthValue >= 0) {
             return BalanceStudentStatusEnum::Paid->value;
         }
 
+        $fullDebtAmount = $effectivePrice * -1;
+
         if ($monthValue > $fullDebtAmount) {
             return BalanceStudentStatusEnum::PartiallyPaid->value;
         }
-
-        $currentMonthName = strtolower(Carbon::now()->englishMonth);
-        $monthOrder = array_flip(self::MONTH_ORDER);
-        $currentMonthIndex = $monthOrder[$currentMonthName] ?? -1;
-        $monthIndex = $monthOrder[$monthName] ?? -1;
 
         if ($monthIndex > $currentMonthIndex) {
             return BalanceStudentStatusEnum::Pending->value;
@@ -233,8 +264,6 @@ class BalanceService
         if ($monthIndex < $currentMonthIndex) {
             return BalanceStudentStatusEnum::Debt->value;
         }
-
-        $dayOfMonthlyPayment = $config->day_of_monthly_payment ?? 1;
 
         return Carbon::now()->day >= $dayOfMonthlyPayment
             ? BalanceStudentStatusEnum::Debt->value

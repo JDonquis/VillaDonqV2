@@ -10,6 +10,7 @@ use App\Listeners\ChangeDebtsForStudents;
 use App\Listeners\GenerateBalance;
 use App\Listeners\GenerateInscription;
 use App\Listeners\TakeQuota;
+use App\Listeners\UpdateStudentExemptionBalance;
 use App\Listeners\UpdateTakeQuota;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -34,6 +35,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         StudentUpdated::class => [
             UpdateTakeQuota::class,
+            UpdateStudentExemptionBalance::class,
         ],
         ReEnrollEvent::class => [
             TakeQuota::class,

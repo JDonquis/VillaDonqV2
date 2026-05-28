@@ -194,24 +194,10 @@ class StudentService
 
         $student->load('representative.user', 'course', 'section');
 
-        $exemptionChanged = (
-            (bool) $previousExemptData['is_exempt'] !== (bool) $student->is_exempt
-            || (float) ($previousExemptData['exemption_percentage'] ?? 0) !== (float) ($student->exemption_percentage ?? 0)
-        );
-
-        if ($exemptionChanged && $student->is_exempt && $student->exemption_percentage) {
-            $applyToPastDebts = $data['apply_to_past_debts'] ?? false;
-            (new BalanceService)->recalculateBalanceForExemption(
-                $student,
-                (float) $student->exemption_percentage,
-                $applyToPastDebts
-            );
-        }
-
         $search = $this->generateSearch($student);
         $student->update(['search' => $search]);
 
-        event(new StudentUpdated($previousCourseId, $student));
+        event(new StudentUpdated($previousCourseId, $student, $previousExemptData));
 
         return 0;
     }

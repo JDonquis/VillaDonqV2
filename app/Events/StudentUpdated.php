@@ -16,14 +16,16 @@ class StudentUpdated
 
     public $student;
     public $courseId;
+    public $previousExemptData;
+
     /**
      * Create a new event instance.
      */
-    public function __construct($courseId , $student)
+    public function __construct($courseId , $student, $previousExemptData = null)
     {
         $this->student = $student;
         $this->courseId = $courseId;
-
+        $this->previousExemptData = $previousExemptData;
     }
 
 
