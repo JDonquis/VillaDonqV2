@@ -88,6 +88,7 @@
     //         },
     //     },
     // ];
+
     const months = {
         sep: "september",
         oct: "october",
@@ -103,6 +104,21 @@
         ago: "august",
     };
 
+    const monthsCalendar = {
+        "january": 0,
+        "february": 1,
+        "march": 2,
+        "april": 3,
+        "may": 4,
+        "june": 5,
+        "july": 6,
+        "august": 7,
+        "september": 8,
+        "october": 9,
+        "november": 10,
+        "december": 11,
+    };
+    
     export let balances;
     export let amountToPay = 0;
     export let classes = "";
@@ -111,12 +127,14 @@
     let tooltipPayments = [];
     let tooltipStyle = "";
     let tooltipHideTimeout;
+    const currentMont = new Date().getMonth(); // Mes actual (0-11)
+    console.log({currentMont})
 
     export let id = "";
     const firstUnpaidMonth = Object.entries(months).findIndex(
         ([spanisMonth, monthName]) => {
             const status = balances[0]?.[`${monthName}_status`];
-            return status === "debt" || status === "partially_paid";
+            return status === "debt" || status === "partially_paid" ;
         },
     );
 
@@ -236,7 +254,7 @@
                             if (
                                 (balance[month] < 0 &&
                                     balance[month + "_status"] == "debt") ||
-                                balance[month + "_status"] == "partially_paid"
+                                balance[month + "_status"] == "partially_paid" 
                             ) {
                                 total += balance[month];
                             }
@@ -294,7 +312,7 @@
             <div class="col-span-11 grid grid-cols-12">
                 {#each Object.entries(months) as [spanishLabel, month], indexMonth}
                     <div
-                        class={`group/month hover:brightness-110 border-l-2 border-l-gray-200 relative col-span-1  text-xs capitalize  text-center font-bold ${balance[month + "_status"] == "debt" ? "bg-red" : balance[month + "_status"] == "paid" ? "bg-green" : balance[month + "_status"] == "partially_paid" ? "bg-yellow" : "bg-gray-50 "} text-black  p-1`}
+                        class={`group/month hover:brightness-110 border-l-2 border-l-gray-200 relative col-span-1  text-xs capitalize  text-center font-bold ${balance[month + "_status"] == "debt" ? "bg-red" : balance[month + "_status"] == "paid" ? "bg-green" : balance[month + "_status"] == "partially_paid"  ? "bg-yellow"  :   balance[month + "_status"] == "partially_paid" && monthsCalendar[month] > currentMonth ? "bg-purple" : "bg-gray-50 "} text-black  p-1`}
                         on:mouseenter={(e) =>
                             balance.balance_payments[month]
                                 ? showBalancePaymentsTooltip(
