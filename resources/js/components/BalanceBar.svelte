@@ -123,12 +123,44 @@
     export let amountToPay = 0;
     export let classes = "";
     export let is_exempt = false;
+    export let dayOfPayment = 0;
+    export let gracePeriod = 0;
     let tooltipVisible = false;
     let tooltipPayments = [];
     let tooltipStyle = "";
     let tooltipHideTimeout;
-    const currentMont = new Date().getMonth(); // Mes actual (0-11)
-    console.log({currentMont})
+ 
+
+    $: console.log(dayOfPayment, gracePeriod)
+
+// Obtener el año actual y el día actual para la comparación histórica
+const currentMonth = new Date().getMonth(); // 0-11
+const currentYear = new Date().getFullYear();
+const currentDay = new Date().getDate();
+
+function checkIfMonthIsExpired(monthName) {
+    // 1. Obtener el número de mes (0-11) desde tu objeto monthsCalendar
+    const monthIndex = monthsCalendar[monthName]; 
+    
+    // 2. Si el mes es menor al mes actual, ya pasó de forma estricta
+    if (monthIndex < currentMonth) return true;
+    
+    // 3. Si el mes es mayor al mes actual, definitivamente no ha vencido
+    if (monthIndex > currentMonth) return false;
+    
+    // 4. Si es el mes actual, calculamos el día de vencimiento real
+    // Ejemplo: vence el 30 + 5 días de prórroga = día 35 (es decir, el 5 del siguiente mes)
+    const expirationDay = dayOfPayment + gracePeriod;
+    
+    // Si el día de vencimiento se pasa del mes actual (ej: día 35)
+    if (expirationDay > 30) { 
+        // Como el vencimiento cae en el siguiente mes, en el mes actual NUNCA estará vencido
+        return false; 
+    }
+    
+    // Si el vencimiento cae dentro del mismo mes, comparamos con el día actual
+    return currentDay > expirationDay;
+}
 
     export let id = "";
     const firstUnpaidMonth = Object.entries(months).findIndex(
@@ -309,42 +341,42 @@
                         : ""}
                 ></div>
             </div>
-            <div class="col-span-11 grid grid-cols-12">
+            <div class="col-span-11 grid grid-cols-12"> 
                 {#each Object.entries(months) as [spanishLabel, month], indexMonth}
-                    <div
-                        class={`group/month hover:brightness-110 border-l-2 border-l-gray-200 relative col-span-1  text-xs capitalize  text-center font-bold ${balance[month + "_status"] == "debt" ? "bg-red" : balance[month + "_status"] == "paid" ? "bg-green" : balance[month + "_status"] == "partially_paid"  ? "bg-yellow"  :   balance[month + "_status"] == "partially_paid" && monthsCalendar[month] > currentMonth ? "bg-purple" : "bg-gray-50 "} text-black  p-1`}
-                        on:mouseenter={(e) =>
-                            balance.balance_payments[month]
-                                ? showBalancePaymentsTooltip(
-                                      e,
-                                      balance.balance_payments[month],
-                                  )
-                                : null}
-                        on:mouseleave={scheduleTooltipHide}
-                    >
-                        <div class="z-40">
-                            {spanishLabel}
-                        </div>
-                        <p>
-                            {#if balance[month + "_status"] == "debt" || balance[month + "_status"] == "partially_paid"}
-                                ${Math.abs(balance[month])}
-                            {/if}
-                        </p>
-                        <div
-                            class={`text-xs  months_to_pay absolute top-0.5 left-0 w-full text-black h-[95%] z-40 
-                            ${indexMonth === startPointToPay.month && startPointToPay.school_lapse_index == +indexYear && amountToPay > Math.abs(balance[month]) ? "border-l-4 border-black/50" : ""} 
-                            ${indexMonth === endPointToPay.endMonthIndex - 1 && endPointToPay.endYearIndex == +indexYear && amountToPay > 0 ? "border-r-4 border-black/50" : ""}
-                            ${startPointToPay.school_lapse_index <= indexYear && payingBalances[indexYear]?.startMonth <= indexMonth && indexMonth <= payingBalances[indexYear]?.endMonthIndex ? "bg-purple/30 border-y-4 border-black/50" : ""}`}
-                            style={((indexMonth ==
-                                endPointToPay.endMonthIndex - 1 &&
-                                endPointToPay.endYearIndex == +indexYear) ||
-                                indexMonth == 11) &&
-                            endPointToPay.partialToPay > 0
-                                ? `width: ${(endPointToPay.partialToPay / Math.abs(balance[month])) * 100}%`
-                                : ""}
-                        ></div>
-                    </div>
-                {/each}
+    <div
+        class={`group/month hover:brightness-110 border-l-2 border-l-gray-200 relative col-span-1 text-xs capitalize text-center font-bold p-1 text-black
+            ${balance[month + "_status"] === "debt" ? "bg-red" : ""}
+            ${balance[month + "_status"] === "paid" ? "bg-green" : ""}
+            ${balance[month + "_status"] === "partially_paid" ? (checkIfMonthIsExpired(month) ? "bg-yellow" : "bg-purple") : ""}
+            ${!balance[month + "_status"] ? "bg-gray-50" : ""}
+        `}
+        on:mouseenter={(e) =>
+            balance.balance_payments[month]
+                ? showBalancePaymentsTooltip(e, balance.balance_payments[month])
+                : null}
+        on:mouseleave={scheduleTooltipHide}
+    >
+        <div class="z-40">
+            {spanishLabel}
+        </div>
+        <p>
+            {#if balance[month + "_status"] == "debt" || balance[month + "_status"] == "partially_paid"}
+                ${Math.abs(balance[month])}
+            {/if}
+        </p>
+        
+        <!-- El resto de tu div de progreso (months_to_pay) se queda exactamente igual -->
+        <div
+            class={`text-xs months_to_pay absolute top-0.5 left-0 w-full text-black h-[95%] z-40 
+            ${indexMonth === startPointToPay.month && startPointToPay.school_lapse_index == +indexYear && amountToPay > Math.abs(balance[month]) ? "border-l-4 border-black/50" : ""} 
+            ${indexMonth === endPointToPay.endMonthIndex - 1 && endPointToPay.endYearIndex == +indexYear && amountToPay > 0 ? "border-r-4 border-black/50" : ""}
+            ${startPointToPay.school_lapse_index <= indexYear && payingBalances[indexYear]?.startMonth <= indexMonth && indexMonth <= payingBalances[indexYear]?.endMonthIndex ? "bg-purple/30 border-y-4 border-black/50" : ""}`}
+            style={((indexMonth == endPointToPay.endMonthIndex - 1 && endPointToPay.endYearIndex == +indexYear) || indexMonth == 11) && endPointToPay.partialToPay > 0
+                ? `width: ${(endPointToPay.partialToPay / Math.abs(balance[month])) * 100}%`
+                : ""}
+        ></div>
+    </div>
+{/each}
             </div>
         </div>
         {/if}

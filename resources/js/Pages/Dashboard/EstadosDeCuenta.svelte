@@ -6,6 +6,7 @@
     import { page } from "@inertiajs/svelte";
 
     export let data = [];
+    export let config
     let showTotalDebt = false;
     $: tableData = {
         ...data?.students.data,
@@ -17,6 +18,8 @@
         },
     };
 
+    $: console.log( data)
+    $: console.log( config)
     async function sendToWhatsApp(student) {
         const element = document.getElementById(`balance-bar-${student.id}`);
 
@@ -176,6 +179,9 @@ Gracias por su atención y apoyo continuo.`;
                         is_exempt={student.is_exempt
                             ? student.exemption_percentage
                             : false}
+                        dayOfPayment={config.day_of_monthly_payment}
+                        gracePeriod={config.grace_period}
+
                     />
                 </td>
                 <td class="group"
