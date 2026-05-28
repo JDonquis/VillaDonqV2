@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Events\ReEnrollEvent;
 use App\Events\StudentCreated;
 use App\Events\StudentUpdated;
+use App\Events\UpdateMonthlyPaymentEvent;
+use App\Listeners\ChangeDebtsForStudents;
 use App\Listeners\GenerateBalance;
 use App\Listeners\GenerateInscription;
 use App\Listeners\TakeQuota;
@@ -37,6 +39,9 @@ class EventServiceProvider extends ServiceProvider
             TakeQuota::class,
             GenerateInscription::class,
             GenerateBalance::class,
+        ],
+        UpdateMonthlyPaymentEvent::class => [
+            ChangeDebtsForStudents::class
         ],
 
 

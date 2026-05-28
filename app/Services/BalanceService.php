@@ -87,7 +87,7 @@ class BalanceService
                     $balance->$month += $paymentToMonth;
 
                     $monthValue = $balance->$month;
-                    $balance->{$month.'_status'} = $this->determineMonthStatus($monthValue, $month);
+                    $balance->{$month . '_status'} = $this->determineMonthStatus($monthValue, $month);
 
                     BalancePayment::create([
                         'payment_id' => $payment->id,
@@ -143,7 +143,7 @@ class BalanceService
 
             foreach (self::MONTH_ORDER as $month) {
                 $monthValue = $balance->$month;
-                $balance->{$month.'_status'} = $this->determineMonthStatus($monthValue, $month);
+                $balance->{$month . '_status'} = $this->determineMonthStatus($monthValue, $month);
             }
 
             $this->updateGeneralStatus($balance);
@@ -185,7 +185,7 @@ class BalanceService
 
                 $newCharge = $originalCharge * $multiplier;
                 $balance->$month = $newCharge + $totalPaid;
-                $balance->{$month.'_status'} = $this->determineMonthStatus((float) $balance->$month, $month);
+                $balance->{$month . '_status'} = $this->determineMonthStatus((float) $balance->$month, $month);
             }
 
             $currentInscription = (float) $balance->inscription;
@@ -209,11 +209,15 @@ class BalanceService
 
     private function determineMonthStatus(float $monthValue, string $monthName): string
     {
-        if ($monthValue == 0) {
+
+        $config = MainConfig::select('day_of_monthly_payment', 'monthly_payment')->first();
+        $fullDebtAmount = ($config->monthly_payment ?? 50) * -1;
+
+        if ($monthValue >= 0) {
             return BalanceStudentStatusEnum::Paid->value;
         }
 
-        if ($monthValue > 0) {
+        if ($monthValue > $fullDebtAmount) {
             return BalanceStudentStatusEnum::PartiallyPaid->value;
         }
 
@@ -230,7 +234,6 @@ class BalanceService
             return BalanceStudentStatusEnum::Debt->value;
         }
 
-        $config = MainConfig::select('day_of_monthly_payment')->first();
         $dayOfMonthlyPayment = $config->day_of_monthly_payment ?? 1;
 
         return Carbon::now()->day >= $dayOfMonthlyPayment
@@ -247,12 +250,12 @@ class BalanceService
         }
 
         foreach (self::MONTH_ORDER as $month) {
-            $statusField = $month.'_status';
+            $statusField = $month . '_status';
             $statuses[] = $balance->$statusField;
         }
 
         $allPaid = collect($statuses)->every(
-            fn ($status) => $status === BalanceStudentStatusEnum::Paid->value
+            fn($status) => $status === BalanceStudentStatusEnum::Paid->value
         );
 
         if ($allPaid) {
@@ -262,7 +265,7 @@ class BalanceService
         }
 
         $hasDebt = collect($statuses)->contains(
-            fn ($status) => $status === BalanceStudentStatusEnum::Debt->value
+            fn($status) => $status === BalanceStudentStatusEnum::Debt->value
         );
 
         if ($hasDebt) {
@@ -272,7 +275,7 @@ class BalanceService
         }
 
         $hasPartial = collect($statuses)->contains(
-            fn ($status) => $status === BalanceStudentStatusEnum::PartiallyPaid->value
+            fn($status) => $status === BalanceStudentStatusEnum::PartiallyPaid->value
         );
 
         $balance->status = $hasPartial

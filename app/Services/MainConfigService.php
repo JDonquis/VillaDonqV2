@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\PaymentMethodEnum;
 use App\Events\StudentCreated;
 use App\Events\StudentUpdated;
+use App\Events\UpdateMonthlyPaymentEvent;
 use App\Http\Resources\AccountPaymentCollection;
 use App\Http\Resources\StudentCollection;
 use App\Http\Resources\StudentResource;
@@ -73,7 +74,12 @@ class MainConfigService
 
     public function updatePaymentConfig($data)
     {
+        $oldPrice = $this->mainConfigModel->monthly_payment;
         $this->mainConfigModel->update($data);
+
+        if ($data['monthly_payment'] != $oldPrice) {
+            event(new UpdateMonthlyPaymentEvent($this->mainConfigModel->monthly_payment));
+        }
     }
 
     public function createAccount($request)
