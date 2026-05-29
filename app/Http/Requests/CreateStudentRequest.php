@@ -94,10 +94,14 @@ class CreateStudentRequest extends FormRequest
             'second_rep_workplace' => ['nullable'],
             'is_exempt' => ['nullable', 'boolean'],
             'exemption_percentage' => [
-                'nullable', 'integer', 'min:1', 'max:100',
-                \Illuminate\Validation\Rule::requiredIf(fn () => (bool) $this->input('is_exempt')),
+                'nullable',
+                'integer',
+                'min:1',
+                'max:100',
+                \Illuminate\Validation\Rule::requiredIf(fn() => (bool) $this->input('is_exempt')),
             ],
             'exemption_observations' => ['nullable', 'string'],
+            'document_type' => ['nullable', 'string'],
         ];
     }
 }

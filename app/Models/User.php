@@ -24,7 +24,8 @@ class User extends Authenticatable
         'address',
         'photo',
         'email_verified_status',
-        'is_admin'
+        'is_admin',
+        'document_type'
     ];
 
     /**
