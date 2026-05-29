@@ -15,20 +15,20 @@ class PaymentService
             ->when(isset($params['search']), function ($q) use ($params) {
                 $search = $params['search'];
                 $q->where(function ($query) use ($search) {
-                    $query->where('reference', 'like', '%'.$search.'%')
-                        ->orWhere('observations', 'like', '%'.$search.'%')
+                    $query->where('reference', 'like', '%' . $search . '%')
+                        ->orWhere('observations', 'like', '%' . $search . '%')
                         ->orWhereHas('user', function ($q) use ($search) {
-                            $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%'.$search.'%'])
-                                ->orWhere('name', 'like', '%'.$search.'%')
-                                ->orWhere('last_name', 'like', '%'.$search.'%');
+                            $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%'])
+                                ->orWhere('name', 'like', '%' . $search . '%')
+                                ->orWhere('last_name', 'like', '%' . $search . '%');
                         })
                         ->orWhereHas('accountPayment.method', function ($q) use ($search) {
-                            $q->where('name', 'like', '%'.$search.'%');
+                            $q->where('name', 'like', '%' . $search . '%');
                         })
                         ->orWhereHas('students', function ($q) use ($search) {
-                            $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%'.$search.'%'])
-                                ->orWhere('name', 'like', '%'.$search.'%')
-                                ->orWhere('last_name', 'like', '%'.$search.'%');
+                            $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%'])
+                                ->orWhere('name', 'like', '%' . $search . '%')
+                                ->orWhere('last_name', 'like', '%' . $search . '%');
                         });
                 });
             })
@@ -78,6 +78,7 @@ class PaymentService
             'reference' => $data['reference'] ?? null,
             'status' => 1,
             'observations' => $data['observations'] ?? null,
+            'reported_date' => $data['reported_date'] ?? null,
         ]);
 
         // Asociar estudiantes con el pago

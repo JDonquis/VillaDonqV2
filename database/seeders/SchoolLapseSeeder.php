@@ -17,6 +17,8 @@ class SchoolLapseSeeder extends Seeder
     {
         $currentYear = Carbon::now()->year;
 
+        $currentYear = Carbon::now()->month >= 9 ? $currentYear : $currentYear - 1;
+
         $start = Carbon::create($currentYear, 9, 1, 0, 0, 0);
 
         $end = Carbon::create($currentYear + 1, 8, 31, 23, 59, 59);
