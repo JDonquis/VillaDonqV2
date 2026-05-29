@@ -7,9 +7,10 @@
 
     export let data = [];
     export let config
+
     let showTotalDebt = false;
     $: tableData = {
-        ...data?.students.data,
+        ...data?.students,
         filters: {
             debt_filter:
                 new URLSearchParams($page.url.split("?")[1] || "").get(
@@ -18,7 +19,7 @@
         },
     };
 
-    $: console.log( data)
+    $: console.log( {data}, {tableData})
     $: console.log( config)
     async function sendToWhatsApp(student) {
         const element = document.getElementById(`balance-bar-${student.id}`);

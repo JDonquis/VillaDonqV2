@@ -131,7 +131,8 @@
     let tooltipHideTimeout;
  
 
-    $: console.log(dayOfPayment, gracePeriod)
+    // $: console.log("Balances actualizados:", balances);
+
 
 // Obtener el año actual y el día actual para la comparación histórica
 const currentMonth = new Date().getMonth(); // 0-11
@@ -163,17 +164,24 @@ function checkIfMonthIsExpired(monthName) {
 }
 
     export let id = "";
-    const firstUnpaidMonth = Object.entries(months).findIndex(
+    const firstUnpaidMonth = balances[0].status != "pending" ? Object.entries(months).findIndex(
         ([spanisMonth, monthName]) => {
             const status = balances[0]?.[`${monthName}_status`];
             return status === "debt" || status === "partially_paid" ;
         },
+    ) :  Object.entries(months).findIndex(
+        ([spanisMonth, monthName]) => {
+            const status = balances[0]?.[`${monthName}_status`];
+            return status == "pending" ;
+        },
     );
 
-    const startPointToPay = {
+    let startPointToPay = {
         school_lapse_index: 0,
-        month: firstUnpaidMonth, // Si no hay deudas, cae al primer mes por defecto
+        month: firstUnpaidMonth , // Si no hay deudas, cae al primer mes por defecto
     };
+
+    // $: console.log(firstUnpaidMonth);
     let payingBalances = [{}];
 
     let endPointToPay = {};
@@ -238,7 +246,7 @@ function checkIfMonthIsExpired(monthName) {
 
         clearTimeout(tooltipHideTimeout);
         tooltipPayments = payments;
-        console.log(tooltipPayments)
+        // console.log(tooltipPayments)
         const rect = event.currentTarget.getBoundingClientRect();
         tooltipStyle = `position: fixed; top: ${rect.bottom}px; left: ${rect.left + rect.width / 2}px; transform: translateX(-50%); z-index: 9999;`;
         tooltipVisible = true;
@@ -350,6 +358,7 @@ function checkIfMonthIsExpired(monthName) {
             ${balance[month + "_status"] === "partially_paid" ? (checkIfMonthIsExpired(month) ? "bg-yellow" : "bg-purple") : ""}
             ${!balance[month + "_status"] ? "bg-gray-50" : ""}
         `}
+        title={balance[month + "_status"] == "pending" ? "Pendiente de pago: $" + Math.abs(balance[month]) : "" }
         on:mouseenter={(e) =>
             balance.balance_payments[month]
                 ? showBalancePaymentsTooltip(e, balance.balance_payments[month])
