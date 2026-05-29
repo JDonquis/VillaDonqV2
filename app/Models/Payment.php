@@ -21,9 +21,11 @@ class Payment extends Model
         'status',
         'observations',
         'deleted_by',
+        'reported_date',
     ];
 
     protected $casts = [
+        'reported_date' => 'date',
         'date' => 'date',
         'total_in_dolars' => 'decimal:2',
         'total_in_bs' => 'decimal:2',
