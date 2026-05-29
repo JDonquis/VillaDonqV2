@@ -31,13 +31,15 @@ class PaymentController extends Controller
         $result = $this->paymentService->getAll($request->all());
         $config = MainConfig::select('day_of_monthly_payment', 'grace_period')->first();
 
-        return inertia('Dashboard/Pagos', ['data' => [
-            'accounts' => $accounts,
-            'payments' => $result['payments'],
-            'prices' => $prices,
-            'total_income' => $result['total_income'],
+        return inertia('Dashboard/Pagos', [
+            'data' => [
+                'accounts' => $accounts,
+                'payments' => $result['payments'],
+                'prices' => $prices,
+                'total_income' => $result['total_income'],
+            ],
             'config' => $config,
-        ]]);
+        ]);
     }
 
     /**
