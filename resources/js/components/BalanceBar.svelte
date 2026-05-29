@@ -181,6 +181,8 @@ function checkIfMonthIsExpired(monthName) {
         month: firstUnpaidMonth , // Si no hay deudas, cae al primer mes por defecto
     };
 
+    console.log({firstUnpaidMonth}, balances[0])
+
     // $: console.log(firstUnpaidMonth);
     let payingBalances = [{}];
 
@@ -355,12 +357,12 @@ function checkIfMonthIsExpired(monthName) {
         class={`group/month hover:brightness-110 border-l-2 border-l-gray-200 relative col-span-1 text-xs capitalize text-center font-bold p-1 text-black
             ${balance[month + "_status"] === "debt" ? "bg-red" : ""}
             ${balance[month + "_status"] === "paid" ? "bg-green" : ""}
-            ${balance[month + "_status"] === "partially_paid" ? (checkIfMonthIsExpired(month) ? "bg-yellow" : "bg-purple") : ""}
+            ${balance[month + "_status"] === "partially_paid" ? (checkIfMonthIsExpired(month) ? "bg-yellow" : "bg-blue") : ""}
             ${!balance[month + "_status"] ? "bg-gray-50" : ""}
         `}
         title={balance[month + "_status"] == "pending" ? "Pendiente de pago: $" + Math.abs(balance[month]) : "" }
         on:mouseenter={(e) =>
-            balance.balance_payments[month]
+            balance.balance_payments?.[month]
                 ? showBalancePaymentsTooltip(e, balance.balance_payments[month])
                 : null}
         on:mouseleave={scheduleTooltipHide}
