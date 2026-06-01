@@ -66,7 +66,7 @@ class UpdateStudentRequest extends FormRequest
             'student_last_name' => ['required'],
             'student_date_birth' => ['required'],
             'student_email' => ['nullable'],
-            'student_ci' => ['required', 'unique:students,ci,'.$id],
+            'student_ci' => ['required', 'unique:students,ci,' . $id],
             'student_phone_number' => ['nullable'],
             'student_sex' => ['nullable'],
             'student_previous_school' => ['nullable'],
@@ -92,11 +92,15 @@ class UpdateStudentRequest extends FormRequest
             'second_rep_workplace' => ['nullable'],
             'is_exempt' => ['nullable', 'boolean'],
             'exemption_percentage' => [
-                'nullable', 'integer', 'min:1', 'max:100',
-                \Illuminate\Validation\Rule::requiredIf(fn () => (bool) $this->input('is_exempt')),
+                'nullable',
+                'integer',
+                'min:1',
+                'max:100',
+                \Illuminate\Validation\Rule::requiredIf(fn() => (bool) $this->input('is_exempt')),
             ],
             'exemption_observations' => ['nullable', 'string'],
             'apply_to_past_debts' => ['nullable', 'boolean'],
+            'document_type' => ['nullable', 'string'],
         ];
     }
 }
