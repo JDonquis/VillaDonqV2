@@ -113,7 +113,7 @@ Gracias por su atención y apoyo continuo.`;
         <b
             class={`text-sm ${showTotalDebt ? "opacity-100" : "opacity-0 blur-sm"} text-red transition-all duration-200`}
         >
-            {showTotalDebt ? `$${data.total_income}` : "•••"}
+            {showTotalDebt ? `$${data.total_debt}` : "•••"}
         </b>
         <button
             type="button"
