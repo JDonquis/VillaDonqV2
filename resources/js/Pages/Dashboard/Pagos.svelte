@@ -16,6 +16,10 @@
     import { page } from "@inertiajs/svelte";
 
     export let data = { students: { data: [] }, accounts: { data: [] } };
+    export let config = {
+        day_of_monthly_payment: 0,
+        grace_period: 0,
+    }
 
     export let searched_students = [];
     let isSearchTableOpen = false;
@@ -477,6 +481,8 @@
                                     balances={student.balances}
                                     amountToPay={student.amount_in_dolars}
                                     is_exempt={student.is_exempt ? student.exemption_percentage : false}
+                                    dayOfPayment={config.day_of_monthly_payment}
+                                    gracePeriod={config.grace_period}
                                 />
                                 {/if}
                             </td>
