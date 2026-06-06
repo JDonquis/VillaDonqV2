@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\BalanceStudentStatusEnum;
 use App\Models\BalanceStudent;
+use App\Models\MainConfig;
 use App\Models\SchoolLapse;
 use App\Models\Section;
 use Illuminate\Support\Facades\DB;
@@ -43,13 +44,17 @@ class AccountStatementService
     public function getAll($params = [])
     {
         $currentLapse = SchoolLapse::where('status', 1)->first();
+        $config = MainConfig::first();
+        $dayOfPayment = $config->day_of_monthly_payment ?? 5;
+        $gracePeriod = $config->grace_period ?? 0;
+        
         $currentMonthName = strtolower(now()->format('F'));
         $currentMonthIndex = array_search($currentMonthName, self::SCHOOL_MONTHS);
 
         // SQL expression for debt sum (absolute value of negative numbers)
         $debtSumSql = $this->getDebtSumSql();
         // SQL expression for "has_real_debt" logic
-        $hasRealDebtSql = $this->getHasRealDebtSql($currentLapse, $currentMonthIndex);
+        $hasRealDebtSql = $this->getHasRealDebtSql($currentLapse, $currentMonthIndex, $dayOfPayment, $gracePeriod);
 
         $query = BalanceStudent::query()
             ->join('students', 'balance_students.student_id', '=', 'students.id')
@@ -111,7 +116,7 @@ class AccountStatementService
                     break;
 
                 case 'up_to_date':
-                    $query->whereRaw("($debtSumSql) = 0");
+                    $query->whereRaw("NOT ($hasRealDebtSql)");
                     break;
             }
         }
@@ -157,11 +162,11 @@ class AccountStatementService
         ])->paginate($perPage);
 
         // Transformation to match frontend expectation
-        $mappedItems = $paginatedBalances->getCollection()->map(function ($balance) use ($currentLapse, $currentMonthIndex) {
+        $mappedItems = $paginatedBalances->getCollection()->map(function ($balance) use ($currentLapse, $currentMonthIndex, $dayOfPayment, $gracePeriod) {
             $student = $balance->student;
             
             $balanceDebt = $this->calculateBalanceDebt($balance);
-            $hasRealDebt = $this->checkHasRealDebt($balance, $currentLapse, $currentMonthIndex);
+            $hasRealDebt = $this->checkHasRealDebt($balance, $currentLapse, $currentMonthIndex, $dayOfPayment, $gracePeriod);
             $balanceIncome = $balance->balancePayments->sum('amount');
 
             $transformedBalance = [
@@ -234,29 +239,36 @@ class AccountStatementService
         return implode(' + ', $parts);
     }
 
-    private function getHasRealDebtSql($currentLapse, $currentMonthIndex): string
+    private function getHasRealDebtSql($currentLapse, $currentMonthIndex, $dayOfPayment, $gracePeriod): string
     {
         $debtVal = BalanceStudentStatusEnum::Debt->value;
         $partialVal = BalanceStudentStatusEnum::PartiallyPaid->value;
+        $isPastDay = now()->day >= ($dayOfPayment + $gracePeriod);
 
         $sql = "(inscription_status = '$debtVal' OR inscription_status = '$partialVal')";
 
         foreach (self::SCHOOL_MONTHS as $index => $month) {
             $col = $month . '_status';
-            $sql .= " OR ($col = '$debtVal')";
-
+            
+            $isDueCondition = "";
             if ($currentLapse) {
                 $lapseId = $currentLapse->id;
                 $pastLapsesSubquery = "(SELECT id FROM school_lapses WHERE start < '{$currentLapse->start}')";
                 
+                $isDueCondition = "(school_lapse_id IN $pastLapsesSubquery OR (school_lapse_id = $lapseId AND (";
                 if ($index < $currentMonthIndex) {
-                    $sql .= " OR ($col = '$partialVal' AND (school_lapse_id = $lapseId OR school_lapse_id IN $pastLapsesSubquery))";
+                    $isDueCondition .= "1=1";
+                } elseif ($index == $currentMonthIndex) {
+                    $isDueCondition .= ($isPastDay ? "1=1" : "1=0");
                 } else {
-                    $sql .= " OR ($col = '$partialVal' AND school_lapse_id IN $pastLapsesSubquery)";
+                    $isDueCondition .= "1=0";
                 }
+                $isDueCondition .= ")))";
             } else {
-                $sql .= " OR ($col = '$partialVal')";
+                $isDueCondition = "1=1";
             }
+
+            $sql .= " OR (($col = '$debtVal' OR $col = '$partialVal') AND $isDueCondition)";
         }
 
         return "($sql)";
@@ -272,28 +284,28 @@ class AccountStatementService
         return (float) $debt;
     }
 
-    private function checkHasRealDebt($balance, $currentLapse, $currentMonthIndex): bool
+    private function checkHasRealDebt($balance, $currentLapse, $currentMonthIndex, $dayOfPayment, $gracePeriod): bool
     {
         if ($balance->inscription_status === BalanceStudentStatusEnum::Debt ||
             $balance->inscription_status === BalanceStudentStatusEnum::PartiallyPaid) {
             return true;
         }
 
-        foreach (self::MONTHS as $month) {
+        $isPastDay = now()->day >= ($dayOfPayment + $gracePeriod);
+
+        foreach (self::SCHOOL_MONTHS as $index => $month) {
             $status = $balance->{$month.'_status'};
-            if ($status === BalanceStudentStatusEnum::Debt) {
-                return true;
-            }
-            if ($status === BalanceStudentStatusEnum::PartiallyPaid) {
-                $monthIndex = array_search($month, self::SCHOOL_MONTHS);
+            if ($status === BalanceStudentStatusEnum::Debt || $status === BalanceStudentStatusEnum::PartiallyPaid) {
                 if ($currentLapse) {
                     if ($balance->school_lapse_id === $currentLapse->id) {
-                        if ($monthIndex !== false && $monthIndex < $currentMonthIndex) {
+                        if ($index < $currentMonthIndex || ($index == $currentMonthIndex && $isPastDay)) {
                             return true;
                         }
                     } elseif ($balance->schoolLapse && $balance->schoolLapse->start < $currentLapse->start) {
                         return true;
                     }
+                } else {
+                    return true;
                 }
             }
         }
