@@ -71,6 +71,7 @@ class GenerateBalance
 
         DB::table('balance_students')->insert(
             [
+                'status' => BalanceStudentStatusEnum::Debt->value,
                 'student_id' => $student->id,
                 'school_lapse_id' => $schoolLapseActive->id,
                 'inscription' => -$effectiveInscriptionPrice,
