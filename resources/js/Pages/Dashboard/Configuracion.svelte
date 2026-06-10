@@ -7,9 +7,9 @@
     import Alert from "../../components/Alert.svelte";
     import Input from "../../components/Input.svelte";
     import { displayAlert } from "../../stores/alertStore";
+    import axios from "axios";
     export let data;
 
-    
     console.log({ data });
 
     const institution = useForm({
@@ -83,6 +83,38 @@
             },
         });
     }
+
+    const initiateNextCourse = async () => {
+        const mensaje =
+            "⚠️ ¿ESTÁ SEGURO DE INICIAR EL PRÓXIMO PERIODO ESCOLAR?\n\n" +
+            "Esta acción NO se puede deshacer. Tenga en cuenta lo siguiente:\n\n" +
+            "• El periodo actual quedará finalizado (esto NO borra ninguna información).\n" +
+            "• Todas las nuevas inscripciones y movimientos financieros se registrarán bajo este nuevo ciclo.\n\n" +
+            "¿Desea continuar?";
+
+        if (!confirm(mensaje)) {
+            return;
+            // El usuario aceptó, aquí va tu lógica para iniciar el periodo
+        }
+
+        try {
+            const response = await axios.post(
+                "/dashboard/periodo-escolar/iniciar-proximo",
+            );
+            displayAlert({
+                type: "success",
+                message:
+                    response.data.message || "Próximo periodo escolar iniciado",
+            });
+        } catch (error) {
+            displayAlert({
+                type: "error",
+                message:
+                    error.response?.data?.message ||
+                    "Error al iniciar el próximo periodo escolar",
+            });
+        }
+    };
 
     let showPaymentOptions = false;
 </script>
@@ -316,89 +348,127 @@
 
     <!-- <hr class=" border-gray-300" /> -->
     <div class="flex gap-10">
-        <form
-            class="Configuracion_tarifas my-10 mb-4 py-3 min-w-[310px] max-w-[330px]"
-            id="pricesForm"
-            on:submit={updatePrices}
-        >
-            <h2 class="font-bold text-xl mb-4">Tarifas</h2>
+        <div>
+            <form
+                class="Configuracion_tarifas my-10 mb-4 py-3 min-w-[310px] max-w-[330px]"
+                id="pricesForm"
+                on:submit={updatePrices}
+            >
+                <h2 class="font-bold text-xl mb-4">Tarifas</h2>
 
-            <div class="w-full gap-10 pl-1">
-                <Input
-                    label="Inscripción ($)"
-                    type="number"
-                    required={true}
-                    bind:value={$prices.new_inscription_price}
-                />
-                <Input
-                    label="Mensualidad ($)"
-                    type="number"
-                    required={true}
-                    bind:value={$prices.monthly_payment}
-                />
-                <div class="flex gap-2">
+                <div class="w-full gap-10 pl-1">
                     <Input
-                        label="Mensualidad vence el "
+                        label="Inscripción ($)"
                         type="number"
                         required={true}
-                        bind:value={$prices.day_of_monthly_payment}
-                        min={1}
-                        max={31}
+                        bind:value={$prices.new_inscription_price}
                     />
                     <Input
-                        label="Prórroga de pago"
-                        type="number"
-                        bind:value={$prices.grace_period}
-                        min={0}
-                    />
-                </div>
-
-                <Input
-                    label="Seguro de atención primaria (AME) ($)"
-                    type="number"
-                    required={true}
-                    bind:value={$prices.ame_price}
-                />
-                <div class="relative flex items-center  ">
-                    <Input
-                        label="Plan de inversión ($)"
+                        label="Mensualidad ($)"
                         type="number"
                         required={true}
-                        bind:value={$prices.investment_plan_price}
+                        bind:value={$prices.monthly_payment}
                     />
-                    <div class="absolute right-0 top-6 group">
-                        <button type="button" tabindex="-1" class="ml-2 cursor-pointer relative">
-                            <iconify-icon icon="mdi:help-circle-outline" class="text-lg text-gray-500 hover:text-color1" />
-                            <span class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 p-2 rounded bg-black text-white text-xs opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 whitespace-pre-line">
-                                Este cobro se realiza en los meses de:
-                                noviembre, marzo y junio.
-                            </span>
-                        </button>
-
+                    <div class="flex gap-2">
+                        <Input
+                            label="Mensualidad vence el "
+                            type="number"
+                            required={true}
+                            bind:value={$prices.day_of_monthly_payment}
+                            min={1}
+                            max={31}
+                        />
+                        <Input
+                            label="Prórroga de pago"
+                            type="number"
+                            bind:value={$prices.grace_period}
+                            min={0}
+                        />
                     </div>
-                </div>
 
-                <!-- <Input
-                        label="Inscripción de regulares ($)"
+                    <Input
+                        label="Seguro de atención primaria (AME) ($)"
                         type="number"
                         required={true}
-                        bind:value={$prices.regular_inscription_price}
-                    /> -->
-                {#if $prices.isDirty}
+                        bind:value={$prices.ame_price}
+                    />
+                    <div class="relative flex items-center">
+                        <Input
+                            label="Plan de inversión ($)"
+                            type="number"
+                            required={true}
+                            bind:value={$prices.investment_plan_price}
+                        />
+                        <div class="absolute right-0 top-6 group">
+                            <button
+                                type="button"
+                                tabindex="-1"
+                                class="ml-2 cursor-pointer relative"
+                            >
+                                <iconify-icon
+                                    icon="mdi:help-circle-outline"
+                                    class="text-lg text-gray-500 hover:text-color1"
+                                />
+                                <span
+                                    class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 p-2 rounded bg-black text-white text-xs opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 whitespace-pre-line"
+                                >
+                                    Este cobro se realiza en los meses de:
+                                    noviembre, marzo y junio.
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- <Input
+                            label="Inscripción de regulares ($)"
+                            type="number"
+                            required={true}
+                            bind:value={$prices.regular_inscription_price}
+                        /> -->
+                    {#if $prices.isDirty}
+                        <button
+                            class="btn btn-green flex items-center gap-3 mb-2 mt-7 w-full"
+                            type="submit"
+                            form={"pricesForm"}
+                        >
+                            <iconify-icon
+                                icon="material-symbols:save"
+                                class="text-3xl"
+                            ></iconify-icon>
+                            <span> GUARDAR TARIFAS </span>
+                        </button>
+                    {/if}
+                </div>
+            </form>
+
+            <form
+                class="periodo my-10 mb-4 py-3 min-w-[310px] max-w-[330px]"
+            >
+                <h2 class="font-bold text-xl mb-4">Periodo Escolar</h2>
+
+                <div class="w-full gap-10 pl-1">
+                    <p>{data.schoolLapse.start} / {data.schoolLapse.end}</p>
+
+                    <!-- <Input
+                            label="Inscripción de regulares ($)"
+                            type="number"
+                            required={true}
+                            bind:value={$prices.regular_inscription_price}
+                        /> -->
                     <button
-                        class="btn btn-green flex items-center gap-3 mb-2 mt-7 w-full"
-                        type="submit"
-                        form={"pricesForm"}
+                        class="btn btn-green flex items-center gap-3 mb-2 mt-4 w-full"
+                        type="button"
+                        on:click={initiateNextCourse}
                     >
-                        <iconify-icon
-                            icon="material-symbols:save"
+                        <span> Iniciar próximo periodo </span>
+                    <iconify-icon
+                            icon="picon:next"
                             class="text-3xl"
                         ></iconify-icon>
-                        <span> GUARDAR TARIFAS </span>
                     </button>
-                {/if}
-            </div>
-        </form>
+                </div>
+            </form>
+        </div>
 
         <section class="my-10">
             <header class="flex justify-between mb-6">
@@ -491,7 +561,9 @@
                         >
                             {#if payMethod?.cash_currency}
                                 <div>
-                                    <h4 class="text-gray-500">Tipo de moneda:</h4>
+                                    <h4 class="text-gray-500">
+                                        Tipo de moneda:
+                                    </h4>
                                     <p>{payMethod.cash_currency}</p>
                                 </div>
                             {/if}

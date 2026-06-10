@@ -143,6 +143,7 @@ Gracias por su atención y apoyo continuo.`;
             { id: "previous_period", name: "Deudores del periodo anterior" },
             { id: "exempted", name: "Solo exonerados" },
             { id: "up_to_date", name: "Al día" },
+            { id: "graduated_with_debts", name: "Graduados con deudas" }
         ],
     }}
 >
