@@ -25,6 +25,7 @@ class Student extends Model
         'photo',
         'search',
         'status',
+        'graduate',
         'is_exempt',
         'exemption_percentage',
         'exemption_observations',

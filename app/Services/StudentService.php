@@ -91,6 +91,15 @@ class StudentService
             throw new \Exception('Estudiante no encontrado');
         }
 
+        if ($student->course_id == 1) { // 5to año, se gradúa
+            $student->update([
+                'graduate' => true,
+                'status' => 0,
+            ]);
+
+            return 0;
+        }
+
         $latestInscription = Inscription::where('student_id', $student->id)->latest()->first();
 
         $schoolLapse = SchoolLapse::where('id', $latestInscription->school_lapse_id)->first();

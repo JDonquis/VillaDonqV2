@@ -89,7 +89,10 @@ class PaymentService
 
         foreach ($studentsData as $studentData) {
             $student = Student::where('id', $studentData['id'])
-                ->where('status', '!=', 0)
+                ->where(function ($q) {
+                    $q->where('status', '!=', 0)
+                        ->orWhere('graduate', 1);
+                })
                 ->firstOrFail();
 
             $payment->students()->attach($studentData['id'], [

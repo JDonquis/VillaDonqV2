@@ -9,6 +9,7 @@ use App\Models\SchoolLapse;
 use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class RecalculateBalanceStatus extends Command
 {
@@ -46,6 +47,9 @@ class RecalculateBalanceStatus extends Command
      */
     public function handle()
     {
+
+        Log::info("Iniciando comando balance:recalculate-status");
+
         $this->info('Iniciando recalculación de estatus de balances...');
 
         $config = MainConfig::first();
@@ -99,18 +103,18 @@ class RecalculateBalanceStatus extends Command
                     // Meses futuros en el mismo lapso
                     if ($index > $currentMonthIndex) {
                         $newStatus = BalanceStudentStatusEnum::Pending->value;
-                    } 
+                    }
                     // Meses pasados en el mismo lapso
                     elseif ($index < $currentMonthIndex) {
                         $newStatus = BalanceStudentStatusEnum::Debt->value;
-                    } 
+                    }
                     // Mes actual
                     else {
-                        $newStatus = $isPastDueDate 
-                            ? BalanceStudentStatusEnum::Debt->value 
+                        $newStatus = $isPastDueDate
+                            ? BalanceStudentStatusEnum::Debt->value
                             : BalanceStudentStatusEnum::Pending->value;
                     }
-                } 
+                }
                 // Lapsos anteriores o sin lapso activo (todo lo pendiente es deuda)
                 elseif ($balance->schoolLapse && $balance->schoolLapse->start < ($currentLapse->start ?? $now->toDateString())) {
                     $newStatus = BalanceStudentStatusEnum::Debt->value;
@@ -121,14 +125,14 @@ class RecalculateBalanceStatus extends Command
 
                 // Si es un pago parcial (tiene deuda pero algo se ha pagado), mantenemos PartiallyPaid
                 // Nota: Asumimos que si hay deuda pero el valor es mayor a -precio_completo, es parcial.
-                // Sin embargo, para simplificar y seguir la lógica de BalanceService, 
+                // Sin embargo, para simplificar y seguir la lógica de BalanceService,
                 // solo lo cambiamos si no es ya PartiallyPaid o si el valor indica deuda total.
                 // Ajuste: Si el valor es negativo, verificamos si es deuda completa o parcial.
-                
+
                 // Obtenemos el precio efectivo para este estudiante (opcional si queremos ser muy precisos)
                 // Pero basándonos en tu requerimiento de "verificar fechas y grace period":
                 if ($currentStatus === BalanceStudentStatusEnum::PartiallyPaid->value) {
-                    // No cambiamos PartiallyPaid a Pending/Debt a menos que sea necesario, 
+                    // No cambiamos PartiallyPaid a Pending/Debt a menos que sea necesario,
                     // pero el requerimiento se enfoca en Debt vs Pending por fechas.
                 }
 
@@ -159,15 +163,15 @@ class RecalculateBalanceStatus extends Command
     {
         $statuses = [];
         if ($balance->inscription_status) {
-            $statuses[] = $balance->inscription_status instanceof BalanceStudentStatusEnum 
-                ? $balance->inscription_status->value 
+            $statuses[] = $balance->inscription_status instanceof BalanceStudentStatusEnum
+                ? $balance->inscription_status->value
                 : $balance->inscription_status;
         }
 
         foreach (self::SCHOOL_MONTHS as $month) {
             $statusField = $month . '_status';
-            $statuses[] = $balance->$statusField instanceof BalanceStudentStatusEnum 
-                ? $balance->$statusField->value 
+            $statuses[] = $balance->$statusField instanceof BalanceStudentStatusEnum
+                ? $balance->$statusField->value
                 : $balance->$statusField;
         }
 
@@ -184,8 +188,8 @@ class RecalculateBalanceStatus extends Command
         }
 
         $hasPartial = collect($statuses)->contains(fn($status) => $status === BalanceStudentStatusEnum::PartiallyPaid->value);
-        $balance->status = $hasPartial 
-            ? BalanceStudentStatusEnum::PartiallyPaid->value 
+        $balance->status = $hasPartial
+            ? BalanceStudentStatusEnum::PartiallyPaid->value
             : BalanceStudentStatusEnum::Pending->value;
     }
 }

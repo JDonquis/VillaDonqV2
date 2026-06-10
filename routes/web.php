@@ -5,6 +5,7 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MainConfigController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\SchoolLapseController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UserController;
@@ -60,6 +61,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/dashboard/pagos/{id}', [PaymentController::class, 'destroy']);
 
     Route::get('/dashboard/estados-de-cuenta', [AccountStatementController::class, 'index']);
+
+    Route::post('/dashboard/periodo-escolar/iniciar-proximo', [SchoolLapseController::class, 'startNext']);
 
     Route::get('/dashboard/configuracion', [MainConfigController::class, 'index']);
     Route::get('/dashboard/configuracion/editar-cuenta/{id}', [MainConfigController::class, 'showEditAccount']);
