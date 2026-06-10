@@ -9,6 +9,7 @@ use App\Services\MainConfigService;
 use App\Http\Requests\AccountRequest;
 use App\Http\Requests\PaymentConfigRequest;
 use App\Http\Resources\AccountPaymentResource;
+use App\Models\SchoolLapse;
 
 class MainConfigController extends Controller
 {
@@ -25,6 +26,7 @@ class MainConfigController extends Controller
         $methods = $this->mainConfigService->getMethods();
         $accounts  = $this->mainConfigService->getAccounts();
         $prices = $this->mainConfigService->getPrices();
+        $schoolLapse = SchoolLapse::where('status', 1)->first();
         return inertia(
             'Dashboard/Configuracion',
             [
@@ -33,6 +35,7 @@ class MainConfigController extends Controller
                     'prices' => $prices,
                     'accounts' => $accounts,
                     'methods' => $methods,
+                    'schoolLapse' => $schoolLapse,
                 ]
 
             ]
