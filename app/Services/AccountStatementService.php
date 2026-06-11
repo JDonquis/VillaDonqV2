@@ -88,13 +88,17 @@ class AccountStatementService
             ->join('representatives', 'students.representative_id', '=', 'representatives.id')
             ->join('users', 'representatives.user_id', '=', 'users.id')
             ->where(function ($q) use ($hasRealDebtSql, $params, $currentLapse) {
-                $q->where('students.status', '!=', 0)
-                    ->orWhere(function ($q) use ($hasRealDebtSql, $params, $currentLapse) {
-                        $q->where('students.graduate', 1)
-                            ->whereHas('balances', function($q) use ($hasRealDebtSql) {
-                                $q->whereRaw($hasRealDebtSql);
-                            });
-                    });
+                if (!empty($params['debt_filter']) && $params['debt_filter'] === 'graduated_with_debts') {
+                    $q->where('students.graduate', 1);
+                } else {
+                    $q->where('students.status', '!=', 0)
+                        ->orWhere(function ($q) use ($hasRealDebtSql) {
+                            $q->where('students.graduate', 1)
+                                ->whereHas('balances', function($q) use ($hasRealDebtSql) {
+                                    $q->whereRaw($hasRealDebtSql);
+                                });
+                        });
+                }
             })
             ->select('students.*');
 
@@ -262,6 +266,9 @@ class AccountStatementService
 
         // Debt Filter
         if (!empty($params['debt_filter'])) {
+            if ($params['debt_filter'] === 'graduated_with_debts') {
+                $query->where('students.graduate', 1);
+            }
             $this->applyDebtFilter($query, $params['debt_filter'], $hasRealDebtSql, $currentLapse);
         }
     }
@@ -269,6 +276,7 @@ class AccountStatementService
     private function applyDebtFilter($query, $debtFilter, $hasRealDebtSql, $currentLapse)
     {
         switch ($debtFilter) {
+            case 'graduated_with_debts':
             case 'debtors':
                 $query->whereRaw($hasRealDebtSql);
                 break;
