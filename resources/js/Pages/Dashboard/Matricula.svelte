@@ -306,34 +306,36 @@
 
 <Modal bind:showModal={showModalReinscribe} classes={"w-96"}>
     <form class="px-2" id="r-form" on:submit={handleSubmitReinscribe}>
-    {#if $formReinscribe.course_id != 1 } 
-        <Input
-            type="select"
-            required={true}
-            label={"Año escolar"}
-            bind:value={$formReinscribe.course_id}
-            error={$formReinscribe.errors?.course_id}
-            disabled={submitStatus == "Editar"}
-        >
-            {#each data.courses as course}
-                <option value={course.id}>{course.name}</option>
-            {/each}
-        </Input>
-        <Input
-            type="select"
-            required={true}
-            label={"Sección"}
-            bind:value={$formReinscribe.section_id}
-            error={$formReinscribe.errors?.section_id}
-        >
-            {#each data.course_sections?.data?.[`course_${$formReinscribe.course_id}`] as section}
-                <option value={section.id}>{section.name}</option>
-            {/each}
-        </Input>
-    {:else}
-        <p class="text-center p-5">Como este estudiante está en 5to año, al dar click en el botón de reinscribir quedará como graduado</p>
-    {/if}
-
+        {#if $formReinscribe.course_id == 1}
+            <p class="text-center p-5">
+                Como este estudiante está en 5to año, al dar click en el botón
+                de reinscribir quedará como graduado
+            </p>
+        {:else}
+            <Input
+                type="select"
+                required={true}
+                label={"Año escolar"}
+                bind:value={$formReinscribe.course_id}
+                error={$formReinscribe.errors?.course_id}
+                disabled={submitStatus == "Editar"}
+            >
+                {#each data.courses as course}
+                    <option value={course.id}>{course.name}</option>
+                {/each}
+            </Input>
+            <Input
+                type="select"
+                required={true}
+                label={"Sección"}
+                bind:value={$formReinscribe.section_id}
+                error={$formReinscribe.errors?.section_id}
+            >
+                {#each data.course_sections?.data?.[`course_${$formReinscribe.course_id}`] as section}
+                    <option value={section.id}>{section.name}</option>
+                {/each}
+            </Input>
+        {/if}
     </form>
     <button
         form="r-form"
@@ -802,24 +804,25 @@
                 }}
             >
                 <td>{i + 1}</td>
-                <td >
-                        <div class="relative max-w-fit">
-                            <span>
-                                {row.student_name}
-                            </span>
-                            {#if row.is_exempt}
-                                <div class="text-purple font-bold absolute -bottom-3 left-0 flex items-center gap-1 text-xs">
-                                    <iconify-icon
-                                        icon="mdi:shield-check"
-                                        class="text-purple mr-1"
-                                    />
-                                    <small>
-                                        {row.exemption_percentage}%
-                                    </small>
-                                </div>
-                            {/if}
-
-                        </div>    
+                <td>
+                    <div class="relative max-w-fit">
+                        <span>
+                            {row.student_name}
+                        </span>
+                        {#if row.is_exempt}
+                            <div
+                                class="text-purple font-bold absolute -bottom-3 left-0 flex items-center gap-1 text-xs"
+                            >
+                                <iconify-icon
+                                    icon="mdi:shield-check"
+                                    class="text-purple mr-1"
+                                />
+                                <small>
+                                    {row.exemption_percentage}%
+                                </small>
+                            </div>
+                        {/if}
+                    </div>
                 </td>
                 <td>{row.student_last_name}</td>
                 <td>{row.student_ci}</td>
