@@ -417,7 +417,7 @@
                         label={"Tipo"}
                         bind:value={$form.student_document_type}
                         error={$form.errors?.student_document_type}
-                        classes={"w-[80px] "}
+                        classes={"max-w-[70px] "}
                     >
                         <option value="E">E</option>
                         <option value="V">V</option>
@@ -558,7 +558,7 @@
                         label={"Tipo"}
                         bind:value={$form.rep_document_type}
                         error={$form.errors?.rep_document_type}
-                        classes={"w-[80px] "}
+                       classes={"max-w-[70px] "}
                     >
                         <option value="E">E</option>
                         <option value="V">V</option>
@@ -652,7 +652,7 @@
                         label={"Tipo"}
                         bind:value={$form.second_rep_document_type}
                         error={$form.errors?.second_rep_document_type}
-                        classes={"w-[80px] "}
+                       classes={"max-w-[70px] "}
                     >
                         <option value="E">E</option>
                         <option value="V">V</option>

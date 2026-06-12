@@ -105,20 +105,20 @@
     };
 
     const monthsCalendar = {
-        "january": 0,
-        "february": 1,
-        "march": 2,
-        "april": 3,
-        "may": 4,
-        "june": 5,
-        "july": 6,
-        "august": 7,
-        "september": 8,
-        "october": 9,
-        "november": 10,
-        "december": 11,
+        january: 0,
+        february: 1,
+        march: 2,
+        april: 3,
+        may: 4,
+        june: 5,
+        july: 6,
+        august: 7,
+        september: 8,
+        october: 9,
+        november: 10,
+        december: 11,
     };
-    
+
     export let balances;
     export let amountToPay = 0;
     export let classes = "";
@@ -129,59 +129,56 @@
     let tooltipPayments = [];
     let tooltipStyle = "";
     let tooltipHideTimeout;
- 
 
     // $: console.log("Balances actualizados:", balances);
 
+    // Obtener el año actual y el día actual para la comparación histórica
+    const currentMonth = new Date().getMonth(); // 0-11
+    const currentYear = new Date().getFullYear();
+    const currentDay = new Date().getDate();
 
-// Obtener el año actual y el día actual para la comparación histórica
-const currentMonth = new Date().getMonth(); // 0-11
-const currentYear = new Date().getFullYear();
-const currentDay = new Date().getDate();
+    function checkIfMonthIsExpired(monthName) {
+        // 1. Obtener el número de mes (0-11) desde tu objeto monthsCalendar
+        const monthIndex = monthsCalendar[monthName];
 
-function checkIfMonthIsExpired(monthName) {
-    // 1. Obtener el número de mes (0-11) desde tu objeto monthsCalendar
-    const monthIndex = monthsCalendar[monthName]; 
-    
-    // 2. Si el mes es menor al mes actual, ya pasó de forma estricta
-    if (monthIndex < currentMonth) return true;
-    
-    // 3. Si el mes es mayor al mes actual, definitivamente no ha vencido
-    if (monthIndex > currentMonth) return false;
-    
-    // 4. Si es el mes actual, calculamos el día de vencimiento real
-    // Ejemplo: vence el 30 + 5 días de prórroga = día 35 (es decir, el 5 del siguiente mes)
-    const expirationDay = dayOfPayment + gracePeriod;
-    
-    // Si el día de vencimiento se pasa del mes actual (ej: día 35)
-    if (expirationDay > 30) { 
-        // Como el vencimiento cae en el siguiente mes, en el mes actual NUNCA estará vencido
-        return false; 
+        // 2. Si el mes es menor al mes actual, ya pasó de forma estricta
+        if (monthIndex < currentMonth) return true;
+
+        // 3. Si el mes es mayor al mes actual, definitivamente no ha vencido
+        if (monthIndex > currentMonth) return false;
+
+        // 4. Si es el mes actual, calculamos el día de vencimiento real
+        // Ejemplo: vence el 30 + 5 días de prórroga = día 35 (es decir, el 5 del siguiente mes)
+        const expirationDay = dayOfPayment + gracePeriod;
+
+        // Si el día de vencimiento se pasa del mes actual (ej: día 35)
+        if (expirationDay > 30) {
+            // Como el vencimiento cae en el siguiente mes, en el mes actual NUNCA estará vencido
+            return false;
+        }
+
+        // Si el vencimiento cae dentro del mismo mes, comparamos con el día actual
+        return currentDay > expirationDay;
     }
-    
-    // Si el vencimiento cae dentro del mismo mes, comparamos con el día actual
-    return currentDay > expirationDay;
-}
 
     export let id = "";
-    const firstUnpaidMonth = balances[0].status != "pending" ? Object.entries(months).findIndex(
-        ([spanisMonth, monthName]) => {
-            const status = balances[0]?.[`${monthName}_status`];
-            return status === "debt" || status === "partially_paid" ;
-        },
-    ) :  Object.entries(months).findIndex(
-        ([spanisMonth, monthName]) => {
-            const status = balances[0]?.[`${monthName}_status`];
-            return status == "pending" ;
-        },
-    );
+    const firstUnpaidMonth =
+        balances[0].status != "pending"
+            ? Object.entries(months).findIndex(([spanisMonth, monthName]) => {
+                  const status = balances[0]?.[`${monthName}_status`];
+                  return status === "debt" || status === "partially_paid";
+              })
+            : Object.entries(months).findIndex(([spanisMonth, monthName]) => {
+                  const status = balances[0]?.[`${monthName}_status`];
+                  return status == "pending";
+              });
 
     let startPointToPay = {
         school_lapse_index: 0,
-        month: firstUnpaidMonth , // Si no hay deudas, cae al primer mes por defecto
+        month: firstUnpaidMonth, // Si no hay deudas, cae al primer mes por defecto
     };
 
-    console.log({firstUnpaidMonth}, balances[0])
+    console.log({ firstUnpaidMonth }, balances[0]);
 
     // $: console.log(firstUnpaidMonth);
     let payingBalances = [{}];
@@ -288,7 +285,6 @@ function checkIfMonthIsExpired(monthName) {
             </p>
 
             <div class="flex items-center gap-1 text-xs">
-                
                 <p>Deuda:</p>
                 <b>
                     ${Math.abs(
@@ -296,7 +292,7 @@ function checkIfMonthIsExpired(monthName) {
                             if (
                                 (balance[month] < 0 &&
                                     balance[month + "_status"] == "debt") ||
-                                balance[month + "_status"] == "partially_paid" 
+                                balance[month + "_status"] == "partially_paid"
                             ) {
                                 total += balance[month];
                             }
@@ -324,72 +320,85 @@ function checkIfMonthIsExpired(monthName) {
         </div>
 
         {#if is_exempt < 100}
-        <div class="grid p-0 grid-cols-12 border-2 border-black">
-            <div
-                class={` hover:brightness-125  relative col-span-1 z-10  text-xs capitalize  text-center font-bold ${balance.inscription < 0 ? "bg-red" : "bg-green"} text-black  p-1`}
-                 on:mouseenter={(e) =>
-                            balance.balance_payments.inscription
-                                ? showBalancePaymentsTooltip(
-                                      e,
-                                      balance.balance_payments.inscription,
-                                  )
-                                : null}
-                        on:mouseleave={scheduleTooltipHide}
-            >
-                <span> Inscr. </span>
-
-                <p>
-                    {Math.abs(balance.inscription) > 0
-                        ? "$" + Math.abs(balance.inscription)
-                        : ""}
-                </p>
-
+            <div class="grid p-0 grid-cols-12 border-2 border-black">
                 <div
-                    class={`absolute top-0.5 left-0  h-[95%] z-40 ${payingBalances[indexYear]?.balanceInscription > 0 ? "bg-purple/30 border-y-4 border-black/50 border" : ""}`}
-                    style={payingBalances[indexYear]?.balanceInscription > 0
-                        ? `width: ${(payingBalances[indexYear]?.balanceInscription / Math.abs(balance.inscription)) * 100}%`
-                        : ""}
-                ></div>
-            </div>
-            <div class="col-span-11 grid grid-cols-12"> 
-                {#each Object.entries(months) as [spanishLabel, month], indexMonth}
-    <div
-        class={`group/month hover:brightness-110 border-l-2 border-l-gray-200 relative col-span-1 text-xs capitalize text-center font-bold p-1 text-black
+                    class={` hover:brightness-125  relative col-span-1 z-10  text-xs text-black  p-1 capitalize  text-center font-bold
+                 ${balance.inscription_status === "pending" ? "bg-red" : ""}
+            ${balance.inscription_status === "paid" ? "bg-green" : ""}
+            ${balance.inscription_status === "partially_paid" ? "bg-yellow" : ""}`}
+                    on:mouseenter={(e) =>
+                        balance.balance_payments.inscription
+                            ? showBalancePaymentsTooltip(
+                                  e,
+                                  balance.balance_payments.inscription,
+                              )
+                            : null}
+                    on:mouseleave={scheduleTooltipHide}
+                >
+                    <span> Inscr. </span>
+
+                    <p>
+                        {Math.abs(balance.inscription) > 0
+                            ? "$" + Math.abs(balance.inscription)
+                            : ""}
+                    </p>
+
+                    <div
+                        class={`absolute top-0.5 left-0  h-[95%] z-40 ${payingBalances[indexYear]?.balanceInscription > 0 ? "bg-purple/30 border-y-4 border-black/50 border" : ""}`}
+                        style={payingBalances[indexYear]?.balanceInscription > 0
+                            ? `width: ${(payingBalances[indexYear]?.balanceInscription / Math.abs(balance.inscription)) * 100}%`
+                            : ""}
+                    ></div>
+                </div>
+                <div class="col-span-11 grid grid-cols-12">
+                    {#each Object.entries(months) as [spanishLabel, month], indexMonth}
+                        <div
+                            class={`group/month hover:brightness-110 border-l-2 border-l-gray-200 relative col-span-1 text-xs capitalize text-center font-bold p-1 text-black
             ${balance[month + "_status"] === "debt" ? "bg-red" : ""}
             ${balance[month + "_status"] === "paid" ? "bg-green" : ""}
             ${balance[month + "_status"] === "partially_paid" ? (checkIfMonthIsExpired(month) ? "bg-yellow" : "bg-blue") : ""}
             ${!balance[month + "_status"] ? "bg-gray-50" : ""}
         `}
-        title={balance[month + "_status"] == "pending" ? "Pendiente de pago: $" + Math.abs(balance[month]) : "" }
-        on:mouseenter={(e) =>
-            balance.balance_payments?.[month]
-                ? showBalancePaymentsTooltip(e, balance.balance_payments[month])
-                : null}
-        on:mouseleave={scheduleTooltipHide}
-    >
-        <div class="z-40">
-            {spanishLabel}
-        </div>
-        <p>
-            {#if balance[month + "_status"] == "debt" || balance[month + "_status"] == "partially_paid"}
-                ${Math.abs(balance[month])}
-            {/if}
-        </p>
-        
-        <!-- El resto de tu div de progreso (months_to_pay) se queda exactamente igual -->
-        <div
-            class={`text-xs months_to_pay absolute top-0.5 left-0 w-full text-black h-[95%] z-40 
+                            title={balance[month + "_status"] == "pending"
+                                ? "Pendiente de pago: $" +
+                                  Math.abs(balance[month])
+                                : ""}
+                            on:mouseenter={(e) =>
+                                balance.balance_payments?.[month]
+                                    ? showBalancePaymentsTooltip(
+                                          e,
+                                          balance.balance_payments[month],
+                                      )
+                                    : null}
+                            on:mouseleave={scheduleTooltipHide}
+                        >
+                            <div class="z-40">
+                                {spanishLabel}
+                            </div>
+                            <p>
+                                {#if balance[month + "_status"] == "debt" || balance[month + "_status"] == "partially_paid"}
+                                    ${Math.abs(balance[month])}
+                                {/if}
+                            </p>
+
+                            <!-- El resto de tu div de progreso (months_to_pay) se queda exactamente igual -->
+                            <div
+                                class={`text-xs months_to_pay absolute top-0.5 left-0 w-full text-black h-[95%] z-40 
             ${indexMonth === startPointToPay.month && startPointToPay.school_lapse_index == +indexYear && amountToPay > Math.abs(balance[month]) ? "border-l-4 border-black/50" : ""} 
             ${indexMonth === endPointToPay.endMonthIndex - 1 && endPointToPay.endYearIndex == +indexYear && amountToPay > 0 ? "border-r-4 border-black/50" : ""}
             ${startPointToPay.school_lapse_index <= indexYear && payingBalances[indexYear]?.startMonth <= indexMonth && indexMonth <= payingBalances[indexYear]?.endMonthIndex ? "bg-purple/30 border-y-4 border-black/50" : ""}`}
-            style={((indexMonth == endPointToPay.endMonthIndex - 1 && endPointToPay.endYearIndex == +indexYear) || indexMonth == 11) && endPointToPay.partialToPay > 0
-                ? `width: ${(endPointToPay.partialToPay / Math.abs(balance[month])) * 100}%`
-                : ""}
-        ></div>
-    </div>
-{/each}
+                                style={((indexMonth ==
+                                    endPointToPay.endMonthIndex - 1 &&
+                                    endPointToPay.endYearIndex == +indexYear) ||
+                                    indexMonth == 11) &&
+                                endPointToPay.partialToPay > 0
+                                    ? `width: ${(endPointToPay.partialToPay / Math.abs(balance[month])) * 100}%`
+                                    : ""}
+                            ></div>
+                        </div>
+                    {/each}
+                </div>
             </div>
-        </div>
         {/if}
     {/each}
 
@@ -400,13 +409,21 @@ function checkIfMonthIsExpired(monthName) {
             on:mouseenter={() => clearTimeout(tooltipHideTimeout)}
             on:mouseleave={scheduleTooltipHide}
         >
-            <iconify-icon icon="teenyicons:up-solid" width="14" height="14" class="text-dark  absolute -top-2 z-10 inset-x-0 mx-auto w-max " />
+            <iconify-icon
+                icon="teenyicons:up-solid"
+                width="14"
+                height="14"
+                class="text-dark absolute -top-2 z-10 inset-x-0 mx-auto w-max"
+            />
             {#each tooltipPayments as payment}
-                <div class="flex flex-col gap-0.5 items-center mb-2 p-1 relative">
+                <div
+                    class="flex flex-col gap-0.5 items-center mb-2 p-1 relative"
+                >
                     <p class="text-xs">{payment.payment.date}</p>
                     <div class="flex items-center gap-1">
-                        <p class="text-sm">Total: ${payment.payment.total_in_dolars}</p
-                        >
+                        <p class="text-sm">
+                            Total: ${payment.payment.total_in_dolars}
+                        </p>
                         <p class="text-xs">Ref: {payment.payment.reference}</p>
                     </div>
                     <p class="text-sm font-bold">Abonado: ${payment.amount}</p>

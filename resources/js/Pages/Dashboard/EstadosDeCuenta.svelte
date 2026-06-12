@@ -4,6 +4,7 @@
     import Table from "../../components/Table.svelte";
     import html2canvas from "html2canvas";
     import { page } from "@inertiajs/svelte";
+    import { displayAlert } from "../../stores/alertStore";
 
     export let data = [];
     export let config;
