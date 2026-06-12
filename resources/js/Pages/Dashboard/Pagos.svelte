@@ -19,7 +19,7 @@
     export let config = {
         day_of_monthly_payment: 0,
         grace_period: 0,
-    }
+    };
 
     export let searched_students = [];
     let isSearchTableOpen = false;
@@ -78,31 +78,28 @@
     });
     $: console.log($form);
     function handleSubmit(event) {
-
         if (submitStatus === "Solo lectura") {
             return;
-         }
+        }
         event.preventDefault();
         $form.clearErrors();
- 
-            $form.post("/dashboard/pagos", {
-                onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
-                    }
-                },
-                onSuccess: (mensaje) => {
-                    $form.reset();
-                    displayAlert({
-                        type: "success",
-                        message: "Ok todo salió bien",
-                    });
-                    showModal = false;
-                },
-            });
-            
-    }
 
+        $form.post("/dashboard/pagos", {
+            onError: (errors) => {
+                if (errors.data) {
+                    displayAlert({ type: "error", message: errors.data });
+                }
+            },
+            onSuccess: (mensaje) => {
+                $form.reset();
+                displayAlert({
+                    type: "success",
+                    message: "Ok todo salió bien",
+                });
+                showModal = false;
+            },
+        });
+    }
 
     const search_student = debounce(async (search_text) => {
         isSearchTableOpen = search_text.length > 0;
@@ -142,7 +139,10 @@
 
     function handleDelete(id) {
         if (selectedRow.data?.status == 0) {
-            displayAlert({ type: "error", message: "Este pago ya ha sido eliminado" });
+            displayAlert({
+                type: "error",
+                message: "Este pago ya ha sido eliminado",
+            });
             return;
         }
         $form.delete(`/dashboard/pagos/${id}`, {
@@ -157,8 +157,8 @@
                     type: "success",
                     message: "Pago eliminado correctamente",
                 });
-                 selectedRow = { status: false, data: null };
-            }
+                selectedRow = { status: false, data: null };
+            },
         });
     }
 
@@ -202,7 +202,7 @@
             amount_in_dolars: s.pivot?.amount_in_dolars,
             amount_in_bs: s.pivot?.amount_in_bs,
         }));
-        $form.date =  new Date(selectedData.date).toISOString().split("T")[0];
+        $form.date = new Date(selectedData.date).toISOString().split("T")[0];
         // $form.reported_date = new Date(selectedData?.reported_date)?.toISOString().split("T")[0] || null;
         $form.account_payment_id = selectedData.account_payment_id;
         $form.total_in_dolars = selectedData.total_in_dolars;
@@ -217,17 +217,18 @@
         // $form.total_in_dolars = $form.total_in_bs / dolarPrice;
     }
 
-    const getBalanceByStudentId = async(studentId) => {
-         try {
+    const getBalanceByStudentId = async (studentId) => {
+        try {
             const response = await axios.get(
-                `/dashboard/pagos/search-student`, {
+                `/dashboard/pagos/search-student`,
+                {
                     params: { id: studentId },
-                }
+                },
             );
-            console.log(response.data)
+            console.log(response.data);
             return response.data;
         } catch (error) {
-            console.log(error)
+            console.log(error);
             return [];
         }
     };
@@ -304,6 +305,8 @@
                                             balances: student.balances || [],
                                             last_name: student.last_name,
                                             ci: student.ci,
+                                            document_type:
+                                                student.document_type,
                                             course_name: student.course.name,
                                             section_name: student.section.name,
                                             legal_rep_name:
@@ -323,8 +326,12 @@
                             <td>{student.name} {student.last_name}</td>
                             <td>{student.ci}</td>
                             <td
-                                >{student.course.name} - {student.section
-                                    .name}</td
+                                >C.I:
+                                {#if student.document_type}
+                                    <span style=" padding: 0 "
+                                        >{student.document_type}-</span
+                                    >
+                                {/if}{student.ci}</td
                             >
                             <td
                                 >{student.representative.user.name}
@@ -363,7 +370,7 @@
                                         min="0"
                                         placeholder="Dólares"
                                         step="0.01"
-                                        class="w-20  border-3 py-2 px-2 border- small-shadow focus:outline-0"
+                                        class="w-20 border-3 py-2 px-2 border- small-shadow focus:outline-0"
                                         value={student.amount_in_dolars || ""}
                                         on:input={(e) => {
                                             $form.students[i] = {
@@ -441,7 +448,13 @@
                                     </span>
                                 </div>
                             </td>
-                            <td>C.I:{student.ci}</td>
+                            <td
+                                >C.I:
+                                {#if student.document_type}
+                                    <span>{student.document_type}-</span>
+                                {/if}
+                                {student.ci}</td
+                            >
                             <td>
                                 {student.course_name}-{student.section_name}
                             </td>
@@ -476,14 +489,16 @@
                         </tr>
                         <tr class=" ">
                             <td colspan="7" class="px-3 pb-10">
-                            {#if submitStatus !== "Solo lectura"}
-                                <BalanceBar
-                                    balances={student.balances}
-                                    amountToPay={student.amount_in_dolars}
-                                    is_exempt={student.is_exempt ? student.exemption_percentage : false}
-                                    dayOfPayment={config.day_of_monthly_payment}
-                                    gracePeriod={config.grace_period}
-                                />
+                                {#if submitStatus !== "Solo lectura"}
+                                    <BalanceBar
+                                        balances={student.balances}
+                                        amountToPay={student.amount_in_dolars}
+                                        is_exempt={student.is_exempt
+                                            ? student.exemption_percentage
+                                            : false}
+                                        dayOfPayment={config.day_of_monthly_payment}
+                                        gracePeriod={config.grace_period}
+                                    />
                                 {/if}
                             </td>
                         </tr>
@@ -585,8 +600,7 @@
                     {/if}
                 </button>
             </div>
-        
-         {/if}
+        {/if}
     </form>
 </Modal>
 
@@ -673,7 +687,7 @@
         }
         handleDelete(selectedRow.data?.id);
     }}
-     otherSelectOptions={[
+    otherSelectOptions={[
         {
             label: "Ver detalles",
             icon: "mdi:eye",
@@ -726,6 +740,9 @@
                                 {student.last_name}
                                 <span class="text-gray-500">
                                     | C.I:
+                                    {#if student.document_type}
+                                        <span>{student.document_type}-</span>
+                                    {/if}
                                     {student.ci}
                                     | {student.course.name}-{student.section
                                         .name}

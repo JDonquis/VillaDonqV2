@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,6 +17,7 @@ class StudentResource extends JsonResource
     {
         return
             [
+                'student_document_type' => $this->document_type,
                 'student_id' => $this->id,
                 'student_name' => $this->name,
                 'student_last_name' => $this->last_name,
@@ -37,12 +39,14 @@ class StudentResource extends JsonResource
                 'rep_phone_number' => $this->representative->user->phone_number,
                 'rep_email' => $this->representative->user->email ?? null,
                 'rep_relationship' => $this->representative->relationship ?? null,
+                'rep_document_type' => $this->representative->document_type ?? null,
                 'second_rep_relationship' => $this->representative->second_representative_relationship ?? null,
                 'second_rep_name' => $this->representative->second_representative_name ?? null,
                 'second_rep_last_name' => $this->representative->second_representative_last_name ?? null,
                 'second_rep_ci' => $this->representative->second_representative_ci ?? null,
                 'second_rep_phone_number' => $this->representative->second_representative_phone_number ?? null,
                 'second_rep_email' => $this->representative->second_representative_email ?? null,
+                'second_rep_document_type' => $this->representative->second_document_type ?? null,
                 'is_exempt' => $this->is_exempt,
                 'exemption_percentage' => $this->exemption_percentage,
                 'exemption_observations' => $this->exemption_observations,
@@ -53,9 +57,9 @@ class StudentResource extends JsonResource
 
     private function getAge($dateOfBirth)
     {
-        $today = date('Y-m-d');
-        $diff = date_diff(date_create($dateOfBirth), date_create($today));
+        $today = Carbon::now();
+        $diff = $today->diffInYears($dateOfBirth);
 
-        return $diff->format('%y');
+        return $diff;
     }
 }

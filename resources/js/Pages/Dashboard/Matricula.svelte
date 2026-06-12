@@ -43,6 +43,7 @@
         student_date_birth: "",
         student_email: "",
         student_ci: "",
+        student_document_type: "V",
         student_phone_number: "",
         course_id: 1,
         section_id: "",
@@ -54,14 +55,18 @@
         rep_name: "",
         rep_last_name: "",
         rep_ci: "",
+        rep_document_type: "V",
         rep_phone_number: "",
+        rep_phone_number2: "",
         rep_email: generarCorreoAleatorio(),
         rep_profession: "",
         rep_workplace: "",
         second_rep_name: "",
         second_rep_last_name: "",
         second_rep_ci: "",
+        second_rep_document_type: "V",
         second_rep_phone_number: "",
+        second_rep_phone_number2: "",
         second_rep_email: "",
         second_rep_profession: "",
         second_rep_workplace: "",
@@ -170,6 +175,7 @@
         $form.student_date_birth = student.student_date_birth;
         $form.student_email = student.student_email;
         $form.student_ci = student.student_ci;
+        $form.student_document_type = student.student_document_type;
         $form.student_phone_number = student.student_phone_number;
         $form.course_id = student.course_id;
         $form.section_id = student.section_id;
@@ -181,7 +187,9 @@
         $form.rep_name = student.rep_name;
         $form.rep_last_name = student.rep_last_name;
         $form.rep_ci = student.rep_ci;
+        $form.rep_document_type = student.rep_document_type;
         $form.rep_phone_number = student.rep_phone_number;
+        $form.rep_phone_number2 = student.rep_phone_number2;
         $form.rep_email = student.rep_email;
         $form.rep_profession = student.rep_profession;
         $form.rep_workplace = student.rep_workplace;
@@ -189,7 +197,9 @@
         $form.second_rep_name = student.second_rep_name;
         $form.second_rep_last_name = student.second_rep_last_name;
         $form.second_rep_ci = student.second_rep_ci;
+        $form.second_rep_document_type = student.second_rep_document_type;
         $form.second_rep_phone_number = student.second_rep_phone_number;
+        $form.second_rep_phone_number2 = student.second_rep_phone_number2;
         $form.second_rep_email = student.second_rep_email;
         $form.second_rep_profession = student.second_rep_profession;
         $form.second_rep_workplace = student.second_rep_workplace;
@@ -279,6 +289,9 @@
                 `/dashboard/matricula/search-representative/${ci}`,
             );
             const rep = response.data;
+            if (!rep.rep_id) {
+                return;
+            }
             $form.rep_name = rep.rep_name;
             $form.rep_last_name = rep.rep_last_name;
             $form.rep_phone_number = rep.rep_phone_number;
@@ -306,34 +319,36 @@
 
 <Modal bind:showModal={showModalReinscribe} classes={"w-96"}>
     <form class="px-2" id="r-form" on:submit={handleSubmitReinscribe}>
-    {#if $formReinscribe.course_id != 1 } 
-        <Input
-            type="select"
-            required={true}
-            label={"Año escolar"}
-            bind:value={$formReinscribe.course_id}
-            error={$formReinscribe.errors?.course_id}
-            disabled={submitStatus == "Editar"}
-        >
-            {#each data.courses as course}
-                <option value={course.id}>{course.name}</option>
-            {/each}
-        </Input>
-        <Input
-            type="select"
-            required={true}
-            label={"Sección"}
-            bind:value={$formReinscribe.section_id}
-            error={$formReinscribe.errors?.section_id}
-        >
-            {#each data.course_sections?.data?.[`course_${$formReinscribe.course_id}`] as section}
-                <option value={section.id}>{section.name}</option>
-            {/each}
-        </Input>
-    {:else}
-        <p class="text-center p-5">Como este estudiante está en 5to año, al dar click en el botón de reinscribir quedará como graduado</p>
-    {/if}
-
+        {#if $formReinscribe.course_id != 1}
+            <Input
+                type="select"
+                required={true}
+                label={"Año escolar"}
+                bind:value={$formReinscribe.course_id}
+                error={$formReinscribe.errors?.course_id}
+                disabled={submitStatus == "Editar"}
+            >
+                {#each data.courses as course}
+                    <option value={course.id}>{course.name}</option>
+                {/each}
+            </Input>
+            <Input
+                type="select"
+                required={true}
+                label={"Sección"}
+                bind:value={$formReinscribe.section_id}
+                error={$formReinscribe.errors?.section_id}
+            >
+                {#each data.course_sections?.data?.[`course_${$formReinscribe.course_id}`] as section}
+                    <option value={section.id}>{section.name}</option>
+                {/each}
+            </Input>
+        {:else}
+            <p class="text-center p-5">
+                Como este estudiante está en 5to año, al dar click en el botón
+                de reinscribir quedará como graduado
+            </p>
+        {/if}
     </form>
     <button
         form="r-form"
@@ -396,19 +411,33 @@
                     bind:value={$form.student_email}
                     error={$form.errors?.student_email}
                 />
-                <Input
-                    type="number"
-                    required={true}
-                    label={"Cédula"}
-                    bind:value={$form.student_ci}
-                    error={$form.errors?.student_ci}
-                />
+                <div class=" flex items-center gap-2">
+                    <Input
+                        type="select"
+                        label={"Tipo"}
+                        bind:value={$form.student_document_type}
+                        error={$form.errors?.student_document_type}
+                        classes={"w-[80px] "}
+                    >
+                        <option value="E">E</option>
+                        <option value="V">V</option>
+                    </Input>
+                    <Input
+                        type="number"
+                        required={true}
+                        label={"Cédula"}
+                        bind:value={$form.student_ci}
+                        error={$form.errors?.student_ci}
+                        classes="w-[78%]  "
+                    />
+                </div>
                 <Input
                     type="tel"
                     label={"Teléfono"}
                     bind:value={$form.student_phone_number}
                     error={$form.errors?.student_phone_number}
                 />
+
                 <Input
                     type="select"
                     label={"Sexo"}
@@ -447,6 +476,12 @@
                     label={"Colegio de procedencia"}
                     bind:value={$form.student_previous_school}
                     error={$form.errors?.student_previous_school}
+                />
+                <Input
+                    type="textarea"
+                    label={"Dirección"}
+                    bind:value={$form.address}
+                    error={$form.errors?.address}
                 />
             </fieldset>
             <fieldset
@@ -517,14 +552,28 @@
                 <legend class="text-center px-5 font-bold rounded-sm bg"
                     >REPRESENTANTE LEGAL</legend
                 >
-                <Input
-                    type="number"
-                    required={true}
-                    label={"Cédula"}
-                    bind:value={$form.rep_ci}
-                    error={$form.errors?.rep_ci}
-                    on:input={(e) => search_rep1(e.target.value)}
-                />
+                <div class=" flex items-center gap-2">
+                    <Input
+                        type="select"
+                        label={"Tipo"}
+                        bind:value={$form.rep_document_type}
+                        error={$form.errors?.rep_document_type}
+                        classes={"w-[80px] "}
+                    >
+                        <option value="E">E</option>
+                        <option value="V">V</option>
+                    </Input>
+                    <Input
+                        type="number"
+                        required={true}
+                        label={"Cédula"}
+                        bind:value={$form.rep_ci}
+                        error={$form.errors?.rep_ci}
+                        classes="w-[78%]  "
+                        on:input={(e) => search_rep1(e.target.value)}
+                    />
+                </div>
+
                 <Input
                     type="text"
                     required={true}
@@ -567,6 +616,13 @@
                     bind:value={$form.rep_phone_number}
                     error={$form.errors?.rep_phone_number}
                 />
+                <Input
+                    type="tel"
+                    required={false}
+                    label={"Teléfono 2"}
+                    bind:value={$form.rep_phone_number2}
+                    error={$form.errors?.rep_phone_number2}
+                />
 
                 <!-- <Input
                     type="text"
@@ -590,13 +646,26 @@
                     >SEGUNDO REPRESENTANTE</legend
                 >
 
-                <Input
-                    type="number"
-                    label={"Cédula"}
-                    bind:value={$form.second_rep_ci}
-                    error={$form.errors?.second_rep_ci}
-                    on:input={() => console.log("2")}
-                />
+                <div class=" flex items-center gap-2">
+                    <Input
+                        type="select"
+                        label={"Tipo"}
+                        bind:value={$form.second_rep_document_type}
+                        error={$form.errors?.second_rep_document_type}
+                        classes={"w-[80px] "}
+                    >
+                        <option value="E">E</option>
+                        <option value="V">V</option>
+                    </Input>
+                    <Input
+                        type="number"
+                        label={"Cédula"}
+                        bind:value={$form.second_rep_ci}
+                        error={$form.errors?.second_rep_ci}
+                        classes="w-[78%]  "
+                        on:input={(e) => search_rep1(e.target.value)}
+                    />
+                </div>
                 <Input
                     type="text"
                     label={"Nombres"}
@@ -636,6 +705,12 @@
                     error={$form.errors?.second_rep_phone_number}
                 />
 
+                <Input
+                    type="tel"
+                    label={"Teléfono 2"}
+                    bind:value={$form.second_rep_phone_number2}
+                    error={$form.errors?.second_rep_phone_number2}
+                />
                 <!-- <Input
                     type="text"
                     label={"Profesión"}
@@ -651,33 +726,6 @@
                 /> -->
             </fieldset>
         </div>
-        <!-- <fieldset
-            class="px-5 bg-gray-50 mt-4 grid grid-cols-2 gap-x-10  w-full border md:p-9 pt-2  "
-        >
-            <legend
-                class="text-center px-5 py-1 rounded-sm bg-color2 text-gray-100"
-                >DIRECCION DE HABITACION</legend
-            >
-            <Input
-                type="text"
-                label={"Estado"}
-                bind:value={$form.state}
-                error={$form.errors?.state}
-            />
-            <Input
-                type="text"
-                label={"Ciudad"}
-                bind:value={$form.city}
-                error={$form.errors?.city}
-            />
-            <Input
-                type="textarea"
-                label={"Dirección específica"}
-                bind:value={$form.address}
-                error={$form.errors?.address}
-                classes="col-span-2"
-            />
-        </fieldset> -->
     </form>
     <button
         form="a-form"
@@ -802,27 +850,35 @@
                 }}
             >
                 <td>{i + 1}</td>
-                <td >
-                        <div class="relative max-w-fit">
-                            <span>
-                                {row.student_name}
-                            </span>
-                            {#if row.is_exempt}
-                                <div class="text-purple font-bold absolute -bottom-3 left-0 flex items-center gap-1 text-xs">
-                                    <iconify-icon
-                                        icon="mdi:shield-check"
-                                        class="text-purple mr-1"
-                                    />
-                                    <small>
-                                        {row.exemption_percentage}%
-                                    </small>
-                                </div>
-                            {/if}
-
-                        </div>    
+                <td>
+                    <div class="relative max-w-fit">
+                        <span>
+                            {row.student_name}
+                        </span>
+                        {#if row.is_exempt}
+                            <div
+                                class="text-purple font-bold absolute -bottom-3 left-0 flex items-center gap-1 text-xs"
+                            >
+                                <iconify-icon
+                                    icon="mdi:shield-check"
+                                    class="text-purple mr-1"
+                                />
+                                <small>
+                                    {row.exemption_percentage}%
+                                </small>
+                            </div>
+                        {/if}
+                    </div>
                 </td>
                 <td>{row.student_last_name}</td>
-                <td>{row.student_ci}</td>
+                <td>
+                    <span class="">
+                        C.I: {#if row.student_document_type}
+                            <span>{row.student_document_type}-</span>
+                        {/if}
+                        {row.student_ci}
+                    </span>
+                </td>
                 <td>{row.student_sex}</td>
                 <td>{row.student_age}</td>
                 <td>{row.rep_name} {row.rep_last_name}</td>

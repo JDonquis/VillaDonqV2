@@ -28,7 +28,14 @@ class PaymentService
                         ->orWhereHas('students', function ($q) use ($search) {
                             $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%'])
                                 ->orWhere('name', 'like', '%' . $search . '%')
-                                ->orWhere('last_name', 'like', '%' . $search . '%');
+                                ->orWhere('last_name', 'like', '%' . $search . '%')
+                                ->orWhere('ci', 'like', '%' . $search . '%')
+                                ->orWhereHas('representative.user', function ($q) use ($search) {
+                                    $q->whereRaw("CONCAT(name, ' ', last_name) LIKE ?", ['%' . $search . '%'])
+                                        ->orWhere('name', 'like', '%' . $search . '%')
+                                        ->orWhere('last_name', 'like', '%' . $search . '%')
+                                        ->orWhere('ci', 'like', '%' . $search . '%');
+                                });
                         });
                 });
             })
@@ -51,7 +58,7 @@ class PaymentService
                 $q->whereIn('account_payment_id', $accountPaymentIds);
             });
 
-        $totalIncome = (clone $query)->sum('total_in_dolars');
+        $totalIncome = (clone $query)->where('status', '!=', 0)->sum('total_in_dolars');
 
         $query->orderBy('created_at', 'desc');
 
