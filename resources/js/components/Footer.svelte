@@ -1,1 +1,1 @@
-<footer class=" px-5 py-1  ">Footer</footer>
+<footer class=" px-5 py-1  "></footer>
