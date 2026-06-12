@@ -43,8 +43,8 @@
                 class="form__field nb-input"
                 on:change
                 on:input
-                {readonly}
-                {disabled}
+                disabled={readonly || disabled}
+
             >
                 <slot></slot>
             </select>

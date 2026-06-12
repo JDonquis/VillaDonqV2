@@ -3,7 +3,7 @@
     import Modal from "../../components/Modal.svelte";
     import Input from "../../components/Input.svelte";
     import Alert from "../../components/Alert.svelte";
-    import { getMonitor } from "consulta-dolar-venezuela";
+    // ❌ ELIMINADO: import { getMonitor } from "consulta-dolar-venezuela";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm } from "@inertiajs/svelte";
     import axios from "axios";
@@ -26,17 +26,8 @@
     let searchInputRef;
     let searchTableRef;
     const currentDate = new Date();
-    let dolarPrice;
+    let dolarPrice = 0; // Inicializamos en 0
 
-    getMonitor("BCV", "lastUpdate")
-        .then((response) => {
-            dolarPrice = response.bcv.price;
-        })
-        .catch((error) => {
-            console.error("Error:", error);
-        });
-
-    // Format the date as a string in the "YYYY-MM-DD" format
     const currentDateString = currentDate.toISOString().split("T")[0];
 
     const emptyDataForm = {
@@ -50,26 +41,84 @@
         observations: "",
     };
 
-    let form = useForm({
-        date: currentDateString,
-        reported_date: currentDateString,
-        students: [],
-        account_payment_id: "",
-        total_in_dolars: "1",
-        total_in_bs: "",
-        reference: "",
-        observations: "",
-    });
-
-    let formEdit = useForm({
-        ...emptyDataForm,
-    });
+    let form = useForm({ ...emptyDataForm });
+    let formEdit = useForm({ ...emptyDataForm });
 
     let showModal = false;
     let showTotalIncome = false;
     $: showModalFormEdit = false;
     let selectedRow = { status: false, data: null };
     let submitStatus = "Registrar";
+
+    // ==========================================
+    // 🌐 NUEVA FUNCIÓN PARA BUSCAR TASA POR FECHA
+    // ==========================================
+    async function updateDolarPriceByDate(targetDate) {
+        if (!targetDate) return;
+
+        try {
+            const apiDateFormat = targetDate.replace(/-/g, "/");
+            const url = `https://ve.dolarapi.com/v1/historicos/dolares/oficial/${apiDateFormat}`;
+
+            // Petición limpia con Axios
+            const response = await axios.get(url);
+
+            // DolarApi devuelve la estructura directo en data
+            dolarPrice = response.data.promedio;
+
+            // Forzar actualización si hay montos ya escritos
+            recalculateTotals();
+        } catch (error) {
+            console.error("Error buscando tasa histórica con Axios:", error);
+            displayAlert({
+                type: "error",
+                message:
+                    "No se pudo obtener la tasa para la fecha seleccionada. Intenta de nuevo o verifica la conexión.",
+            });
+            // Si es fin de semana y da 404, puedes dejar el dolarPrice anterior
+            // o reportar que no hay tasa oficial para ese día.
+        }
+    }
+
+    function recalculateTotals() {
+        if (dolarPrice <= 0) return;
+
+        // Mapeamos los estudiantes para actualizar sus cálculos con la nueva tasa
+        $form.students = $form.students.map((s) => {
+            const dolars = parseFloat(s.amount_in_dolars) || 0;
+            return {
+                ...s,
+                amount_in_bs: (dolars * dolarPrice).toFixed(2),
+            };
+        });
+
+        // Recalcular los acumulados del formulario general
+        $form.total_in_dolars = $form.students
+            .reduce(
+                (total, s) => total + (parseFloat(s.amount_in_dolars) || 0),
+                0,
+            )
+            .toFixed(2);
+
+        $form.total_in_bs = ($form.total_in_dolars * dolarPrice).toFixed(2);
+    }
+
+    // ⚡ REACTIVIDAD DE SVELTE:
+    // Cada vez que el usuario mueva la fecha en el Input, esto se ejecutará solo.
+    $: if ($form.date) {
+        updateDolarPriceByDate($form.date);
+    }
+
+    // Modificamos la función de conversión para que use el dolarPrice dinámico
+    $: $form.total_in_dolars, exchange();
+
+    function exchange() {
+        if (dolarPrice > 0 && $form.total_in_dolars) {
+            $form.total_in_bs = (
+                parseFloat($form.total_in_dolars) * dolarPrice
+            ).toFixed(2);
+        }
+    }
 
     document.addEventListener("keydown", ({ key }) => {
         if (key === "Escape") {
@@ -210,13 +259,6 @@
         $form.observations = selectedData.observations;
     }
 
-    $: $form.total_in_dolars, exchange();
-
-    function exchange() {
-        // $form.total_in_bs = $form.total_in_dolars * +dolarPrice;
-        // $form.total_in_dolars = $form.total_in_bs / dolarPrice;
-    }
-
     const getBalanceByStudentId = async (studentId) => {
         try {
             const response = await axios.get(
@@ -289,7 +331,7 @@
                 <tbody>
                     {#each searched_students as student}
                         <tr
-                            class={` hover:bg-black/10  [&_*]:px-4 [&_*]:py-2 cursor-pointer bg-white bg-opacity-10 border-gray-500`}
+                            class={`text-xs hover:bg-black/10  [&_*]:px-4 [&_*]:py-2 cursor-pointer bg-white bg-opacity-10 border-gray-500`}
                             on:click={() => {
                                 // Verificar si el estudiante ya está en el arreglo
                                 if (
@@ -372,6 +414,8 @@
                                         step="0.01"
                                         class="w-20 border-3 py-2 px-2 border- small-shadow focus:outline-0"
                                         value={student.amount_in_dolars || ""}
+                                        readonly={submitStatus ===
+                                            "Solo lectura"}
                                         on:input={(e) => {
                                             $form.students[i] = {
                                                 ...$form.students[i],
@@ -410,6 +454,8 @@
                                         class=" w-24 border-3 py-2 px-2 border-3 border-black small-shadow focus:outline-0"
                                         value={student.amount_in_bs || ""}
                                         placeholder="Bolívares"
+                                        readonly={submitStatus ===
+                                            "Solo lectura"}
                                         on:input={(e) => {
                                             $form.students[i] = {
                                                 ...$form.students[i],
@@ -611,6 +657,10 @@
             e.preventDefault();
             showModal = true;
             searchInputRef.focus();
+            if (submitStatus === "Solo lectura") {
+                $form.reset();
+                submitStatus = "Registrar";
+            }
         }}
     >
         Registrar pago

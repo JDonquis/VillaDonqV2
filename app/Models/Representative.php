@@ -21,6 +21,7 @@ class Representative extends Model
         'second_representative_last_name',
         'second_representative_ci',
         'second_representative_phone_number',
+        'second_representative_phone_number2',
         'second_representative_email',
         'second_representative_profession',
         'second_representative_workplace',

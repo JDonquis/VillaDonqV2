@@ -30,15 +30,19 @@ class UpdateStudentRequest extends FormRequest
             'state',
             'city',
             'address',
-            'rep_id',
+            'rep_ci',
+            'rep_document_type',
             'rep_phone_number',
+            'rep_phone_number2',
             'rep_email',
             'rep_profession',
             'rep_workplace',
             'second_rep_name',
             'second_rep_last_name',
             'second_rep_ci',
+            'second_rep_document_type',
             'second_rep_phone_number',
+            'second_rep_phone_number2',
             'second_rep_email',
             'second_rep_profession',
             'second_rep_workplace',
@@ -61,7 +65,9 @@ class UpdateStudentRequest extends FormRequest
 
     public function rules(): array
     {
-        $id = request()->route('id');
+        $studentId = request()->route('id');
+        $student = \App\Models\Student::find($studentId);
+        $userId = $student ? $student->representative->user_id : null;
 
         return [
 
@@ -69,7 +75,7 @@ class UpdateStudentRequest extends FormRequest
             'student_last_name' => ['required'],
             'student_date_birth' => ['required'],
             'student_email' => ['nullable'],
-            'student_ci' => ['required', 'unique:students,ci,' . $id],
+            'student_ci' => ['required', 'unique:students,ci,' . $studentId],
             'student_phone_number' => ['nullable'],
             'student_sex' => ['nullable'],
             'student_previous_school' => ['nullable'],
@@ -81,15 +87,19 @@ class UpdateStudentRequest extends FormRequest
             'rep_id' => ['nullable'],
             'rep_name' => ['required'],
             'rep_last_name' => ['required'],
-            'rep_ci' => ['required'],
+            'rep_ci' => ['required', 'unique:users,ci,' . $userId],
+            'rep_document_type' => ['nullable', 'string'],
             'rep_phone_number' => ['nullable'],
-            'rep_email' => ['nullable'],
+            'rep_phone_number2' => ['nullable'],
+            'rep_email' => ['required', 'email', 'unique:users,email,' . $userId],
             'rep_profession' => ['nullable'],
             'rep_workplace' => ['nullable'],
             'second_rep_name' => ['nullable'],
             'second_rep_last_name' => ['nullable'],
             'second_rep_ci' => ['nullable'],
+            'second_rep_document_type' => ['nullable', 'string'],
             'second_rep_phone_number' => ['nullable'],
+            'second_rep_phone_number2' => ['nullable'],
             'second_rep_email' => ['nullable'],
             'second_rep_profession' => ['nullable'],
             'second_rep_workplace' => ['nullable'],
