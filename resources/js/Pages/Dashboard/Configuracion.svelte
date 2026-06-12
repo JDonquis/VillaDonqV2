@@ -120,7 +120,9 @@
 </script>
 
 <Alert />
-
+<svelte:head>
+    <title>Configuración</title>
+</svelte:head>
 <section class="bg-background">
     <div class="py-5"></div>
 
@@ -441,9 +443,7 @@
                 </div>
             </form>
 
-            <form
-                class="periodo my-10 mb-4 py-3 min-w-[310px] max-w-[330px]"
-            >
+            <form class="periodo my-10 mb-4 py-3 min-w-[310px] max-w-[330px]">
                 <h2 class="font-bold text-xl mb-4">Periodo Escolar</h2>
 
                 <div class="w-full gap-10 pl-1">
@@ -461,9 +461,7 @@
                         on:click={initiateNextCourse}
                     >
                         <span> Iniciar próximo periodo </span>
-                    <iconify-icon
-                            icon="picon:next"
-                            class="text-3xl"
+                        <iconify-icon icon="picon:next" class="text-3xl"
                         ></iconify-icon>
                     </button>
                 </div>

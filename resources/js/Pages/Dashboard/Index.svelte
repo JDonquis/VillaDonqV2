@@ -2,9 +2,8 @@
     import { onMount, onDestroy } from "svelte";
     import * as echarts from "echarts";
     import Input from "../../components/Input.svelte";
-    import axios from "axios";  
+    import axios from "axios";
     export let schoolLapses;
-
 
     let annual_vs_monthly_flow_year_id;
     let chartContainer;
@@ -12,19 +11,13 @@
 
     // 1. SUPONGAMOS QUE ESTOS SON LOS DATOS CRUDOS QUE LLEGAN DE TU ENDPOINT
     // (Convertimos strings a números y "" a null para que la matemática no falle)
-    
+
     let annual_vs_monthly_flow_data = {
-        pagado_mensual: [
-       
-        ],
-        esperado_mensual: [
-        ],
-        real_acumulado: [
-        ],
-        meta_acumulada: [
-        ],
+        pagado_mensual: [],
+        esperado_mensual: [],
+        real_acumulado: [],
+        meta_acumulada: [],
     };
-   
 
     // 2. FUNCIÓN MATEMÁTICA PARA CALCULAR EL TOPE PERFECTO (Múltiplo de 5 para los saltos del eje)
     function calcularTopeEje(arraysCombinados) {
@@ -48,7 +41,10 @@
 
     // 3. CÁLCULO REACTIVO DE LOS TOPES
     // Evaluamos tanto lo real como lo esperado para asegurar que nada se desborde
-    $: maxMensual = calcularTopeEje([annual_vs_monthly_flow_data.pagado_mensual, annual_vs_monthly_flow_data.esperado_mensual]);
+    $: maxMensual = calcularTopeEje([
+        annual_vs_monthly_flow_data.pagado_mensual,
+        annual_vs_monthly_flow_data.esperado_mensual,
+    ]);
     $: maxAcumulado = calcularTopeEje([
         annual_vs_monthly_flow_data.real_acumulado,
         annual_vs_monthly_flow_data.meta_acumulada,
@@ -91,7 +87,7 @@
                     "May",
                     "Jun",
                     "Jul",
-                    "Ago"
+                    "Ago",
                 ],
                 axisPointer: { type: "shadow" },
             },
@@ -168,15 +164,13 @@
         if (myChart) myChart.resize();
     }
 
-    
-    
     onMount(() => {
         myChart = echarts.init(chartContainer);
         myChart.setOption(option);
         window.addEventListener("resize", handleResize);
     });
 
-   onMount(async () => {
+    onMount(async () => {
         // Inicializamos ECharts con la estructura base vacía
         myChart = echarts.init(chartContainer);
         myChart.setOption(option);
@@ -199,18 +193,18 @@
             if (myChart) myChart.showLoading();
 
             // Si hay year_id construimos la ruta con el ID, si no, llamamos a la ruta base de carga inicial
-            const url = year_id 
+            const url = year_id
                 ? `/dashboard/graficos/annual-vs-monthly-flow/${year_id}`
                 : `/dashboard/graficos/annual-vs-monthly-flow`; // <-- Ajusta esta URL a tu ruta base si es distinta
 
             const response = await axios.get(url);
             const data = response.data.data;
             console.log("Datos recibidos del backend:", data);
-            console.log(response)
+            console.log(response);
 
-            annual_vs_monthly_flow_year_id = response.data.schoolLapseID.toLocaleString();
-            annual_vs_monthly_flow_data = data
-           
+            annual_vs_monthly_flow_year_id =
+                response.data.schoolLapseID.toLocaleString();
+            annual_vs_monthly_flow_data = data;
         } catch (error) {
             console.error("Error al obtener datos:", error);
         } finally {
@@ -222,8 +216,11 @@
         if (myChart) myChart.dispose();
         window.removeEventListener("resize", handleResize);
     });
-
 </script>
+
+<svelte:head>
+    <title>Dashboard</title>
+</svelte:head>
 
 <div
     class="w-full bg-white p-6 border-4 large-shadow border-black max-w-[1200px] flex flex-col gap-4"

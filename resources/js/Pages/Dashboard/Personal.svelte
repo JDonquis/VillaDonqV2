@@ -8,7 +8,7 @@
     import { displayAlert } from "../../stores/alertStore";
     import SelectableRow from "../../components/SelectableRow.svelte";
     import { page } from "@inertiajs/svelte";
-    console.log($page)
+    console.log($page);
     export let types = [];
     export let data = [];
     let submitStatus = "Crear";
@@ -159,6 +159,9 @@
     $: console.log("selectedRow", selectedRow);
 </script>
 
+<svelte:head>
+    <title>Personal</title>
+</svelte:head>
 <section class="bg-background min-h-screen">
     <Alert />
     <div class="container mx-auto">
@@ -171,7 +174,6 @@
                         message: "No tienes permisos para crear personal",
                     });
                     return;
-                    
                 }
                 if (submitStatus === "Editar") {
                     $form.reset();

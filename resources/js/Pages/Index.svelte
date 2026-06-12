@@ -91,7 +91,7 @@
                     />
                     <!-- {#if $form.errors.email}
             <div class="text-black bg-opaemailty-30 bg-red pt-1">
-                
+
                 <span >{$form.errors.email}</span>
             </div>
             {/if} -->
@@ -111,7 +111,7 @@
                     type="submit"
                     disabled={$form.processing}
                     value={$form.processing ? "Cargando..." : "ENTRAR"}
-                    class=" bg-[#490A75] btn w-full mt-6 "
+                    class=" bg-[#490A75] btn w-full mt-6"
                 />
 
                 <div class="mt-4 text-center">
@@ -132,8 +132,7 @@
         box-sizing: border-box;
     }
     input[type="submit"] {
-        background-color: #490A75;
+        background-color: #490a75;
         color: white;
     }
-    
 </style>
