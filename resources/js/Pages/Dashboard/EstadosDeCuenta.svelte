@@ -57,7 +57,7 @@
 
             phoneNumber = phoneNumber.replace("+", "");
 
-           const text = `🔹 *Recordatorio de Pago* 🔹
+            const text = `🔹 *Recordatorio de Pago* 🔹
 
 Hola ${student.representative.user.name} ${student.representative.user.last_name}, esperamos que se encuentre muy bien.
 
@@ -65,7 +65,7 @@ Le contactamos de la administración para informarle que la mensualidad de su re
 
 👤 *Estudiante:* ${student.name} ${student.last_name}
 
-Le agradeceríamos ponerse al día a la brevedad posible para actualizar el estatus de su cuenta y recordando que la institución debe cumplir compromisos administrativos. 
+Le agradeceríamos ponerse al día a la brevedad posible para actualizar el estatus de su cuenta y recordando que la institución debe cumplir compromisos administrativos.
 
 ℹ️ *Nota importante sobre la imagen adjunta:*
 Por favor, *haga clic sobre la imagen para abrirla en pantalla completa*. Así podrá visualizar correctamente todo el calendario escolar, los meses solventes (en verde) y el desglose exacto de los montos pendientes (en rojo).
@@ -163,7 +163,7 @@ Si ya realizó el pago, por favor ignore este mensaje o envíenos el comprobante
         </tr>
     </thead>
     <tbody slot="tbody">
-        {#each data?.students.data as student}
+        {#each tableData.data as student}
             <tr>
                 <td class=" space-y-2">
                     <div class="flex items-center gap-2">

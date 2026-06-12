@@ -3,7 +3,6 @@
     import Modal from "../../components/Modal.svelte";
     import Input from "../../components/Input.svelte";
     import Alert from "../../components/Alert.svelte";
-    // ❌ ELIMINADO: import { getMonitor } from "consulta-dolar-venezuela";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm } from "@inertiajs/svelte";
     import axios from "axios";
@@ -105,7 +104,10 @@
 
     // ⚡ REACTIVIDAD DE SVELTE:
     // Cada vez que el usuario mueva la fecha en el Input, esto se ejecutará solo.
-    $: if ($form.date) {
+    let lastFetchedDate = null;
+
+    $: if ($form.date && $form.date !== lastFetchedDate) {
+        lastFetchedDate = $form.date;
         updateDolarPriceByDate($form.date);
     }
 
@@ -497,7 +499,9 @@
                             <td
                                 >C.I:
                                 {#if student.document_type}
-                                    <span class="text-xs">{student.document_type}-</span>
+                                    <span class="text-xs"
+                                        >{student.document_type}-</span
+                                    >
                                 {/if}
                                 {student.ci}</td
                             >
@@ -791,7 +795,9 @@
                                 <span class="text-gray-500">
                                     | C.I:
                                     {#if student.document_type}
-                                        <span class="text-xs">{student.document_type}-</span>
+                                        <span class="text-xs"
+                                            >{student.document_type}-</span
+                                        >
                                     {/if}
                                     {student.ci}
                                     | {student.course.name}-{student.section
