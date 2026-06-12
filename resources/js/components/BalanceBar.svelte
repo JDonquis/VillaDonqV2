@@ -323,7 +323,7 @@
             <div class="grid p-0 grid-cols-12 border-2 border-black">
                 <div
                     class={` hover:brightness-125  relative col-span-1 z-10  text-xs text-black  p-1 capitalize  text-center font-bold
-                 ${balance.inscription_status === "pending" ? "bg-red" : ""}
+                 ${balance.inscription_status === "pending" || balance.inscription_status === "debt" ? "bg-red" : ""}
             ${balance.inscription_status === "paid" ? "bg-green" : ""}
             ${balance.inscription_status === "partially_paid" ? "bg-yellow" : ""}`}
                     on:mouseenter={(e) =>
@@ -383,8 +383,8 @@
 
                             <!-- El resto de tu div de progreso (months_to_pay) se queda exactamente igual -->
                             <div
-                                class={`text-xs months_to_pay absolute top-0.5 left-0 w-full text-black h-[95%] z-40 
-            ${indexMonth === startPointToPay.month && startPointToPay.school_lapse_index == +indexYear && amountToPay > Math.abs(balance[month]) ? "border-l-4 border-black/50" : ""} 
+                                class={`text-xs months_to_pay absolute top-0.5 left-0 w-full text-black h-[95%] z-40
+            ${indexMonth === startPointToPay.month && startPointToPay.school_lapse_index == +indexYear && amountToPay > Math.abs(balance[month]) ? "border-l-4 border-black/50" : ""}
             ${indexMonth === endPointToPay.endMonthIndex - 1 && endPointToPay.endYearIndex == +indexYear && amountToPay > 0 ? "border-r-4 border-black/50" : ""}
             ${startPointToPay.school_lapse_index <= indexYear && payingBalances[indexYear]?.startMonth <= indexMonth && indexMonth <= payingBalances[indexYear]?.endMonthIndex ? "bg-purple/30 border-y-4 border-black/50" : ""}`}
                                 style={((indexMonth ==
