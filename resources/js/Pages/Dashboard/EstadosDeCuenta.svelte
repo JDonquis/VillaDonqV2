@@ -57,11 +57,20 @@
 
             phoneNumber = phoneNumber.replace("+", "");
 
-            const text = `Hola ${student.representative.user.name} ${student.representative.user.last_name}, esperamos que se encuentre muy bien.
+           const text = `🔹 *Recordatorio de Pago* 🔹
 
-Le contactamos para informarle que el pago mensual de ${student.name} ${student.last_name} se encuentra vencido. Le agradeceríamos ponerse al día cuando le sea posible para mantener su cuenta al día y evitar inconvenientes.
+Hola ${student.representative.user.name} ${student.representative.user.last_name}, esperamos que se encuentre muy bien.
 
-Gracias por su atención y apoyo continuo.`;
+Le contactamos de la administración para informarle que la mensualidad de su representado se encuentra vencida:
+
+👤 *Estudiante:* ${student.name} ${student.last_name}
+
+Le agradeceríamos ponerse al día a la brevedad posible para actualizar el estatus de su cuenta y recordando que la institución debe cumplir compromisos administrativos. 
+
+ℹ️ *Nota importante sobre la imagen adjunta:*
+Por favor, *haga clic sobre la imagen para abrirla en pantalla completa*. Así podrá visualizar correctamente todo el calendario escolar, los meses solventes (en verde) y el desglose exacto de los montos pendientes (en rojo).
+
+Si ya realizó el pago, por favor ignore este mensaje o envíenos el comprobante. ¡Gracias por su apoyo continuo! ✨`;
 
             // OPEN WHATSAPP AFTER clipboard succeeds
             window.open(

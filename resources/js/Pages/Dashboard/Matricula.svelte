@@ -873,10 +873,9 @@
                 <td>{row.student_last_name}</td>
                 <td>
                     <span class="">
-                        C.I: {#if row.student_document_type}
-                            <span>{row.student_document_type}-</span>
-                        {/if}
-                        {row.student_ci}
+                        {#if row.student_document_type}
+                            <span class="text-xs">{row.student_document_type}-</span>
+                        {/if}{row.student_ci}
                     </span>
                 </td>
                 <td>{row.student_sex}</td>

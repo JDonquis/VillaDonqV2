@@ -497,7 +497,7 @@
                             <td
                                 >C.I:
                                 {#if student.document_type}
-                                    <span>{student.document_type}-</span>
+                                    <span class="text-xs">{student.document_type}-</span>
                                 {/if}
                                 {student.ci}</td
                             >
@@ -791,7 +791,7 @@
                                 <span class="text-gray-500">
                                     | C.I:
                                     {#if student.document_type}
-                                        <span>{student.document_type}-</span>
+                                        <span class="text-xs">{student.document_type}-</span>
                                     {/if}
                                     {student.ci}
                                     | {student.course.name}-{student.section
