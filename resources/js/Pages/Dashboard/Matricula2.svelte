@@ -558,7 +558,7 @@
                         label={"Tipo"}
                         bind:value={$form.rep_document_type}
                         error={$form.errors?.rep_document_type}
-                        classes={"max-w-[70px] "}
+                       classes={"max-w-[70px] "}
                     >
                         <option value="E">E</option>
                         <option value="V">V</option>
@@ -652,7 +652,7 @@
                         label={"Tipo"}
                         bind:value={$form.second_rep_document_type}
                         error={$form.errors?.second_rep_document_type}
-                        classes={"max-w-[70px] "}
+                       classes={"max-w-[70px] "}
                     >
                         <option value="E">E</option>
                         <option value="V">V</option>
@@ -874,9 +874,7 @@
                 <td>
                     <span class="">
                         {#if row.student_document_type}
-                            <span class="text-xs"
-                                >{row.student_document_type}-</span
-                            >
+                            <span class="text-xs">{row.student_document_type}-</span>
                         {/if}{row.student_ci}
                     </span>
                 </td>
