@@ -70,7 +70,7 @@ class StudentController extends Controller
 
             Log::error('Error al crear estudiante: ' . $e->getMessage());
 
-            return redirect('/dashboard/matricula?course_id=' . $request->course_id . '&section_id=' . $request->section_id)->withErrors(['message' => 'Ha ocurrido un error al crear el estudiante. Por favor, intente más tarde.']);
+            return redirect('/dashboard/matricula?course_id=' . $request->course_id . '&section_id=' . $request->section_id)->withErrors(['message' => $e->getMessage()]);
         }
     }
 
@@ -94,7 +94,7 @@ class StudentController extends Controller
 
             Log::error('Error al actualizar estudiante ID ' . $id . ': ' . $e->getMessage());
 
-            return redirect('/dashboard/matricula?course_id=' . $request->course_id . '&section_id=' . $request->section_id)->withErrors(['message' => 'Ha ocurrido un error al actualizar el estudiante. Por favor, intente más tarde.']);
+            return redirect('/dashboard/matricula?course_id=' . $request->course_id . '&section_id=' . $request->section_id)->withErrors(['message' => $e->getMessage()]);
         }
     }
 

@@ -65,7 +65,9 @@ class UpdateStudentRequest extends FormRequest
 
     public function rules(): array
     {
-        $id = request()->route('id');
+        $studentId = request()->route('id');
+        $student = \App\Models\Student::find($studentId);
+        $userId = $student ? $student->representative->user_id : null;
 
         return [
 
@@ -73,7 +75,7 @@ class UpdateStudentRequest extends FormRequest
             'student_last_name' => ['required'],
             'student_date_birth' => ['required'],
             'student_email' => ['nullable'],
-            'student_ci' => ['required', 'unique:students,ci,' . $id],
+            'student_ci' => ['required', 'unique:students,ci,' . $studentId],
             'student_phone_number' => ['nullable'],
             'student_sex' => ['nullable'],
             'student_previous_school' => ['nullable'],
@@ -85,11 +87,11 @@ class UpdateStudentRequest extends FormRequest
             'rep_id' => ['nullable'],
             'rep_name' => ['required'],
             'rep_last_name' => ['required'],
-            'rep_ci' => ['required'],
+            'rep_ci' => ['required', 'unique:users,ci,' . $userId],
             'rep_document_type' => ['nullable', 'string'],
             'rep_phone_number' => ['nullable'],
             'rep_phone_number2' => ['nullable'],
-            'rep_email' => ['nullable'],
+            'rep_email' => ['required', 'email', 'unique:users,email,' . $userId],
             'rep_profession' => ['nullable'],
             'rep_workplace' => ['nullable'],
             'second_rep_name' => ['nullable'],
