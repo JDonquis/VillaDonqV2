@@ -303,8 +303,7 @@ class StudentService
                     'section',
                     'balances' => function ($query) {
                         // Traemos los que tengan status específicos O el más reciente
-                        $query->whereIn('status', [BalanceStudentStatusEnum::Pending->value, BalanceStudentStatusEnum::Debt->value])
-                            ->with('schoolLapse')
+                        $query->with('schoolLapse')
                             ->oldest(); // Ordenar por fecha de creación (el más antiguo primero)
                     },
                 ])
@@ -340,8 +339,7 @@ class StudentService
                 'section',
                 'balances' => function ($query) {
                     // Traemos los que tengan status específicos O el más reciente
-                    $query->whereIn('status', [BalanceStudentStatusEnum::Pending->value, BalanceStudentStatusEnum::Debt->value])
-                        ->with('schoolLapse')
+                    $query->with('schoolLapse')
                         ->oldest(); // Ordenar por fecha de creación (el más antiguo primero)
                 },
             ])

@@ -127,7 +127,6 @@
             selectedRow = { status: false, data: null };
         }
     });
-    $: console.log($form);
     function handleSubmit(event) {
         if (submitStatus === "Solo lectura") {
             return;

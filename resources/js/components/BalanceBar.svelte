@@ -138,27 +138,28 @@
     const currentDay = new Date().getDate();
 
     function checkIfMonthIsExpired(monthName) {
-        // 1. Obtener el número de mes (0-11) desde tu objeto monthsCalendar
         const monthIndex = monthsCalendar[monthName];
-
-        // 2. Si el mes es menor al mes actual, ya pasó de forma estricta
-        if (monthIndex < currentMonth) return true;
-
-        // 3. Si el mes es mayor al mes actual, definitivamente no ha vencido
-        if (monthIndex > currentMonth) return false;
-
-        // 4. Si es el mes actual, calculamos el día de vencimiento real
-        // Ejemplo: vence el 30 + 5 días de prórroga = día 35 (es decir, el 5 del siguiente mes)
         const expirationDay = dayOfPayment + gracePeriod;
 
-        // Si el día de vencimiento se pasa del mes actual (ej: día 35)
-        if (expirationDay > 30) {
-            // Como el vencimiento cae en el siguiente mes, en el mes actual NUNCA estará vencido
-            return false;
+        // Hardcode: Si el mes es Enero (0), usar año pasado
+        // Si es cualquier otro mes, usar año actual
+        let year = currentYear;
+        if (monthIndex > 7) {
+            year = currentYear - 1;
         }
 
-        // Si el vencimiento cae dentro del mismo mes, comparamos con el día actual
-        return currentDay > expirationDay;
+        let expirationDate;
+        if (expirationDay > 30) {
+            expirationDate = new Date(year, monthIndex + 1, expirationDay - 30);
+        } else {
+            expirationDate = new Date(year, monthIndex, expirationDay);
+        }
+
+        const today = new Date();
+        expirationDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+
+        return expirationDate < today;
     }
 
     export let id = "";
@@ -237,6 +238,8 @@
         return { endMonthIndex, endYearIndex, partialToPay };
     }
 
+    $: console.log({ payingBalances }, { endPointToPay });
+
     function showBalancePaymentsTooltip(event, payments) {
         if (!payments || payments.length === 0) {
             tooltipVisible = false;
@@ -278,7 +281,7 @@
                 ></iconify-icon>
             </button> -->
             <p class="text-xs font-bold">
-                {balance.school_lapse.start.slice(0, 4)} - {balance.school_lapse.end.slice(
+                {balance.school_lapse?.start.slice(0, 4)} - {balance.school_lapse?.end.slice(
                     0,
                     4,
                 )}
@@ -346,7 +349,7 @@
                     <div
                         class={`absolute top-0.5 left-0  h-[95%] z-40 ${payingBalances[indexYear]?.balanceInscription > 0 ? "bg-purple/30 border-y-4 border-black/50 border" : ""}`}
                         style={payingBalances[indexYear]?.balanceInscription > 0
-                            ? `width: ${(payingBalances[indexYear]?.balanceInscription / Math.abs(balance.inscription)) * 100}%`
+                            ? `max-width: 100%; width: ${(payingBalances[indexYear]?.balanceInscription / Math.abs(balance.inscription)) * 100}%`
                             : ""}
                     ></div>
                 </div>
