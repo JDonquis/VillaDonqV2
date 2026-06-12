@@ -319,7 +319,12 @@
 
 <Modal bind:showModal={showModalReinscribe} classes={"w-96"}>
     <form class="px-2" id="r-form" on:submit={handleSubmitReinscribe}>
-        {#if $formReinscribe.course_id != 1}
+        {#if $formReinscribe.course_id == 1}
+            <p class="text-center p-5">
+                Como este estudiante está en 5to año, al dar click en el botón
+                de reinscribir quedará como graduado
+            </p>
+        {:else}
             <Input
                 type="select"
                 required={true}
@@ -343,11 +348,6 @@
                     <option value={section.id}>{section.name}</option>
                 {/each}
             </Input>
-        {:else}
-            <p class="text-center p-5">
-                Como este estudiante está en 5to año, al dar click en el botón
-                de reinscribir quedará como graduado
-            </p>
         {/if}
     </form>
     <button
