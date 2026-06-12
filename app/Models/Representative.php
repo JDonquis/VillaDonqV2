@@ -15,6 +15,7 @@ class Representative extends Model
         'profession',
         'workplace',
         'relationship',
+        'document_type',
         'second_representative_relationship',
         'second_representative_name',
         'second_representative_last_name',
@@ -23,6 +24,7 @@ class Representative extends Model
         'second_representative_email',
         'second_representative_profession',
         'second_representative_workplace',
+        'second_document_type',
     ];
 
     public $timestamps = false;

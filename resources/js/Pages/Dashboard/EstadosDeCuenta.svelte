@@ -6,7 +6,7 @@
     import { page } from "@inertiajs/svelte";
 
     export let data = [];
-    export let config
+    export let config;
 
     let showTotalDebt = false;
     $: tableData = {
@@ -19,8 +19,8 @@
         },
     };
 
-    $: console.log( {data}, {tableData})
-    $: console.log( config)
+    $: console.log({ data }, { tableData });
+    $: console.log(config);
     async function sendToWhatsApp(student) {
         const element = document.getElementById(`balance-bar-${student.id}`);
 
@@ -95,8 +95,6 @@ Gracias por su atención y apoyo continuo.`;
                 message:
                     "No se pudo copiar al portapapeles. Se ha descargado la imagen, por favor envíala manualmente por WhatsApp.",
             });
-
-
         }
     }
 </script>
@@ -143,7 +141,7 @@ Gracias por su atención y apoyo continuo.`;
             { id: "previous_period", name: "Deudores del periodo anterior" },
             { id: "exempted", name: "Solo exonerados" },
             { id: "up_to_date", name: "Al día" },
-            { id: "graduated_with_debts", name: "Graduados con deudas" }
+            { id: "graduated_with_debts", name: "Graduados con deudas" },
         ],
     }}
 >
@@ -163,8 +161,11 @@ Gracias por su atención y apoyo continuo.`;
                             {student.name}
                             {student.last_name}
                             <span class="text-gray-500">
-                                | C.I:
-                                {student.ci}
+                                | {#if student.document_type}
+                                    <span style=" padding: 0 "
+                                        >{student.document_type}-</span
+                                    >
+                                {/if}{student.ci}
                                 | {student.course.name}-{student.section.name}
                             </span>
                         </span>
@@ -183,7 +184,6 @@ Gracias por su atención y apoyo continuo.`;
                             : false}
                         dayOfPayment={config.day_of_monthly_payment}
                         gracePeriod={config.grace_period}
-
                     />
                 </td>
                 <td class="group"

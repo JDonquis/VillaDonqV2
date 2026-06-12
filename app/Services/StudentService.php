@@ -142,6 +142,7 @@ class StudentService
 
             'profession' => $data['rep_profession'] ?? null,
             'workplace' => $data['rep_workplace'] ?? null,
+            'document_type' => $data['document_type'] ?? null,
             'second_representative_name' => $data['second_rep_name'] ?? null,
             'second_representative_last_name' => $data['second_rep_last_name'] ?? null,
             'second_representative_ci' => $data['second_rep_ci'] ?? null,
@@ -149,6 +150,7 @@ class StudentService
             'second_representative_email' => $data['second_rep_email'] ?? null,
             'second_representative_profession' => $data['second_rep_profession'] ?? null,
             'second_representative_workplace' => $data['second_rep_workplace'] ?? null,
+            'second_document_type' => $data['second_document_type'] ?? null,
         ]);
 
         $user = User::where('id', $representative->user_id)->first();
@@ -200,6 +202,7 @@ class StudentService
             'is_exempt' => $data['is_exempt'] ?? false,
             'exemption_percentage' => $data['exemption_percentage'] ?? null,
             'exemption_observations' => $data['exemption_observations'] ?? null,
+            'document_type' => $data['student_document_type'] ?? null,
         ]);
 
         $student->load('representative.user', 'course', 'section');
@@ -240,6 +243,7 @@ class StudentService
             'profession' => $data['rep_profession'] ?? null,
             'workplace' => $data['rep_workplace'] ?? null,
             'relationship' => $data['rep_relationship'] ?? null,
+            'document_type' => $data['document_type'] ?? null,
             'second_representative_relationship' => $data['second_rep_relationship'] ?? null,
             'second_representative_name' => $data['second_rep_name'] ?? null,
             'second_representative_last_name' => $data['second_rep_last_name'] ?? null,
@@ -248,6 +252,7 @@ class StudentService
             'second_representative_email' => $data['second_rep_email'] ?? null,
             'second_representative_profession' => $data['second_rep_profession'] ?? null,
             'second_representative_workplace' => $data['second_rep_workplace'] ?? null,
+            'second_document_type' => $data['second_document_type'] ?? null,
         ]);
 
         return $newRepresentative;
@@ -272,6 +277,7 @@ class StudentService
             'is_exempt' => $data['is_exempt'] ?? false,
             'exemption_percentage' => $data['exemption_percentage'] ?? null,
             'exemption_observations' => $data['exemption_observations'] ?? null,
+            'document_type' => $data['student_document_type'] ?? null,
         ]);
 
         $newStudent->load('representative.user', 'course', 'section');

@@ -46,6 +46,9 @@ class UpdateStudentRequest extends FormRequest
             'exemption_percentage',
             'exemption_observations',
             'apply_to_past_debts',
+            'document_type',
+            'second_document_type',
+            'student_document_type'
         ];
 
         $data = $this->all();
@@ -101,6 +104,8 @@ class UpdateStudentRequest extends FormRequest
             'exemption_observations' => ['nullable', 'string'],
             'apply_to_past_debts' => ['nullable', 'boolean'],
             'document_type' => ['nullable', 'string'],
+            'second_document_type' => ['nullable', 'string'],
+            'student_document_type' => ['nullable', 'string'],
         ];
     }
 }

@@ -47,6 +47,9 @@ class CreateStudentRequest extends FormRequest
             'is_exempt',
             'exemption_percentage',
             'exemption_observations',
+            'document_type',
+            'second_document_type',
+            'student_document_type'
         ];
 
         $data = $this->all();
@@ -102,6 +105,8 @@ class CreateStudentRequest extends FormRequest
             ],
             'exemption_observations' => ['nullable', 'string'],
             'document_type' => ['nullable', 'string'],
+            'second_document_type' => ['nullable', 'string'],
+            'student_document_type' => ['nullable', 'string'],
         ];
     }
 }
