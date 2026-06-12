@@ -142,15 +142,16 @@ class StudentService
 
             'profession' => $data['rep_profession'] ?? null,
             'workplace' => $data['rep_workplace'] ?? null,
-            'document_type' => $data['document_type'] ?? null,
+            'document_type' => $data['rep_document_type'] ?? null,
             'second_representative_name' => $data['second_rep_name'] ?? null,
             'second_representative_last_name' => $data['second_rep_last_name'] ?? null,
             'second_representative_ci' => $data['second_rep_ci'] ?? null,
             'second_representative_phone_number' => $data['second_rep_phone_number'] ?? null,
+            'second_representative_phone_number2' => $data['second_rep_phone_number2'] ?? null,
             'second_representative_email' => $data['second_rep_email'] ?? null,
             'second_representative_profession' => $data['second_rep_profession'] ?? null,
             'second_representative_workplace' => $data['second_rep_workplace'] ?? null,
-            'second_document_type' => $data['second_document_type'] ?? null,
+            'second_document_type' => $data['second_rep_document_type'] ?? null,
         ]);
 
         $user = User::where('id', $representative->user_id)->first();
@@ -164,12 +165,13 @@ class StudentService
             'last_name' => $data['rep_last_name'],
             'ci' => $data['rep_ci'],
             'phone_number' => $data['rep_phone_number'],
+            'phone_number2' => $data['rep_phone_number2'] ?? null,
             'email' => $data['rep_email'] ?? null,
             'password' => Hash::make($data['rep_ci']),
             'address' => $data['address'] ?? null,
             'state' => $data['state'] ?? null,
             'city' => $data['city'] ?? null,
-            'document_type' => $data['document_type'] ?? null,
+            'document_type' => $data['rep_document_type'] ?? null,
         ]);
 
         $student = Student::where('id', $studentId)->first();
@@ -224,12 +226,13 @@ class StudentService
             'last_name' => $data['rep_last_name'],
             'ci' => $data['rep_ci'],
             'phone_number' => $data['rep_phone_number'] ?? null,
+            'phone_number2' => $data['rep_phone_number2'] ?? null,
             'email' => $data['rep_email'] ?? null,
             'password' => Hash::make($data['rep_ci']),
             'address' => $data['address'] ?? null,
             'state' => $data['state'] ?? null,
             'city' => $data['city'] ?? null,
-            'document_type' => $data['document_type'] ?? null,
+            'document_type' => $data['rep_document_type'] ?? null,
         ]);
 
         return $newUser;
@@ -243,16 +246,17 @@ class StudentService
             'profession' => $data['rep_profession'] ?? null,
             'workplace' => $data['rep_workplace'] ?? null,
             'relationship' => $data['rep_relationship'] ?? null,
-            'document_type' => $data['document_type'] ?? null,
+            'document_type' => $data['rep_document_type'] ?? null,
             'second_representative_relationship' => $data['second_rep_relationship'] ?? null,
             'second_representative_name' => $data['second_rep_name'] ?? null,
             'second_representative_last_name' => $data['second_rep_last_name'] ?? null,
             'second_representative_ci' => $data['second_rep_ci'] ?? null,
             'second_representative_phone_number' => $data['second_rep_phone_number'] ?? null,
+            'second_representative_phone_number2' => $data['second_rep_phone_number2'] ?? null,
             'second_representative_email' => $data['second_rep_email'] ?? null,
             'second_representative_profession' => $data['second_rep_profession'] ?? null,
             'second_representative_workplace' => $data['second_rep_workplace'] ?? null,
-            'second_document_type' => $data['second_document_type'] ?? null,
+            'second_document_type' => $data['second_rep_document_type'] ?? null,
         ]);
 
         return $newRepresentative;
@@ -374,10 +378,15 @@ class StudentService
                 'rep_name' => $user->name,
                 'rep_last_name' => $user->last_name,
                 'rep_ci' => $user->ci,
+                'rep_document_type' => $user->document_type ?? null,
                 'rep_phone_number' => $user->phone_number,
+                'rep_phone_number2' => $user->phone_number2 ?? null,
                 'rep_email' => $user->email ?? null,
                 'rep_profession' => $representative->profession ?? null,
                 'rep_workplace' => $representative->workplace ?? null,
+                'address' => $user->address ?? null,
+                'state' => $user->state ?? null,
+                'city' => $user->city ?? null,
 
             ];
 
@@ -404,7 +413,9 @@ class StudentService
                 'second_rep_name' => $representative->second_representative_name ?? null,
                 'second_rep_last_name' => $representative->second_representative_last_name ?? null,
                 'second_rep_ci' => $representative->second_representative_ci ?? null,
+                'second_rep_document_type' => $representative->second_document_type ?? null,
                 'second_rep_phone_number' => $representative->second_representative_phone_number ?? null,
+                'second_rep_phone_number2' => $representative->second_representative_phone_number2 ?? null,
                 'second_rep_email' => $representative->second_representative_email ?? null,
                 'second_rep_profession' => $representative->second_representative_profession ?? null,
                 'second_rep_workplace' => $representative->second_representative_workplace ?? null,

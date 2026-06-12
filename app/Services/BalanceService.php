@@ -66,24 +66,35 @@ class BalanceService
             if ($balance->inscription < 0) {
                 $inscriptionDebt = abs($balance->inscription);
 
-                if ($remainingAmount < $inscriptionDebt) {
-                    throw new Exception(
-                        "El pago no cubre la inscripción del estudiante {$student->name} {$student->last_name}. Deuda: {$inscriptionDebt}$, Disponible: {$remainingAmount}$"
-                    );
-                }
+                $inscriptionPaymentsCount = BalancePayment::where('balance_student_id', $balance->id)
+                    ->where('is_inscription', true)
+                    ->count();
 
-                $balance->inscription += $inscriptionDebt;
-                $balance->inscription_status = BalanceStudentStatusEnum::Paid->value;
+                if ($remainingAmount < $inscriptionDebt) {
+                    if ($inscriptionPaymentsCount >= 2) {
+                        throw new Exception(
+                            "La inscripción debe ser cancelada en un máximo de 3 pagos. Este es el tercer intento y el monto ({$remainingAmount}$) no cubre la deuda restante ({$inscriptionDebt}$) para el estudiante {$student->name} {$student->last_name}."
+                        );
+                    }
+
+                    $paymentToInscription = $remainingAmount;
+                    $balance->inscription += $paymentToInscription;
+                    $balance->inscription_status = BalanceStudentStatusEnum::PartiallyPaid->value;
+                } else {
+                    $paymentToInscription = $inscriptionDebt;
+                    $balance->inscription += $paymentToInscription;
+                    $balance->inscription_status = BalanceStudentStatusEnum::Paid->value;
+                }
 
                 BalancePayment::create([
                     'payment_id' => $payment->id,
                     'balance_student_id' => $balance->id,
-                    'amount' => $inscriptionDebt,
+                    'amount' => $paymentToInscription,
                     'month' => null,
                     'is_inscription' => true,
                 ]);
 
-                $remainingAmount -= $inscriptionDebt;
+                $remainingAmount -= $paymentToInscription;
             }
 
             foreach (self::MONTH_ORDER as $index => $month) {
@@ -274,13 +285,21 @@ class BalanceService
     {
         $statuses = [];
 
-        if ($balance->getAttribute('inscription_status')) {
-            $statuses[] = $balance->inscription_status;
+        $inscriptionStatus = $balance->inscription_status;
+        if ($inscriptionStatus) {
+            $statuses[] = $inscriptionStatus instanceof BalanceStudentStatusEnum 
+                ? $inscriptionStatus->value 
+                : $inscriptionStatus;
         }
 
         foreach (self::MONTH_ORDER as $month) {
             $statusField = $month . '_status';
-            $statuses[] = $balance->$statusField;
+            $monthStatus = $balance->$statusField;
+            if ($monthStatus) {
+                $statuses[] = $monthStatus instanceof BalanceStudentStatusEnum
+                    ? $monthStatus->value
+                    : $monthStatus;
+            }
         }
 
         $allPaid = collect($statuses)->every(
