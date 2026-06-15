@@ -7,6 +7,7 @@ use App\Models\BalancePayment;
 use App\Models\BalanceStudent;
 use App\Models\MainConfig;
 use App\Models\Payment;
+use App\Models\SchoolLapse;
 use App\Models\Student;
 use Carbon\Carbon;
 use Exception;
@@ -254,6 +255,79 @@ class BalanceService
             $this->updateGeneralStatus($balance);
             $balance->save();
         }
+    }
+
+    public function recalculateAmountsFromConfig(): int
+    {
+        $config = MainConfig::first();
+        if (!$config) return 0;
+
+        $baseMonthlyPayment = (float) ($config->monthly_payment ?? 0);
+        $baseInscriptionPrice = (float) ($config->new_inscription_price ?? 0);
+        $dayOfMonthlyPayment = $config->day_of_monthly_payment ?? 1;
+
+        $schoolLapseActive = SchoolLapse::where('status', 1)->first();
+        if (!$schoolLapseActive) return 0;
+
+        $currentMonthName = strtolower(Carbon::now()->englishMonth);
+        $monthOrder = array_flip(self::MONTH_ORDER);
+        $currentMonthIndex = $monthOrder[$currentMonthName] ?? -1;
+
+        $balances = BalanceStudent::where('school_lapse_id', $schoolLapseActive->id)->get();
+        $updatedCount = 0;
+
+        foreach ($balances as $balance) {
+            $student = $balance->student;
+            if (!$student) continue;
+
+            $multiplier = $student->is_exempt ? (1 - (($student->exemption_percentage ?? 0) / 100)) : 1;
+            $newEffectiveMonthlyPrice = $baseMonthlyPayment * $multiplier;
+            $newEffectiveInscriptionPrice = $baseInscriptionPrice * $multiplier;
+
+            $balancePayments = BalancePayment::where('balance_student_id', $balance->id)->get();
+            $paymentsByMonth = $balancePayments->groupBy('month');
+            $totalPaidInscription = $balancePayments->where('is_inscription', true)->sum('amount');
+
+            $changed = false;
+
+            // Inscription
+            $newInscriptionBalance = $totalPaidInscription - $newEffectiveInscriptionPrice;
+            if (abs($balance->inscription - $newInscriptionBalance) > 0.01) {
+                $balance->inscription = $newInscriptionBalance;
+                $balance->inscription_status = match (true) {
+                    $newInscriptionBalance >= 0 => BalanceStudentStatusEnum::Paid->value,
+                    $newInscriptionBalance > ($newEffectiveInscriptionPrice * -1) => BalanceStudentStatusEnum::PartiallyPaid->value,
+                    default => BalanceStudentStatusEnum::Debt->value,
+                };
+                $changed = true;
+            }
+
+            // Months
+            foreach (self::MONTH_ORDER as $index => $month) {
+                $totalPaid = (float) (($paymentsByMonth->get($month, collect()))->sum('amount'));
+                $newMonthBalance = $totalPaid - $newEffectiveMonthlyPrice;
+
+                if (abs($balance->$month - $newMonthBalance) > 0.01) {
+                    $balance->$month = $newMonthBalance;
+                    $balance->{$month . '_status'} = $this->determineMonthStatus(
+                        (float) $balance->$month,
+                        $newEffectiveMonthlyPrice,
+                        $index,
+                        $currentMonthIndex,
+                        $dayOfMonthlyPayment
+                    );
+                    $changed = true;
+                }
+            }
+
+            if ($changed) {
+                $this->updateGeneralStatus($balance);
+                $balance->save();
+                $updatedCount++;
+            }
+        }
+
+        return $updatedCount;
     }
 
     private function determineMonthStatus(float $monthValue, float $effectivePrice, int $monthIndex, int $currentMonthIndex, int $dayOfMonthlyPayment): string
