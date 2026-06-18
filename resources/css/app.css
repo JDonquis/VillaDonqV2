@@ -25,6 +25,18 @@
     --background: #fffdf5;
     --orange: #ffa552;
 }
+/* Para Chrome, Safari, Edge y Opera */
+.no-arrows::-webkit-outer-spin-button,
+.no-arrows::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Para Firefox */
+.no-arrows {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
 
 /* // dashboard  */
 .dashboard_container {

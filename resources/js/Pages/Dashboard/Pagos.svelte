@@ -112,16 +112,7 @@
     }
 
     // Modificamos la función de conversión para que use el dolarPrice dinámico
-    $: $form.total_in_dolars, exchange();
-
-    function exchange() {
-        if (dolarPrice > 0 && $form.total_in_dolars) {
-            $form.total_in_bs = (
-                parseFloat($form.total_in_dolars) * dolarPrice
-            ).toFixed(2);
-        }
-    }
-
+  
     document.addEventListener("keydown", ({ key }) => {
         if (key === "Escape") {
             selectedRow = { status: false, data: null };
@@ -413,7 +404,7 @@
                                         min="0"
                                         placeholder="Dólares"
                                         step="0.01"
-                                        class="w-20 border-3 py-2 px-2 border- small-shadow focus:outline-0"
+                                        class="no-arrows w-20 border-3 py-2 px-2 border- small-shadow focus:outline-0"
                                         value={student.amount_in_dolars || ""}
                                         readonly={submitStatus ===
                                             "Solo lectura"}
@@ -452,7 +443,7 @@
                                         type="number"
                                         min="0"
                                         step="0.01"
-                                        class=" w-24 border-3 py-2 px-2 border-3 border-black small-shadow focus:outline-0"
+                                        class="no-arrows w-24 border-3 py-2 px-2 border-3 border-black small-shadow focus:outline-0"
                                         value={student.amount_in_bs || ""}
                                         placeholder="Bolívares"
                                         readonly={submitStatus ===
